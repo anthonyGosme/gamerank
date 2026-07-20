@@ -6,6 +6,7 @@ import {
   absoluteLinear,
   absoluteLog,
   clamp,
+  crossGameShareFactor,
   effectiveVisitors,
   mean,
   percentileRanks,
@@ -72,7 +73,14 @@ async function collectMetrics(gameIds: string[]): Promise<Map<string, GameMetric
      GROUP BY g, day, ip
   `);
   const perGameDay = new Map<string, Map<string, Map<string, number>>>();
+  // Usage plateforme par (jour, IP), tous jeux confondus — y compris les
+  // jeux masqués : leur trafic compte dans le partage inter-jeux (§4.1).
+  const globalPerDay = new Map<string, Map<string, number>>();
   for (const row of qualifiedRows) {
+    const globalIps = globalPerDay.get(row.day) ?? new Map();
+    globalPerDay.set(row.day, globalIps);
+    globalIps.set(row.ip, (globalIps.get(row.ip) ?? 0) + Number(row.n));
+
     if (!metrics.has(row.g)) continue;
     const days = perGameDay.get(row.g) ?? new Map();
     perGameDay.set(row.g, days);
@@ -83,7 +91,11 @@ async function collectMetrics(gameIds: string[]): Promise<Map<string, GameMetric
   for (const [gameId, days] of perGameDay) {
     const metric = metrics.get(gameId)!;
     for (const [day, ipCounts] of days) {
-      metric.weightedVisitors += effectiveVisitors(ipCounts, s.prefixLevels) * decay(day);
+      metric.weightedVisitors +=
+        effectiveVisitors(ipCounts, s.prefixLevels, {
+          globalIpCounts: globalPerDay.get(day),
+          crossGameExponent: s.crossGameExponent,
+        }) * decay(day);
     }
   }
 
@@ -139,18 +151,37 @@ async function collectMetrics(gameIds: string[]): Promise<Map<string, GameMetric
     metric.sessionSample = Number(row.cnt);
   }
 
-  // Votes (PostgreSQL) : Wilson pour l'approbation, votants pour Gx.
+  // Votes (PostgreSQL), pondérés par IP (§4.1) :
+  //  - concentration même jeu : n votes d'une IP → n^0,5 votes effectifs
+  //    (ferme la faille « vider le localStorage et revoter ») ;
+  //  - partage inter-jeux : une IP votant sur N jeux ne vaut pas N votes.
+  // Wilson est ensuite calculé sur les comptes effectifs (non entiers : ok).
   const { rows: voteRows } = await pool.query(
-    `SELECT game_id AS g, count(*)::int AS total,
+    `SELECT game_id AS g, coalesce(host(ip), '') AS ip, count(*)::int AS total,
             count(*) FILTER (WHERE value = 1)::int AS pos
-       FROM votes GROUP BY game_id`,
+       FROM votes GROUP BY game_id, coalesce(host(ip), '')`,
   );
-  for (const row of voteRows as Array<{ g: string; total: number; pos: number }>) {
+  const typedVoteRows = voteRows as Array<{ g: string; ip: string; total: number; pos: number }>;
+  const platformVotesPerIp = new Map<string, number>();
+  for (const row of typedVoteRows) {
+    if (row.ip) platformVotesPerIp.set(row.ip, (platformVotesPerIp.get(row.ip) ?? 0) + row.total);
+  }
+  for (const row of typedVoteRows) {
     const metric = metrics.get(row.g);
     if (!metric) continue;
-    metric.voters = row.total;
-    metric.positiveVotes = row.pos;
-    metric.wilson = wilsonLowerBound(row.pos, row.total);
+    let effective: number;
+    if (!row.ip) {
+      effective = row.total; // votes historiques sans IP : poids plein
+    } else {
+      const within = Math.pow(row.total, s.voteIpExponent);
+      const share = crossGameShareFactor(row.total, platformVotesPerIp.get(row.ip)!, s.crossGameExponent);
+      effective = within * share;
+    }
+    metric.voters += effective;
+    metric.positiveVotes += effective * (row.pos / row.total);
+  }
+  for (const metric of metrics.values()) {
+    metric.wilson = metric.voters > 0 ? wilsonLowerBound(metric.positiveVotes, metric.voters) : null;
   }
 
   return metrics;

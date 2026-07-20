@@ -1,9 +1,11 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import { pool } from '../src/db.js';
+import { clickhouse } from '../src/clickhouse.js';
 
-// Développeurs créés par CE fichier de test (un processus par fichier),
-// pour un nettoyage ciblé qui ne touche pas les données des autres.
+// Développeurs et jeux créés par CE fichier de test (un processus par
+// fichier), pour un nettoyage ciblé qui ne touche pas les données des autres.
 const createdDevelopers: string[] = [];
+const createdGames: string[] = [];
 
 export async function createDeveloper(
   email = `test-${randomUUID()}@test.local`,
@@ -16,8 +18,19 @@ export async function createDeveloper(
   return rows[0];
 }
 
-// À appeler dans after() : supprime en cascade jeux, votes et scores de test.
+// À appeler dans after() : supprime en cascade jeux, votes et scores de
+// test (PostgreSQL) ET leurs agrégats ClickHouse — sinon les lignes
+// fantômes des runs précédents polluent le partage inter-jeux (§4.1).
 export async function cleanupCreated(): Promise<void> {
+  if (createdGames.length > 0) {
+    const ids = createdGames.map((id) => `'${id}'`).join(',');
+    for (const table of ['events', 'daily_activity', 'daily_sessions']) {
+      await clickhouse
+        .command({ query: `DELETE FROM ${table} WHERE game_id IN (${ids})` })
+        .catch(() => {});
+    }
+    createdGames.length = 0;
+  }
   if (createdDevelopers.length === 0) return;
   await pool.query('DELETE FROM developers WHERE id = ANY($1::uuid[])', [createdDevelopers]);
   createdDevelopers.length = 0;
@@ -34,6 +47,7 @@ export async function createGame(
      RETURNING id, sdk_key AS "sdkKey", domain`,
     [developerId, `Test ${slug}`, `https://${domain}/`, domain, `gr_test_${randomBytes(12).toString('base64url')}`],
   );
+  createdGames.push(rows[0].id);
   return rows[0];
 }
 

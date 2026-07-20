@@ -55,6 +55,11 @@ export const config = {
       { v4: 24, v6: 64, exponent: 0.65 },
       { v4: 32, v6: 128, exponent: 0.5 },
     ],
+    // Partage inter-jeux (§4.1) : une IP/un bloc actif sur N jeux ne compte
+    // pas N fois. part = (usage local / usage plateforme)^(1−γ) ; γ=1 → off.
+    crossGameExponent: Number(process.env.CROSS_GAME_EXPONENT ?? 0.7),
+    // Concentration des votes d'une même IP sur un même jeu : n^0,5.
+    voteIpExponent: Number(process.env.VOTE_IP_EXPONENT ?? 0.5),
     // Constantes de confiance (shrinkage vers le prior global, CDC §7.3).
     shrinkSamples: { fidelity: 20, session: 20, engagement: 50 },
     // Bornes de référence des échelles absolues (CDC §6) — à recalibrer.

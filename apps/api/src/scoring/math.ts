@@ -98,13 +98,25 @@ export function ipPrefix(ip: string, level: PrefixLevel): string {
   return `v6/${bits}:${kept.join(':')}`;
 }
 
+// Facteur de partage inter-jeux : la part que CE jeu représente dans
+// l'usage plateforme du préfixe, adoucie par γ. Usage local = global → 1
+// (préfixe « fidèle » à un jeu, rien ne change). γ = 1 → désactivé.
+export function crossGameShareFactor(local: number, global: number, gamma: number): number {
+  if (gamma >= 1 || global <= 0 || local >= global) return 1;
+  return Math.pow(local / global, 1 - gamma);
+}
+
 // Visiteurs effectifs d'un jour (CDC §4.1) : pour chaque niveau de préfixe,
-// somme des n^α par préfixe ; on retient le niveau le plus restrictif.
+// somme des n^α par préfixe — multipliée par la part inter-jeux du préfixe
+// si l'usage plateforme est fourni ; on retient le niveau le plus restrictif.
 // 100 visiteurs depuis la même /24 ≈ 20 ; 100 IP toutes distinctes ≈ 100.
 export function effectiveVisitors(
   ipCounts: Map<string, number>,
   levels: PrefixLevel[],
+  options?: { globalIpCounts?: Map<string, number>; crossGameExponent?: number },
 ): number {
+  const gamma = options?.crossGameExponent ?? 1;
+  const globalIps = options?.globalIpCounts;
   let minimum = Infinity;
   for (const level of levels) {
     const perPrefix = new Map<string, number>();
@@ -112,11 +124,55 @@ export function effectiveVisitors(
       const prefix = ipPrefix(ip, level);
       perPrefix.set(prefix, (perPrefix.get(prefix) ?? 0) + count);
     }
+    let globalPerPrefix: Map<string, number> | null = null;
+    if (globalIps && gamma < 1) {
+      globalPerPrefix = new Map();
+      for (const [ip, count] of globalIps) {
+        const prefix = ipPrefix(ip, level);
+        globalPerPrefix.set(prefix, (globalPerPrefix.get(prefix) ?? 0) + count);
+      }
+    }
     let total = 0;
-    for (const count of perPrefix.values()) total += Math.pow(count, level.exponent);
+    for (const [prefix, count] of perPrefix) {
+      const share = globalPerPrefix
+        ? crossGameShareFactor(count, globalPerPrefix.get(prefix) ?? count, gamma)
+        : 1;
+      total += Math.pow(count, level.exponent) * share;
+    }
     minimum = Math.min(minimum, total);
   }
   return Number.isFinite(minimum) ? minimum : 0;
+}
+
+// Rareté inter-jeux (CDC §4.1) : une IP ou un UUID présent sur N jeux de la
+// plateforme compte N^(γ−1) par jeu — 1 jeu → ×1, 10 jeux → ×0,50 (γ=0,7).
+// Les blocs très utilisés (VPN partagés, fermes) pèsent moins que les rares.
+export function crossGameMultiplier(gamesCount: number, exponent: number): number {
+  if (gamesCount <= 1) return 1;
+  return Math.pow(gamesCount, exponent - 1);
+}
+
+// Facteur de concentration intra-jeu pour une liste de votes : pour chaque
+// vote, k votes partageant son préfixe au niveau L valent chacun k^(α−1)
+// (de sorte que le groupe pèse k^α au total) ; le niveau le plus
+// restrictif l'emporte. 30 votes d'une même /24 → ×0,30 chacun.
+export function concentrationFactors(ips: string[], levels: PrefixLevel[]): number[] {
+  const perLevelCounts = levels.map((level) => {
+    const counts = new Map<string, number>();
+    for (const ip of ips) {
+      const prefix = ipPrefix(ip, level);
+      counts.set(prefix, (counts.get(prefix) ?? 0) + 1);
+    }
+    return counts;
+  });
+  return ips.map((ip) => {
+    let factor = 1;
+    for (let i = 0; i < levels.length; i++) {
+      const group = perLevelCounts[i].get(ipPrefix(ip, levels[i]))!;
+      factor = Math.min(factor, Math.pow(group, levels[i].exponent - 1));
+    }
+    return factor;
+  });
 }
 
 export function clamp(value: number, min: number, max: number): number {

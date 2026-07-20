@@ -153,11 +153,29 @@ Gt_brut = Σ_jours [ (Σ active_ms du jour) × 0,95^age(jour) ]
 
 Exprimé en heures au moment de la normalisation.
 
-### 4.4 Gx — Votants
+### 4.4 Gx — Votants effectifs
+
+Les votes sont **pondérés par IP** avant tout usage (Gx et approbation) :
 
 ```text
-Gx_brut = nombre de lignes dans la table votes pour ce jeu
+pour chaque (jeu, IP) :
+  effectif = (nb de votes de l'IP sur ce jeu) ^ 0,5
+           × partDuJeu(votes de l'IP sur ce jeu, votes de l'IP partout)   → §6.5
+  positifs effectifs = effectif × (part de votes positifs de l'IP)
+
+Gx_brut = Σ effectifs
 ```
+
+Conséquences :
+
+* 10 votes d'une même IP sur un même jeu (UUID différents — localStorage
+  vidé) ≈ 3,2 votes effectifs, pas 10 ;
+* une IP qui vote sur 10 jeux ne pèse pas 10 votes sur la plateforme ;
+* les votes historiques sans IP gardent un poids plein (cas legacy).
+
+Exemple mesuré (tests) : 30 votes positifs émis par 3 IP → **9,5 votants
+effectifs, Wilson 71,2 %** ; les mêmes 30 votes par 30 IP distinctes →
+**30 effectifs, Wilson 88,6 %**.
 
 Non décroissant (les votes sont une donnée durable en PostgreSQL).
 
@@ -318,6 +336,35 @@ Le niveau le **plus restrictif** l'emporte.
 /64  : 200^0,65       =  31,3   ← minimum
 ```
 
+### 6.5 Partage inter-jeux
+
+Les calculs ci-dessus sont internes à chaque jeu. S'y ajoute un facteur
+**plateforme** : un préfixe hyperactif sur beaucoup de jeux (sortie VPN
+partagée, ferme de bots, joueur unique votant partout) ne compte pas N fois.
+
+```text
+partDuJeu(préfixe) = ( usage sur CE jeu / usage sur TOUTE la plateforme,
+                       le même jour ) ^ (1−γ)         avec γ = 0,70
+
+contribution finale = (n_préfixe)^α × partDuJeu
+```
+
+| Situation | Facteur |
+|---|---|
+| préfixe actif sur 1 seul jeu | 1,00 (rien ne change) |
+| IP répartie également sur 2 jeux | 0,81 |
+| IP répartie également sur 10 jeux | 0,50 → total ≈ 5 « joueurs » au lieu de 10 |
+
+L'usage plateforme inclut les jeux masqués (leur trafic compte dans le
+dénominateur). γ = 1 désactive le mécanisme.
+
+**Pourquoi pas un UUID joueur transverse ?** Le stockage navigateur est
+partitionné par site hôte (Safari, Firefox, Chrome) : un même joueur a un
+UUID différent sur chaque jeu, par construction, et c'est irrémédiable sans
+fingerprinting (rejeté) ou compte joueur (friction). La seule identité
+inter-jeux observable côté serveur est l'IP — d'où ce mécanisme statistique
+plutôt qu'une identité.
+
 ## 7. Étage 4 — Normalisation 0-100
 
 Chaque métrique corrigée devient un sous-score :
@@ -444,6 +491,8 @@ d'environnement.
 | Fenêtre médiane | 30 jours | — |
 | P par défaut | 2/7 | `PEER_DEFAULT_RATIO` |
 | Exposants IP | 0,90 / 0,85 / 0,75 / 0,65 / 0,50 | — |
+| γ partage inter-jeux | 0,70 | `CROSS_GAME_EXPONENT` |
+| Concentration votes/IP | 0,50 | `VOTE_IP_EXPONENT` |
 | k de shrinkage | 20 / 20 / 50 | — |
 | Bornes de référence | §7.1 | — |
 | Pondérations | §8 | — |

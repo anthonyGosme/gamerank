@@ -312,6 +312,10 @@ IPv6 : /32   /48   /56   /64   /128
   (`::`) est développée. Le **/64 IPv6 joue le rôle du /32 IPv4** : un
   foyer possède un /64 entier et les extensions de confidentialité font
   tourner les /128, donc l'adresse exacte n'est pas une identité fiable ;
+* partage inter-jeux : un préfixe IP hyperactif sur N jeux ne compte pas
+  N fois (part = (usage local / usage plateforme)^(1−γ), γ = 0,7) ; les
+  votes sont pondérés pareil, plus n^0,5 par IP au sein d'un même jeu
+  (ferme la faille « vider le localStorage et revoter ») ;
 * **[reporté]** facteur ASN : nécessite la base MaxMind (clé gratuite).
   Lookup local sans appel réseau — pas de risque de lenteur — mais activé
   en v2+ ; facteur ×1,0 en attendant.

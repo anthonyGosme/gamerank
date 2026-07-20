@@ -21,6 +21,8 @@ const INPUTS: Record<string, string> = {
   stale: '20 visiteurs IL Y A 40 JOURS, 120 s chacun (activité identique à « fresh »)',
   fewVotes: '20 visiteurs, 60 s chacun, votes 3+/0− (100 % mais 3 votants)',
   manyVotes: '20 visiteurs, 60 s chacun, votes 90+/10− (90 % sur 100 votants)',
+  voteRing: '30 votes positifs émis par 3 IP seulement (10 votes/IP, UUID tous différents)',
+  voteFair: '30 votes positifs émis par 30 IP distinctes',
 };
 
 const LABELS: Record<string, string> = {
@@ -32,6 +34,8 @@ const LABELS: Record<string, string> = {
   stale: 'ancien (J−40)',
   fewVotes: 'peu de votes',
   manyVotes: 'beaucoup de votes',
+  voteRing: 'anneau de votes',
+  voteFair: 'votes sains',
 };
 
 const one = (value: number, digits = 1) => value.toFixed(digits);
@@ -77,11 +81,16 @@ async function insertSessions(
   });
 }
 
-async function insertVotes(gameId: string, positive: number, negative: number): Promise<void> {
+async function insertVotes(
+  gameId: string,
+  positive: number,
+  negative: number,
+  ipOf?: (index: number) => string,
+): Promise<void> {
   for (let i = 0; i < positive + negative; i++) {
     await pool.query(
-      `INSERT INTO votes (game_id, visitor_id, value) VALUES ($1, $2, $3)`,
-      [gameId, uniqueId('sv'), i < positive ? 1 : -1],
+      `INSERT INTO votes (game_id, visitor_id, value, ip) VALUES ($1, $2, $3, $4)`,
+      [gameId, uniqueId('sv'), i < positive ? 1 : -1, ipOf ? ipOf(i) : null],
     );
   }
 }
@@ -98,6 +107,8 @@ before(async () => {
     stale: await createGame(developer.id),
     fewVotes: await createGame(developer.id),
     manyVotes: await createGame(developer.id),
+    voteRing: await createGame(developer.id),
+    voteFair: await createGame(developer.id),
   };
 
   // Gros jeu médiocre : 50 visiteurs/jour sur 30 j, jamais de retour,
@@ -181,6 +192,19 @@ before(async () => {
   await insertVotes(games.fewVotes.id, 3, 0);
   await insertVotes(games.manyVotes.id, 90, 10);
 
+  // Anneau de votes : mêmes votes positifs, mais 3 IP contre 30.
+  const flatVotes = (prefix: string) =>
+    Array.from({ length: 20 }, (_, i) => ({
+      visitorId: `${prefix}-${i}`,
+      day: day(3),
+      ip: `${110 + i}.9.9.9`,
+      activeMs: 60_000,
+    }));
+  await insertActivity(games.voteRing.id, flatVotes('ring'));
+  await insertActivity(games.voteFair.id, flatVotes('fair'));
+  await insertVotes(games.voteRing.id, 30, 0, (i) => `50.1.1.${i % 3}`);
+  await insertVotes(games.voteFair.id, 30, 0, (i) => `51.${i}.2.3`);
+
   const summary = await runScoring();
   const { rows } = await pool.query(
     `SELECT game_id, score, g, q, rank, metrics FROM game_scores WHERE run_id = $1`,
@@ -196,7 +220,7 @@ before(async () => {
 
   printTable(
     `RÉSULTATS (${summary.gamesCount} jeux classés au total, passe en ${summary.durationMs} ms)`,
-    ['jeu', 'Gv pondéré', 'Gt (h)', 'fidélité', 'médiane', 'approb.', 'G', 'Q', 'Score', 'rang'],
+    ['jeu', 'Gv pondéré', 'Gt (h)', 'votants eff.', 'fidélité', 'médiane', 'approb.', 'G', 'Q', 'Score', 'rang'],
     Object.keys(INPUTS).map((key) => {
       const row = scores.get(games[key].id)!;
       const m = row.metrics;
@@ -204,6 +228,7 @@ before(async () => {
         LABELS[key],
         one(m.weightedVisitors),
         one(m.activeMs / 3_600_000),
+        one(m.voters),
         `${pct(m.fidelity)} → ${pct(m.corrected.fidelity)}`,
         `${one(m.medianSessionMs / 60_000, 1)} min`,
         `${pct(m.wilson)}`,
@@ -277,6 +302,21 @@ test('Wilson : 90/100 votes bat 3/3 votes', () => {
     many.metrics.corrected.approval > few.metrics.corrected.approval,
     `attendu 90/100 > 3/3`,
   );
+});
+
+test('30 votes depuis 3 IP pèsent bien moins que 30 votants distincts', () => {
+  const ring = scores.get(games.voteRing.id)!.metrics;
+  const fair = scores.get(games.voteFair.id)!.metrics;
+  console.log(
+    `    anneau (3 IP)   : 30 votes bruts → ${one(ring.voters)} effectifs,` +
+      ` Wilson ${pct(ring.wilson)}\n` +
+      `    sains (30 IP)   : 30 votes bruts → ${one(fair.voters)} effectifs,` +
+      ` Wilson ${pct(fair.wilson)}\n` +
+      `    la faille « vider le localStorage et revoter » ne rapporte plus que ` +
+      `${one((ring.voters / fair.voters) * 100)} % du poids normal`,
+  );
+  assert.ok(ring.voters < fair.voters / 2, `attendu ${one(ring.voters)} < ${one(fair.voters / 2)}`);
+  assert.ok(ring.wilson! < fair.wilson!, 'Wilson doit refléter les votants effectifs');
 });
 
 test("la décroissance : la même activité pèse moins 40 jours plus tard", () => {

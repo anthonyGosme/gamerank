@@ -97,6 +97,28 @@ test('IPv4 — concentration sur une /24 contre trafic dispersé', () => {
   assert.ok(concentrated < dispersed / 3);
 });
 
+test('partage inter-jeux : une IP active sur 10 jeux ne vaut pas 10 joueurs', () => {
+  const gamma = config.scoring.crossGameExponent;
+  const ip = '81.2.3.4';
+  const onOneGame = effectiveVisitors(new Map([[ip, 1]]), levels, {
+    globalIpCounts: new Map([[ip, 1]]),
+    crossGameExponent: gamma,
+  });
+  const onTenGames = effectiveVisitors(new Map([[ip, 1]]), levels, {
+    globalIpCounts: new Map([[ip, 10]]),
+    crossGameExponent: gamma,
+  });
+  console.log(
+    `    IP fidèle à 1 jeu : ${onOneGame.toFixed(2)} visiteur compté (inchangé)\n` +
+      `    même IP répartie sur 10 jeux : ${onTenGames.toFixed(2)} par jeu` +
+      ` → total plateforme ${(10 * onTenGames).toFixed(1)} au lieu de 10\n` +
+      `    (γ = ${gamma} : part = (local/global)^${(1 - gamma).toFixed(1)})`,
+  );
+  assert.equal(onOneGame, 1, 'une IP mono-jeu ne doit subir aucune décote');
+  assert.ok(onTenGames > 0.3 && onTenGames < 0.7, `attendu ≈ 0,5, obtenu ${onTenGames.toFixed(2)}`);
+  assert.ok(10 * onTenGames < 7, 'le total plateforme doit rester nettement sous 10');
+});
+
 test('IPv4 et IPv6 se mélangent sans se confondre', () => {
   const mixed = new Map<string, number>([
     ['81.2.3.4', 1],

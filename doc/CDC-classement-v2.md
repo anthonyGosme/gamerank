@@ -114,6 +114,28 @@ IPv4** — un foyer dispose d'un /64 entier et les extensions de
 confidentialité font tourner les /128, donc l'adresse exacte n'est pas une
 identité exploitable de ce côté.
 
+**Partage inter-jeux.** Les buckets ci-dessus sont internes à chaque jeu ;
+s'y ajoute une dimension plateforme : un préfixe hyperactif sur beaucoup de
+jeux (sortie VPN partagée, ferme de bots, même joueur partout) ne compte
+pas N fois.
+
+```text
+part du jeu = (usage du préfixe sur ce jeu / usage plateforme, même jour)^(1−γ)
+γ = 0,70 (configurable ; 1 = désactivé)
+
+IP fidèle à 1 jeu        → facteur 1 (inchangé)
+IP répartie sur 10 jeux  → ≈ 5 « joueurs » au total, pas 10
+```
+
+Les **votes** suivent la même logique (l'IP est stockée avec chaque vote) :
+n votes d'une même IP sur un même jeu valent n^0,5 votes effectifs — ce qui
+ferme la faille « vider le localStorage et revoter » — et le partage
+inter-jeux s'applique aussi. Wilson est calculé sur les comptes effectifs.
+
+Nota : il n'existe pas d'identifiant joueur transverse aux jeux, et c'est
+irrémédiable côté navigateur (stockage partitionné par site hôte) ; l'IP
+est la seule identité inter-jeux observable, d'où ce mécanisme statistique.
+
 Un poids dégressif est préféré à un quota dur : pas d'effet de seuil
 contournable, et les concentrations légitimes (campus, CGNAT mobile,
 événement local) gardent l'essentiel de leur poids.
