@@ -70,8 +70,12 @@ moins de 60 s → un seul mail (throttle).
    choisir une image (PNG/JPEG/WebP/GIF < 2 Mo). Tous obligatoires.
 3. **Attendu** : page du jeu avec vignette, badge `Awaiting jury`, clé SDK
    `gr_…`, et la mention du domaine autorisé.
-4. Re-déclarer la même URL → **attendu** : « a game is already registered
-   at this URL ».
+4. Re-déclarer la même URL avec le même compte → **attendu** :
+   « you already registered a game at this URL » (un autre compte, lui,
+   peut déclarer la même URL).
+   4bis. Sur la page du jeu, bouton **Delete this game** (confirmation
+   demandée) → retour au dashboard, le jeu a disparu. Un compte ne peut
+   supprimer que ses propres jeux.
 5. Au 6e jeu du compte → **attendu** : « limit of 5 games per account
    reached ».
 
@@ -132,12 +136,39 @@ ClickHouse) :
 4. Jouer quelques secondes (cliquer les cases oranges).
 5. **Attendu** sur la page du jeu (gamerank) : « Events received ✓ » avec
    l'heure du dernier événement (rafraîchi toutes les 10 s).
+   5bis. **Vérification d'intégration** : tant que non vérifiée, message
+   rouge « ⚠ Verify your integration » + bouton « Verify code ».
+   - Jeu **local** (case « local address » cochée à la déclaration ;
+     obligatoire pour une URL localhost/IP) : la vérification passe dès que
+     des événements ont été reçus.
+   - Jeu **NDD internet** : le backend télécharge la page déclarée et
+     cherche la balise (`sdk.js` + clé) ; message d'erreur explicite si la
+     page est injoignable ou la balise absente.
+   Une fois vérifié : « Integration verified ✓ » en vert avec la date.
 6. **Attendu** sur `/admin` : `load`, `session_start`, puis des `heartbeat`
    à cadence exponentielle (5 s, 15 s, 45 s, 135 s max) avec `activeMs`.
 7. Laisser l'onglet du jeu **caché ou sans input > 60 s** → `activeMs`
    n'augmente plus (le temps inactif ne compte pas).
 
-## Scénario 6 — Admin : observer l'ingestion (US-8.0)
+## Scénario 6 — Badge et vote (US-4.3)
+
+1. Sur la page du jeu (gamerank), section *Integration* : un seul snippet
+   (mesure + badge), aperçu du badge **avec flèches**, et le **color
+   picker** — choisir une couleur claire : le texte passe automatiquement
+   en sombre (contraste calculé côté serveur). Le jeu de démo l'intègre déjà.
+2. Ouvrir le jeu de démo : le badge « GAMERANK / NEW » (180×40, couleur du
+   jeu) est sous la grille — c'est une image + lien, il s'affiche même sans
+   JavaScript, sans flèches tant qu'on ne joue pas.
+3. Jouer ≥ 5 s → les flèches ▼ ▲ apparaissent en fondu.
+4. Cliquer ▲ avant 60 s de jeu total → bulle « Keep playing before
+   voting », rien en base.
+5. Rejouer jusqu'à 60 s (ou revenir plus tard) puis voter → la flèche
+   passe orange, et la ligne apparaît :
+   `docker compose exec -T postgres psql -U gamerank -c "SELECT * FROM votes;"`
+6. Revoter ▼ → la même ligne change de valeur (un vote par visiteur).
+7. Le centre du badge reste un lien vers la fiche publique `/g/<id>`.
+
+## Scénario 7 — Admin : observer l'ingestion (US-8.0)
 
 1. Vérifier que ton email est dans `ADMIN_EMAILS` du `.env` (redémarrer
    `npm run dev` après modification).

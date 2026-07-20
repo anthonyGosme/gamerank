@@ -1,7 +1,7 @@
 // GameRank SDK — mesure du temps de jeu réellement actif (CDC §2, US-4.1/4.2).
 // Contrat : ne JAMAIS casser le jeu hôte — tout échec est silencieux.
 
-const SDK_VERSION = '0.1.0';
+const SDK_VERSION = '0.2.0';
 const HEARTBEAT_MIN_MS = 5_000;
 const HEARTBEAT_FACTOR = 3;
 // Plafonné : au-delà, un heartbeat perdu coûterait des minutes de mesure,
@@ -47,6 +47,15 @@ function init(): void {
   let sessionStarted = false;
   let lastActivity = 0;
   let activeMs = 0;
+  let totalActiveMs = 0;
+
+  // Lecture seule pour le widget de vote (US-4.3) : jamais utilisé côté
+  // serveur comme preuve — l'éligibilité est re-vérifiée en ClickHouse.
+  (window as unknown as Record<string, unknown>).GameRank = {
+    key,
+    visitorId,
+    activeMs: () => totalActiveMs,
+  };
   let heartbeatDelay = HEARTBEAT_MIN_MS;
   let heartbeatTimer: ReturnType<typeof setTimeout> | undefined;
   let queue: QueuedEvent[] = [];
@@ -129,6 +138,7 @@ function init(): void {
         Date.now() - lastActivity < IDLE_LIMIT_MS
       ) {
         activeMs += 1000;
+        totalActiveMs += 1000;
       }
     } catch {
       /* silencieux */

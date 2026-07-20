@@ -23,14 +23,17 @@ interface IngestBody {
   events?: unknown;
 }
 
-function originHostname(request: FastifyRequest): string | null {
+// Partagé avec le vote (US-4.3) : même règle d'origine que l'ingestion.
+export function matchesDeclaredDomain(request: FastifyRequest, domain: string): boolean {
   const source = request.headers.origin ?? request.headers.referer;
-  if (typeof source !== 'string') return null;
+  if (typeof source !== 'string') return false;
+  let hostname: string;
   try {
-    return new URL(source).hostname.toLowerCase();
+    hostname = new URL(source).hostname.toLowerCase();
   } catch {
-    return null;
+    return false;
   }
+  return hostname === domain || hostname.endsWith(`.${domain}`);
 }
 
 // Réponse 204 systématique : un émetteur invalide n'apprend rien (US-4.4).
@@ -62,10 +65,7 @@ async function handleBatch(request: FastifyRequest): Promise<void> {
   const game = games[0] as { id: string; domain: string };
 
   // Contrôle d'origine : l'événement doit venir du domaine déclaré (US-2.2).
-  const hostname = originHostname(request);
-  if (!hostname || (hostname !== game.domain && !hostname.endsWith(`.${game.domain}`))) {
-    return;
-  }
+  if (!matchesDeclaredDomain(request, game.domain)) return;
 
   const sdkVersion = typeof body.sdkVersion === 'string' ? body.sdkVersion.slice(0, 32) : '';
   const userAgent = (request.headers['user-agent'] ?? '').slice(0, 256);

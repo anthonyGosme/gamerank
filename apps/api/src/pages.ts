@@ -121,22 +121,45 @@ export const newGamePage = layout('Add a game', `
   <p><a href="/dashboard">← My games</a></p>
   <h1>Declare a game</h1>
   <div id="zone"></div>
+  <style>
+    form label { display: block; font-weight: 600; font-size: .9rem; margin: .9rem 0 .25rem; }
+    .hint { color: #667; font-size: .85rem; margin: .2rem 0 0; }
+  </style>
   <form id="form">
-    <input id="name" placeholder="Game name" required maxlength="100" autofocus>
+    <label for="name">Game name</label>
+    <input id="name" placeholder="My awesome game" required maxlength="100" autofocus>
+    <label for="url">Game URL</label>
     <input id="url" type="url" placeholder="https://mygame.example.com" required>
-    <textarea id="description" placeholder="Description" rows="4" required></textarea>
-    <label>Thumbnail (PNG, JPEG, WebP or GIF — 2 MB max)
-      <input id="thumbnail" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required>
-    </label>
+    <p class="hint">Example: <code>http://localhost:8000</code> for local testing.</p>
+    <p class="hint"><label style="display:inline;font-weight:400">
+      <input type="checkbox" id="isLocal" style="width:auto;margin:0 .3rem 0 0;vertical-align:middle">
+      This is a local address (localhost or IP), not an internet domain name</label></p>
+    <label for="description">Description</label>
+    <textarea id="description" placeholder="What makes your game fun?" rows="4" required></textarea>
+    <label for="thumbnail">Thumbnail (PNG, JPEG, WebP or GIF — 2 MB max)</label>
+    <input id="thumbnail" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required>
+    <img id="thumb-preview" alt="" hidden style="max-width:12rem;max-height:8rem;border-radius:.5rem;display:block;margin:.5rem 0 1rem">
     <button type="submit">Register and get my SDK key</button>
   </form>
   <script>
+    const thumbInput = document.getElementById('thumbnail');
+    const thumbPreview = document.getElementById('thumb-preview');
+    thumbInput.addEventListener('change', () => {
+      const file = thumbInput.files[0];
+      if (file) {
+        thumbPreview.src = URL.createObjectURL(file);
+        thumbPreview.hidden = false;
+      } else {
+        thumbPreview.hidden = true;
+      }
+    });
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const body = new FormData();
       body.append('name', document.getElementById('name').value);
       body.append('url', document.getElementById('url').value);
       body.append('description', document.getElementById('description').value);
+      body.append('isLocal', document.getElementById('isLocal').checked ? 'true' : 'false');
       body.append('thumbnail', document.getElementById('thumbnail').files[0]);
       const res = await fetch('/api/games', { method: 'POST', body });
       if (res.status === 401) { location.href = '/login'; return; }
@@ -230,10 +253,16 @@ export const gamePage = layout('Game', `
         + '<p><a id="url" target="_blank" rel="noopener"></a> <span class="badge" id="status"></span></p>'
         + '<p id="description"></p>'
         + '<h2>Integration</h2>'
-        + '<p>Paste this snippet in your game page — it measures real play time:</p>'
+        + '<p>Paste this snippet in your game page. The first line measures real play time '
+        + '(required) ; the <code>&lt;div&gt;</code> shows the badge and lets players vote '
+        + '(remove it if you do not want the badge):</p>'
         + '<p><code id="snippet"></code> <button id="copy">Copy</button></p>'
+        + '<p id="verify-zone"></p>'
         + '<p id="events-status" class="muted"></p>'
-        + '<p class="muted">Events whose origin does not match <strong id="domain"></strong> will be rejected.</p>';
+        + '<p>Badge preview: <img id="badge-preview" width="180" height="40" alt="" style="vertical-align:middle"> '
+        + '<label class="muted">color <input type="color" id="badge-color" style="width:3rem;padding:0;vertical-align:middle"></label></p>'
+        + '<p class="muted">Events whose origin does not match <strong id="domain"></strong> will be rejected.</p>'
+        + '<p style="margin-top:2.5rem"><button id="delete-btn" style="color:#b91c1c;border-color:#b91c1c">Delete this game</button></p>';
       zone.querySelector('h1').textContent = game.name;
       const thumb = document.getElementById('thumb');
       if (game.thumbnailUrl) thumb.src = game.thumbnailUrl; else thumb.remove();
@@ -241,13 +270,65 @@ export const gamePage = layout('Game', `
       url.textContent = game.url; url.href = game.url;
       document.getElementById('status').textContent = STATUS[game.status] ?? game.status;
       document.getElementById('description').textContent = game.description || '';
-      const snippet = '<script src="' + location.origin + '/sdk.js" data-key="' + game.sdkKey + '" async><\\/script>';
+      const snippet = '<script src="' + location.origin + '/sdk.js" data-key="' + game.sdkKey + '" async><\\/script>\\n'
+        + '<div style="position:relative;display:inline-block;width:180px;height:40px">'
+        + '<script src="' + location.origin + '/widget.js" data-key="' + game.sdkKey + '" async><\\/script>'
+        + '<a href="' + location.origin + '/g/' + game.id + '">'
+        + '<img src="' + location.origin + '/games/' + game.id + '/badge.svg" width="180" height="40" alt="' + game.name.replaceAll('"', '') + ' on GameRank"></a></div>';
       document.getElementById('snippet').textContent = snippet;
       document.getElementById('copy').addEventListener('click', () =>
         navigator.clipboard.writeText(snippet));
+      const preview = document.getElementById('badge-preview');
+      const refreshPreview = () => {
+        preview.src = '/games/' + game.id + '/badge.svg?arrows=1&t=' + Date.now();
+      };
+      refreshPreview();
+      const colorInput = document.getElementById('badge-color');
+      colorInput.value = game.badgeColor || '#111827';
+      colorInput.addEventListener('change', async () => {
+        const res = await fetch('/api/games/' + game.id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ badgeColor: colorInput.value }),
+        });
+        if (res.ok) refreshPreview();
+      });
       document.getElementById('domain').textContent = game.domain;
+      renderVerifyZone(game);
       renderEventsStatus(game);
       setInterval(refreshEventsStatus, 10000, id);
+      document.getElementById('delete-btn').addEventListener('click', async () => {
+        if (!confirm('Delete "' + game.name + '"? Its stats and votes will be lost. This cannot be undone.')) return;
+        const res = await fetch('/api/games/' + game.id, { method: 'DELETE' });
+        if (res.status === 204) { location.href = '/dashboard'; return; }
+        alert('Could not delete this game.');
+      });
+    }
+    function renderVerifyZone(game) {
+      const zone = document.getElementById('verify-zone');
+      const verified = !!game.integrationVerifiedAt;
+      zone.innerHTML = verified
+        ? '<span style="color:#15803d;font-weight:600">Integration verified ✓</span> '
+          + '<span class="muted" id="verify-date"></span> '
+          + '<button id="verify-btn">Recheck the integration</button> '
+          + '<span id="verify-error" style="color:#b91c1c"></span>'
+        : '<span style="color:#b91c1c;font-weight:600">⚠ Verify your integration</span> '
+          + '<button id="verify-btn">Verify code</button> '
+          + '<span id="verify-error" style="color:#b91c1c"></span>';
+      if (verified) {
+        document.getElementById('verify-date').textContent =
+          new Date(game.integrationVerifiedAt).toLocaleString();
+      }
+      document.getElementById('verify-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('verify-btn');
+        btn.disabled = true; btn.textContent = 'Checking…';
+        const res = await fetch('/api/games/' + game.id + '/verify', { method: 'POST' });
+        if (res.ok) { renderVerifyZone(await res.json()); return; }
+        const message = (await res.json()).error;
+        game.integrationVerifiedAt = null;
+        renderVerifyZone(game);
+        document.getElementById('verify-error').textContent = message;
+      });
     }
     function renderEventsStatus(game) {
       document.getElementById('events-status').textContent = game.lastEventAt

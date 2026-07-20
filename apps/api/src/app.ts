@@ -9,6 +9,7 @@ import { config } from './config.js';
 import { registerAuthRoutes } from './auth.js';
 import { registerGameRoutes, uploadsDir } from './games.js';
 import { registerIngestRoutes } from './ingest.js';
+import { registerVoteRoutes } from './votes.js';
 import { registerAdminRoutes } from './admin.js';
 import { loginPage, dashboardPage, newGamePage, gamePage, adminPage } from './pages.js';
 
@@ -42,6 +43,7 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   registerAuthRoutes(app);
   registerGameRoutes(app);
   registerIngestRoutes(app);
+  registerVoteRoutes(app);
   registerAdminRoutes(app);
 
   app.get('/', async (_request, reply) => reply.redirect('/login'));
@@ -52,19 +54,21 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   app.get('/admin', async (_request, reply) => reply.type('text/html').send(adminPage));
   app.get('/health', async () => ({ ok: true }));
 
-  // Fichier buildé par packages/sdk (npm run build:sdk).
-  const sdkPath = path.resolve('../../packages/sdk/dist/sdk.js');
-  app.get('/sdk.js', async (_request, reply) => {
-    try {
-      const js = await readFile(sdkPath);
-      return reply
-        .type('application/javascript; charset=utf-8')
-        .header('Cache-Control', 'public, max-age=300')
-        .send(js);
-    } catch {
-      return reply.code(404).type('application/javascript').send('// SDK not built: npm run build:sdk');
-    }
-  });
+  // Fichiers buildés par packages/sdk (npm run build:sdk).
+  for (const file of ['sdk.js', 'widget.js']) {
+    const filePath = path.resolve(`../../packages/sdk/dist/${file}`);
+    app.get(`/${file}`, async (_request, reply) => {
+      try {
+        const js = await readFile(filePath);
+        return reply
+          .type('application/javascript; charset=utf-8')
+          .header('Cache-Control', 'public, max-age=300')
+          .send(js);
+      } catch {
+        return reply.code(404).type('application/javascript').send('// not built: npm run build:sdk');
+      }
+    });
+  }
 
   return app;
 }

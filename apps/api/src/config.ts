@@ -25,6 +25,8 @@ export const config = {
 
   maxGamesPerDeveloper: Number(process.env.MAX_GAMES_PER_DEVELOPER ?? 5),
   uploadsDir: process.env.UPLOADS_DIR ?? 'uploads',
+  voteMinActiveMs: Number(process.env.VOTE_MIN_ACTIVE_MS ?? 10_000),
+  voteChangeCooldownHours: Number(process.env.VOTE_CHANGE_COOLDOWN_HOURS ?? 24),
   maxThumbnailBytes: Number(process.env.MAX_THUMBNAIL_BYTES ?? 2 * 1024 * 1024),
 
   magicLinkTtlMinutes: 15,

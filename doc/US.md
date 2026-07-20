@@ -53,7 +53,9 @@ vignette) afin qu'il entre dans le classement.
 * nom, URL, description et vignette sont tous obligatoires ;
 * la vignette est téléversée (PNG/JPEG/WebP/GIF, taille max configurable)
   et hébergée par GameRank — pas d'URL d'image externe ;
-* l'URL du jeu est unique dans la base ;
+* **[v2]** l'URL du jeu est unique **par compte** : un même développeur ne
+  peut pas la déclarer deux fois, mais deux comptes peuvent déclarer le
+  même site (assumé) ;
 * une **clé SDK** est générée, liée au jeu et au domaine déclaré ;
 * le jeu est créé en statut `en attente du jury` : il n'apparaît pas encore
   dans le classement (voir US-3.x) ;
@@ -67,7 +69,12 @@ d'installer le SDK en une balise.
 * la page du jeu affiche l'état de réception (`aucun événement reçu` /
   `événements reçus ✓`) pour valider l'installation ;
 * les événements dont l'origine ne correspond pas au domaine déclaré sont
-  rejetés.
+  rejetés ;
+* **[v2]** vérification d'intégration : message rouge « Verify your
+  integration » + bouton « Verify code » tant que non vérifiée ;
+  jeu **local** (localhost/IP, case cochée à la déclaration) → vérifié par
+  la réception d'événements SDK ; **NDD internet** → le backend télécharge
+  la page et vérifie la présence de la balise (sdk.js + clé).
 
 ### US-2.3 Statut de publication
 En tant que développeur, je veux voir le statut de mon jeu
@@ -80,6 +87,16 @@ suis.
 * `classé` : le jeu a reçu ses 5 présentations au jury (§7.4) **ou** 14
   jours se sont écoulés (garde-fou si les inscriptions ralentissent) ; il
   entre dans le classement officiel.
+
+### US-2.5 Supprimer un jeu — ✅ fait
+En tant que développeur, je veux supprimer un de mes jeux afin de retirer
+du classement un site que je ne maintiens plus.
+
+* bouton « Delete this game » sur la page du jeu, avec confirmation ;
+* seul le propriétaire peut supprimer (si deux comptes ont déclaré le même
+  site, chacun ne supprime que le sien) ;
+* la suppression retire le jeu, ses votes et sa vignette ; les événements
+  ClickHouse expirent d'eux-mêmes (TTL).
 
 ### US-2.4 Parcours de première connexion
 En tant que développeur nouvellement inscrit, je veux être guidé pas à pas
@@ -162,7 +179,7 @@ que les métriques soient honnêtes (§2).
 * recette locale : jeu de démo `apps/demo-game` (les URL localhost sont
   acceptées à la déclaration).
 
-### US-4.3 Widget de vote in-game
+### US-4.3 Widget de vote in-game — ✅ fait
 En tant que visiteur, je veux voter 👍/👎 depuis le jeu afin de donner mon
 avis après y avoir vraiment joué.
 
@@ -177,11 +194,13 @@ avis après y avoir vraiment joué.
 </div>
 ```
 
-* `badge.png` est générée côté serveur avec le score courant, dimensions
-  fixes, cacheable (TTL court) — le badge fonctionne sans JavaScript
-  (image + lien, pas de vote) ;
+* `badge.svg` est générée côté serveur avec le score courant (« NEW » avant
+  l'épic 7), dimensions fixes, cacheable (TTL court) — le badge fonctionne
+  sans JavaScript (image + lien, pas de vote) ;
 * `widget.js` découpe le badge en trois zones : gauche = 👎, droite = 👍,
   centre = lien normal vers la fiche GameRank ;
+* les flèches n'apparaissent qu'après 5 s de jeu actif (fondu) ; un clic
+  avant l'éligibilité serveur affiche « keep playing before voting » ;
 * le vote n'est actif qu'après le temps de jeu minimal (60 s actives, §7.2),
   vérifié via la session SDK ;
 * un vote par visiteur (UUID) et par jeu, modifiable (le dernier remplace) ;

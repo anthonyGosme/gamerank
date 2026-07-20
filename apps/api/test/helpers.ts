@@ -28,3 +28,19 @@ export async function createGame(
 export function uniqueId(prefix: string): string {
   return `${prefix}-${randomUUID()}`;
 }
+
+// Corps multipart minimal pour POST /api/games via app.inject().
+export function multipartGame(fields: Record<string, string>): {
+  payload: string;
+  headers: { 'content-type': string };
+} {
+  const boundary = 'testboundary'.padEnd(24, 'x');
+  let payload = '';
+  for (const [name, value] of Object.entries(fields)) {
+    payload += `--${boundary}\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`;
+  }
+  payload +=
+    `--${boundary}\r\nContent-Disposition: form-data; name="thumbnail"; filename="t.png"\r\n` +
+    `Content-Type: image/png\r\n\r\nPNGDATA\r\n--${boundary}--\r\n`;
+  return { payload, headers: { 'content-type': `multipart/form-data; boundary=${boundary}` } };
+}
