@@ -10,6 +10,7 @@ import { createDeveloper, createGame, uniqueId, cleanupCreated, printTable } fro
 
 let games: Record<string, { id: string }>;
 let scores: Map<string, { score: number; g: number; q: number; rank: number; metrics: any }>;
+let runSummary: Awaited<ReturnType<typeof runScoring>>;
 
 // Description des entrées de chaque scénario, affichée avec les résultats.
 const INPUTS: Record<string, string> = {
@@ -205,7 +206,8 @@ before(async () => {
   await insertVotes(games.voteRing.id, 30, 0, (i) => `50.1.1.${i % 3}`);
   await insertVotes(games.voteFair.id, 30, 0, (i) => `51.${i}.2.3`);
 
-  const summary = await runScoring();
+  runSummary = await runScoring();
+  const summary = runSummary;
   const { rows } = await pool.query(
     `SELECT game_id, score, g, q, rank, metrics FROM game_scores WHERE run_id = $1`,
     [summary.runId],
@@ -252,8 +254,11 @@ after(async () => {
 });
 
 test('le run est historisé avec sa durée et les scores courants sont posés', async () => {
+  // On vérifie NOTRE run (pas « le dernier » : le pipeline du serveur de
+  // dev peut être en plein calcul au même moment).
   const { rows } = await pool.query(
-    `SELECT duration_ms, status, games_count FROM score_runs ORDER BY started_at DESC LIMIT 1`,
+    `SELECT duration_ms, status, games_count FROM score_runs WHERE id = $1`,
+    [runSummary.runId],
   );
   assert.equal(rows[0].status, 'ok');
   assert.ok(rows[0].duration_ms >= 0);

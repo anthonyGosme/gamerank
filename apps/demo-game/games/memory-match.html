@@ -1,0 +1,60 @@
+<!--meta:{"title":"Memory Match","category":"puzzle","short":"Flip the cards and find all eight pairs in as few moves as you can.","color":"#0f3d3e"}-->
+<h1>Memory Match</h1>
+<div class="hud"><span>Moves <b id="moves">0</b></span><span>Pairs <b id="pairs">0</b>/8</span></div>
+<div class="stage"><div id="board" style="display:grid;grid-template-columns:repeat(4,4.2rem);gap:.5rem"></div></div>
+<p class="msg" id="msg">Find every matching pair.</p>
+<button id="again" style="margin-top:.8rem">New game</button>
+<script>
+  const SYMBOLS = ['🍒','⚡','🌙','🔥','🍀','💎','🎈','🐙'];
+  const board = document.getElementById('board');
+  let first = null, lock = false, moves = 0, pairs = 0;
+
+  function deal() {
+    moves = 0; pairs = 0; first = null; lock = false;
+    document.getElementById('moves').textContent = 0;
+    document.getElementById('pairs').textContent = 0;
+    document.getElementById('msg').textContent = 'Find every matching pair.';
+    board.innerHTML = '';
+    const deck = [...SYMBOLS, ...SYMBOLS].sort(() => Math.random() - 0.5);
+    deck.forEach((symbol) => {
+      const card = document.createElement('button');
+      card.dataset.symbol = symbol;
+      card.dataset.state = 'down';
+      card.style.cssText = 'width:4.2rem;height:4.2rem;font-size:1.7rem;background:rgba(0,0,0,.28);border-radius:.5rem;padding:0';
+      card.textContent = '';
+      card.addEventListener('click', () => flip(card));
+      board.append(card);
+    });
+  }
+
+  function flip(card) {
+    if (lock || card.dataset.state !== 'down') return;
+    card.dataset.state = 'up';
+    card.textContent = card.dataset.symbol;
+    card.style.background = 'var(--accent)';
+    if (!first) { first = card; return; }
+
+    document.getElementById('moves').textContent = ++moves;
+    if (first.dataset.symbol === card.dataset.symbol) {
+      first.dataset.state = card.dataset.state = 'done';
+      first.style.background = card.style.background = '#10b981';
+      first = null;
+      document.getElementById('pairs').textContent = ++pairs;
+      if (pairs === SYMBOLS.length) {
+        document.getElementById('msg').textContent = 'Cleared in ' + moves + ' moves!';
+      }
+      return;
+    }
+    lock = true;
+    const previous = first; first = null;
+    setTimeout(() => {
+      for (const c of [previous, card]) {
+        c.dataset.state = 'down'; c.textContent = ''; c.style.background = 'rgba(0,0,0,.28)';
+      }
+      lock = false;
+    }, 700);
+  }
+
+  document.getElementById('again').addEventListener('click', deal);
+  deal();
+</script>

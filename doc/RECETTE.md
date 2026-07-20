@@ -32,6 +32,20 @@ docker-compose.yml  postgres (données) · clickhouse (événements) · mailpit 
   valide (clé + domaine d'origine) et les stocke dans ClickHouse (purge auto
   à 3 jours).
 
+## Peupler avec 10 jeux de démo (le plus rapide pour voir le site vivant)
+
+```bash
+npm run db:up && npm run migrate
+npm run seed:demo          # 10 jeux pour anthonygosme@gmail.com, avec
+                           # vignettes générées, activité et votes réalistes
+npm run dev                # le classement est déjà rempli sur /
+cd apps/demo-game && npm run dev   # les 10 jeux jouables sur :4600
+```
+
+Le manifeste est `apps/demo-game/seed.json` (titres, catégories, couleurs,
+visiteurs, rétention, votes). L'injecteur écrit `apps/demo-game/games.json`
+(clés SDK) que le serveur de démo lit pour brancher chaque jeu.
+
 ## Démarrage
 
 ```bash
@@ -191,11 +205,26 @@ ClickHouse) :
    scénarios synthétiques (petit-excellent > gros-médiocre, botnet /24
    écrasé, Wilson 90/100 > 3/3, décroissance à 40 jours).
 
+## Scénario 9 — Site public (épic 5)
+
+1. Ouvrir http://localhost:3000/ **sans être connecté** : home publique
+   avec Top 50, Top new (≤ 31 j), Latest, et les puces de catégories.
+2. Cliquer une catégorie → `/c/<slug>` avec les tris Top / Top new /
+   Latest et la pagination.
+3. Ouvrir une fiche `/g/<id>/<slug>` : score, rang, barres Popularity /
+   Quality, « Developer jury: coming soon », bouton Play.
+4. Cliquer **Play** → redirection vers le site du jeu, et le compteur
+   monte : `SELECT name, play_clicks FROM games;`
+5. `/methodology` : ton marketing, aucune formule.
+6. `/sitemap.xml` liste fiches + catégories ; `/robots.txt` pointe dessus.
+7. Déclarer un jeu exige désormais catégorie + description courte.
+8. Le parcours développeur est accessible via « For developers » (header).
+
 ## Pas encore développé (ne pas recetter)
 
 Jury des pairs (épic 3, avec les transitions de statut US-2.3 et le bandeau
-US-2.4), site public (épic 5), métriques détaillées du dashboard dev
-(US-6.1/6.2), file de revue et masquage admin (US-8.1/8.2).
+US-2.4), mode iframe (US-5.4, reporté), métriques détaillées du dashboard
+dev (US-6.1/6.2), file de revue et masquage admin (US-8.1/8.2).
 
 ## Réinitialiser l'environnement
 

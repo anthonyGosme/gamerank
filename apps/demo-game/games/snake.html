@@ -1,0 +1,63 @@
+<!--meta:{"title":"Snake","category":"arcade","short":"Eat, grow, and try not to bite your own tail. Arrow keys or swipe.","color":"#14532d"}-->
+<h1>Snake</h1>
+<div class="hud"><span>Score <b id="score">0</b></span><span>Best <b id="best">0</b></span></div>
+<div class="stage"><canvas id="c" width="360" height="360" style="display:block;background:rgba(0,0,0,.28);border-radius:.5rem"></canvas></div>
+<p class="msg" id="msg">Arrow keys (or WASD) to move.</p>
+<script>
+  const ctx = document.getElementById('c').getContext('2d');
+  const SIZE = 18, CELL = 20;
+  let snake, dir, next, food, score, best = 0, dead, loop;
+
+  function reset() {
+    snake = [{ x: 9, y: 9 }]; dir = { x: 1, y: 0 }; next = dir;
+    score = 0; dead = false; placeFood();
+    document.getElementById('score').textContent = 0;
+    document.getElementById('msg').textContent = 'Arrow keys (or WASD) to move.';
+  }
+  function placeFood() {
+    do {
+      food = { x: Math.floor(Math.random() * SIZE), y: Math.floor(Math.random() * SIZE) };
+    } while (snake.some((s) => s.x === food.x && s.y === food.y));
+  }
+  function step() {
+    if (dead) return;
+    dir = next;
+    const head = { x: (snake[0].x + dir.x + SIZE) % SIZE, y: (snake[0].y + dir.y + SIZE) % SIZE };
+    if (snake.some((s) => s.x === head.x && s.y === head.y)) {
+      dead = true;
+      best = Math.max(best, score);
+      document.getElementById('best').textContent = best;
+      document.getElementById('msg').textContent = 'Game over — press any key to restart.';
+      return;
+    }
+    snake.unshift(head);
+    if (head.x === food.x && head.y === food.y) {
+      document.getElementById('score').textContent = ++score;
+      placeFood();
+    } else snake.pop();
+    draw();
+  }
+  function draw() {
+    ctx.clearRect(0, 0, 360, 360);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(food.x * CELL + 3, food.y * CELL + 3, CELL - 6, CELL - 6);
+    snake.forEach((s, i) => {
+      ctx.fillStyle = i === 0 ? '#f59e0b' : '#8b7ad6';
+      ctx.fillRect(s.x * CELL + 1, s.y * CELL + 1, CELL - 2, CELL - 2);
+    });
+  }
+  const KEYS = {
+    ArrowUp: { x: 0, y: -1 }, ArrowDown: { x: 0, y: 1 },
+    ArrowLeft: { x: -1, y: 0 }, ArrowRight: { x: 1, y: 0 },
+    w: { x: 0, y: -1 }, s: { x: 0, y: 1 }, a: { x: -1, y: 0 }, d: { x: 1, y: 0 },
+  };
+  addEventListener('keydown', (event) => {
+    if (dead) { reset(); draw(); return; }
+    const wanted = KEYS[event.key];
+    if (!wanted) return;
+    event.preventDefault();
+    if (wanted.x !== -dir.x || wanted.y !== -dir.y) next = wanted;
+  });
+  reset(); draw();
+  loop = setInterval(step, 130);
+</script>

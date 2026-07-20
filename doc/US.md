@@ -50,7 +50,9 @@ retrouver mon dashboard et mes jeux.
 En tant que développeur, je veux enregistrer mon jeu (nom, URL, description,
 vignette) afin qu'il entre dans le classement.
 
-* nom, URL, description et vignette sont tous obligatoires ;
+* nom, URL, description, **description courte** (≤ 160 caractères, pour
+  les cartes des pages de classement et la diversité SEO), **catégorie**
+  (une seule, liste fermée) et vignette sont tous obligatoires ;
 * la vignette est téléversée (PNG/JPEG/WebP/GIF, taille max configurable)
   et hébergée par GameRank — pas d'URL d'image externe ;
 * **[v2]** l'URL du jeu est unique **par compte** : un même développeur ne
@@ -224,33 +226,56 @@ supporter le volume (§11).
 
 ## Épic 5 — Site public
 
-### US-5.1 Consulter le classement
+### US-5.1 Consulter le classement — ✅ fait
 En tant que visiteur, je veux voir le classement officiel afin de découvrir
 les meilleurs jeux.
 
-* liste ordonnée par Score (0-100) avec rang, vignette, nom, score ;
-* 10-20 % des emplacements réservés à l'exploration : jeux `Nouveau` /
-  `Score provisoire` / `Confiance faible`, identifiés comme tels, sans
-  modification de leur rang officiel (§10) ;
-* le dernier classement valide reste affiché si un calcul échoue (§12.12).
+* home publique `/` en trois blocs dont les titres ouvrent des **pages de
+  liste dédiées et paginées** : `/top` (tous les temps), `/new` (meilleurs
+  jeux récents) et `/latest` (derniers inscrits) — l'exploration des
+  nouveaux jeux (§10) passe par ces sections plutôt que par des
+  emplacements intercalés ;
+* mise en page pleine largeur, **bandeau latéral gauche** (catégories avec
+  emoji + accès Top/New/Latest), grandes vignettes carrées, score en
+  pastille lisible ; les cartes du classement Top sont épurées (pas de
+  texte) ;
+* **coquille commune** (`layout.ts`) : le site public et les pages
+  développeur (login, dashboard, fiche jeu, admin) partagent header,
+  logo et styles ;
+* cartes : vignette, nom, **description courte**, score (ou badge NEW),
+  catégorie ;
+* **pages de catégorie** `/c/<slug>` (une catégorie par jeu, choisie à la
+  déclaration) avec trois tris — Top / Top new / Latest — et pagination ;
+* le dernier classement valide reste affiché si un calcul échoue (§12.12) ;
+* SEO : rendu serveur, sitemap.xml (fiches + catégories), robots.txt.
 
-### US-5.2 Consulter une fiche jeu
+### US-5.2 Consulter une fiche jeu — ✅ fait
 En tant que visiteur, je veux voir la fiche d'un jeu afin de décider d'y
 jouer.
 
-* nom, description, vignette, score global et trois sous-scores (Grandeur /
-  Qualité / Choix des développeurs), badges éventuels ;
-* bouton **Jouer** = lien sortant vers le site du développeur ;
-* le clic est compté (chargement attribué au referrer gamerank).
+* URL SEO `/g/<id>/<slug>` (slug lisible, canonical, balises og) ;
+* nom, vignette, descriptions, catégorie, score global, rang, sous-scores
+  Popularity (G) et Quality (Q) en barres — l'axe jury affiché « coming
+  soon » tant que l'épic 3 n'existe pas ;
+* bouton **Play** = `/go/<id>` : le clic est **compté** (`play_clicks`)
+  puis redirigé (302) vers le site du développeur.
 
-### US-5.3 Comprendre la méthode
+### US-5.3 Comprendre la méthode — ✅ fait
 En tant que visiteur, je veux une page publique expliquant le calcul afin de
 faire confiance au classement (§12.14).
 
-* explique les trois axes, la fenêtre à décroissance, Wilson, la confiance,
-  le principe du jury (« chaque jeu est évalué par les 5 développeurs
-  inscrits suivants, qui doivent y jouer avant de voter ») ;
-* ne détaille pas les pondérations anti-abus des jurés (§7.4).
+* `/methodology`, **orientée marketing** : le quoi et le pourquoi (temps
+  réellement joué, la qualité peut battre le volume, votes après jeu
+  vérifié, fraîcheur), **sans** formules ni seuils précis ;
+* ne détaille pas les pondérations anti-abus (§7.4).
+
+### US-5.4 Mode iframe (reporté — à re-réfléchir en toute fin)
+En tant que visiteur, je veux pouvoir jouer sans quitter GameRank.
+
+* opt-in du développeur (« Allow embedding ») : beaucoup de sites
+  interdisent l'embarquement (X-Frame-Options/CSP) et certains devs
+  refuseront de perdre leur trafic direct ;
+* page `/play/<id>` avec iframe quand autorisé, lien sortant sinon.
 
 ---
 
@@ -377,6 +402,17 @@ afin de trancher à la main (§4.4).
 * motif du marquage, métriques suspectes, décisions : ignorer / masquer le
   jeu / ajuster le poids d'un juré ;
 * aucune sanction automatique — le marquage ne déclasse pas (§4.4).
+
+### US-8.1bis Panneau admin sur la fiche jeu — ✅ fait
+En tant qu'admin, je veux voir les infos d'un jeu et agir depuis sa page
+publique.
+
+* injecté côté client sur `/g/:id` si `/api/admin/games/:id` répond 200
+  (page publique inchangée pour les visiteurs) ;
+* affiche : email du développeur, statut, clics « Play », votes up/down
+  et % positif ;
+* boutons **Hide from site** (masque, réversible) et **Delete game**
+  (supprime n'importe quel jeu, avec sa vignette et ses votes).
 
 ### US-8.2 Masquer un jeu
 En tant qu'admin, je veux masquer un jeu (triche avérée, contenu

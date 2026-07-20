@@ -5,8 +5,10 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { pool } from './db.js';
 import { config } from './config.js';
 import { currentDeveloper, type CurrentDeveloper } from './auth.js';
+import { isCategory } from './categories.js';
 
-const GAME_COLUMNS = `id, name, url, domain, description, thumbnail_url AS "thumbnailUrl",
+const GAME_COLUMNS = `id, name, url, domain, description,
+  short_description AS "shortDescription", category, thumbnail_url AS "thumbnailUrl",
   sdk_key AS "sdkKey", status, badge_color AS "badgeColor", last_event_at AS "lastEventAt",
   is_local AS "isLocal", integration_verified_at AS "integrationVerifiedAt",
   current_score AS "currentScore", current_rank AS "currentRank",
@@ -99,6 +101,14 @@ export function registerGameRoutes(app: FastifyInstance): void {
     if (!description) {
       return reply.code(400).send({ error: 'description required' });
     }
+    const shortDescription = field('shortDescription')?.trim();
+    if (!shortDescription || shortDescription.length > 160) {
+      return reply.code(400).send({ error: 'short description required (160 characters max)' });
+    }
+    const category = field('category') ?? '';
+    if (!isCategory(category)) {
+      return reply.code(400).send({ error: 'unknown category' });
+    }
 
     const thumbnail = body.thumbnail;
     if (!thumbnail?.mimetype || typeof thumbnail.toBuffer !== 'function') {
@@ -129,10 +139,12 @@ export function registerGameRoutes(app: FastifyInstance): void {
     const sdkKey = `gr_${randomBytes(18).toString('base64url')}`;
     try {
       const { rows } = await pool.query(
-        `INSERT INTO games (developer_id, name, url, domain, description, thumbnail_url, sdk_key, is_local)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `INSERT INTO games (developer_id, name, url, domain, description, short_description,
+                            category, thumbnail_url, sdk_key, is_local)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          RETURNING ${GAME_COLUMNS}`,
-        [developer.id, name, location.url, location.domain, description, thumbnailUrl, sdkKey, isLocal],
+        [developer.id, name, location.url, location.domain, description, shortDescription,
+         category, thumbnailUrl, sdkKey, isLocal],
       );
       return reply.code(201).send(rows[0]);
     } catch (err: unknown) {
@@ -174,9 +186,15 @@ export function registerGameRoutes(app: FastifyInstance): void {
       last_event_at: Date | null;
     };
 
-    // Un échec (y compris lors d'un recheck) repasse le jeu en non-vérifié.
+    // Un échec (y compris lors d'un recheck) repasse le jeu en non-vérifié,
+    // et le ramène à « awaiting_snippet » s'il n'est pas encore allé plus loin.
     const fail = async (message: string) => {
-      await pool.query('UPDATE games SET integration_verified_at = NULL WHERE id = $1', [game.id]);
+      await pool.query(
+        `UPDATE games SET integration_verified_at = NULL,
+                status = CASE WHEN status = 'awaiting_peer_review' THEN 'awaiting_snippet' ELSE status END
+          WHERE id = $1`,
+        [game.id],
+      );
       return reply.code(400).send({ error: message });
     };
 
@@ -205,8 +223,11 @@ export function registerGameRoutes(app: FastifyInstance): void {
       }
     }
 
+    // Intégration validée : le jeu passe à l'étape suivante du cycle de vie.
     const { rows: updated } = await pool.query(
-      `UPDATE games SET integration_verified_at = now() WHERE id = $1 RETURNING ${GAME_COLUMNS}`,
+      `UPDATE games SET integration_verified_at = now(),
+              status = CASE WHEN status = 'awaiting_snippet' THEN 'awaiting_peer_review' ELSE status END
+        WHERE id = $1 RETURNING ${GAME_COLUMNS}`,
       [game.id],
     );
     return updated[0];

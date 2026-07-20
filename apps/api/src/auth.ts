@@ -35,10 +35,18 @@ export async function currentDeveloper(request: FastifyRequest): Promise<Current
   return { id: rows[0].id, email: rows[0].email, createdAt: rows[0].created_at };
 }
 
+// Une destination de retour n'est acceptée que si elle est interne
+// (chemin relatif simple) — sinon on offrirait une redirection ouverte.
+export function safeRedirect(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  if (!value.startsWith('/') || value.startsWith('//')) return null;
+  return value.slice(0, 200);
+}
+
 export function registerAuthRoutes(app: FastifyInstance): void {
   // Demande de magic link. Répond toujours 204 : pas d'énumération d'emails.
   app.post('/api/auth/magic-link', async (request, reply) => {
-    const { email } = (request.body ?? {}) as { email?: string };
+    const { email, next } = (request.body ?? {}) as { email?: string; next?: string };
     const normalized = email?.trim().toLowerCase();
     if (!normalized || !EMAIL_RE.test(normalized) || normalized.length > 254) {
       return reply.code(400).send({ error: 'invalid email' });
@@ -52,9 +60,9 @@ export function registerAuthRoutes(app: FastifyInstance): void {
     if (recent.length === 0) {
       const token = newToken();
       await pool.query(
-        `INSERT INTO magic_link_tokens (email, token_hash, request_ip, expires_at)
-         VALUES ($1, $2, $3, now() + make_interval(mins => $4))`,
-        [normalized, hash(token), request.ip, config.magicLinkTtlMinutes],
+        `INSERT INTO magic_link_tokens (email, token_hash, request_ip, expires_at, redirect_to)
+         VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5)`,
+        [normalized, hash(token), request.ip, config.magicLinkTtlMinutes, safeRedirect(next)],
       );
       await sendMagicLink(normalized, `${config.appUrl}/api/auth/verify?token=${token}`);
     }
@@ -72,7 +80,7 @@ export function registerAuthRoutes(app: FastifyInstance): void {
       const { rows: tokens } = await client.query(
         `UPDATE magic_link_tokens SET used_at = now()
           WHERE token_hash = $1 AND used_at IS NULL AND expires_at > now()
-          RETURNING email`,
+          RETURNING email, redirect_to AS "redirectTo"`,
         [hash(token)],
       );
       if (tokens.length === 0) {
@@ -97,7 +105,7 @@ export function registerAuthRoutes(app: FastifyInstance): void {
       await client.query('COMMIT');
 
       setSessionCookie(reply, sessionToken);
-      return reply.redirect('/dashboard');
+      return reply.redirect(safeRedirect(tokens[0].redirectTo) ?? '/dashboard');
     } catch (err) {
       await client.query('ROLLBACK');
       throw err;
@@ -113,13 +121,23 @@ export function registerAuthRoutes(app: FastifyInstance): void {
   });
 
   app.post('/api/auth/logout', async (request, reply) => {
-    const cookie = request.cookies[SESSION_COOKIE];
-    if (cookie) {
-      await pool.query('UPDATE sessions SET revoked_at = now() WHERE token_hash = $1', [hash(cookie)]);
-    }
-    reply.clearCookie(SESSION_COOKIE, { path: '/' });
+    await revokeSession(request, reply);
     return reply.code(204).send();
   });
+
+  // Déconnexion par simple lien (bandeau latéral).
+  app.get('/signout', async (request, reply) => {
+    await revokeSession(request, reply);
+    return reply.redirect('/');
+  });
+}
+
+async function revokeSession(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+  const cookie = request.cookies[SESSION_COOKIE];
+  if (cookie) {
+    await pool.query('UPDATE sessions SET revoked_at = now() WHERE token_hash = $1', [hash(cookie)]);
+  }
+  reply.clearCookie(SESSION_COOKIE, { path: '/' });
 }
 
 function setSessionCookie(reply: FastifyReply, token: string): void {

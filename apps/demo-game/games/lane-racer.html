@@ -1,0 +1,50 @@
+<!--meta:{"title":"Lane Racer","category":"racing","short":"Three lanes, oncoming traffic, and a speed that never stops rising.","color":"#3a2e0a"}-->
+<h1>Lane Racer</h1>
+<div class="hud"><span>Distance <b id="dist">0</b>m</span><span>Best <b id="best">0</b>m</span></div>
+<div class="stage"><canvas id="c" width="240" height="380" style="display:block;background:rgba(0,0,0,.28);border-radius:.5rem"></canvas></div>
+<p class="msg" id="msg">← → (or A / D) to change lane.</p>
+<script>
+  const ctx = document.getElementById('c').getContext('2d');
+  const LANES = [40, 120, 200];
+  let lane = 1, obstacles = [], distance = 0, best = 0, speed = 2.2, dead = false;
+
+  function reset() {
+    lane = 1; obstacles = []; distance = 0; speed = 2.2; dead = false;
+    document.getElementById('msg').textContent = '← → (or A / D) to change lane.';
+  }
+  function frame() {
+    if (!dead) {
+      distance += speed / 6;
+      speed = 2.2 + distance / 260;
+      document.getElementById('dist').textContent = Math.floor(distance);
+      if (obstacles.length === 0 || obstacles[obstacles.length - 1].y > 130) {
+        obstacles.push({ lane: Math.floor(Math.random() * 3), y: -60 });
+      }
+      obstacles.forEach((o) => (o.y += speed));
+      obstacles = obstacles.filter((o) => o.y < 420);
+      for (const o of obstacles) {
+        if (o.lane === lane && o.y > 300 && o.y < 368) {
+          dead = true;
+          best = Math.max(best, Math.floor(distance));
+          document.getElementById('best').textContent = best;
+          document.getElementById('msg').textContent = 'Crash! Press any key to restart.';
+        }
+      }
+    }
+    ctx.clearRect(0, 0, 240, 380);
+    ctx.strokeStyle = '#4d3488'; ctx.lineWidth = 2; ctx.setLineDash([12, 14]);
+    for (const x of [80, 160]) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 380); ctx.stroke(); }
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ef4444';
+    obstacles.forEach((o) => ctx.fillRect(LANES[o.lane] - 18, o.y, 36, 52));
+    ctx.fillStyle = dead ? '#6b6b8a' : '#f59e0b';
+    ctx.fillRect(LANES[lane] - 18, 310, 36, 52);
+    requestAnimationFrame(frame);
+  }
+  addEventListener('keydown', (event) => {
+    if (dead) return reset();
+    if (['ArrowLeft', 'a'].includes(event.key)) { lane = Math.max(0, lane - 1); event.preventDefault(); }
+    if (['ArrowRight', 'd'].includes(event.key)) { lane = Math.min(2, lane + 1); event.preventDefault(); }
+  });
+  frame();
+</script>

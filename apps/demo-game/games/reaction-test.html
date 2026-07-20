@@ -1,0 +1,53 @@
+<!--meta:{"title":"Reaction Test","category":"sports","short":"Wait for green, then click. Five rounds, one average — no cheating.","color":"#0c4a6e"}-->
+<h1>Reaction Test</h1>
+<div class="hud"><span>Round <b id="round">0</b>/5</span><span>Last <b id="last">—</b></span><span>Average <b id="avg">—</b></span></div>
+<div class="stage">
+  <div id="pad" style="width:340px;height:220px;border-radius:.6rem;display:flex;align-items:center;
+       justify-content:center;font-size:1.2rem;font-weight:700;cursor:pointer;background:#3f2a80">
+    Click to start
+  </div>
+</div>
+<p class="msg" id="msg">Click when the pad turns green.</p>
+<script>
+  const pad = document.getElementById('pad');
+  let state = 'idle', shownAt = 0, timer = null, times = [];
+
+  function setPad(background, text) {
+    pad.style.background = background;
+    pad.textContent = text;
+  }
+  function arm() {
+    state = 'waiting';
+    setPad('#8b2e46', 'Wait for green…');
+    timer = setTimeout(() => {
+      state = 'go';
+      shownAt = performance.now();
+      setPad('#10b981', 'CLICK!');
+    }, 900 + Math.random() * 2600);
+  }
+  pad.addEventListener('click', () => {
+    if (state === 'idle') { times = []; document.getElementById('round').textContent = 0; return arm(); }
+    if (state === 'waiting') {
+      clearTimeout(timer);
+      setPad('#3f2a80', 'Too early! Click to retry');
+      state = 'idle';
+      document.getElementById('msg').textContent = 'Too early — wait for the green.';
+      return;
+    }
+    if (state !== 'go') return;
+    const ms = Math.round(performance.now() - shownAt);
+    times.push(ms);
+    document.getElementById('last').textContent = ms + ' ms';
+    document.getElementById('round').textContent = times.length;
+    const average = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
+    document.getElementById('avg').textContent = average + ' ms';
+    if (times.length >= 5) {
+      state = 'idle';
+      setPad('#3f2a80', 'Average ' + average + ' ms — click to replay');
+      document.getElementById('msg').textContent = 'Done! Average over 5 rounds: ' + average + ' ms.';
+      return;
+    }
+    setPad('#3f2a80', 'Nice — click for next round');
+    state = 'idle';
+  });
+</script>

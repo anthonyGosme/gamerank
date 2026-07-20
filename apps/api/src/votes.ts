@@ -53,12 +53,22 @@ export function registerVoteRoutes(app: FastifyInstance): void {
   // couleur principale du jeu pour garantir le contraste.
   app.get('/games/:id/badge.svg', async (request, reply) => {
     const { id } = request.params as { id: string };
-    const { arrows, voted } = request.query as { arrows?: string; voted?: string };
+    const { arrows, voted, bg, fg } = request.query as {
+      arrows?: string;
+      voted?: string;
+      bg?: string;
+      fg?: string;
+    };
     const game = await publicGame(id);
     if (!game) return reply.code(404).send();
 
-    const background = game.badgeColor ?? '#111827';
-    const foreground = contrastColor(background);
+    // Le webmaster peut forcer les couleurs via ?bg= / ?fg= (hex sans #) dans
+    // l'URL de l'image ; sinon la couleur choisie par le dev ; sinon un fond
+    // sombre par défaut qui reste visible sur n'importe quelle page.
+    const hex = (value?: string) =>
+      value && /^[0-9a-fA-F]{6}$/.test(value) ? `#${value}` : null;
+    const background = hex(bg) ?? game.badgeColor ?? '#111827';
+    const foreground = hex(fg) ?? contrastColor(background);
     // Score affiché dès qu'il existe ; « NEW » tant qu'aucun calcul n'a eu lieu.
     const score =
       game.currentScore != null ? String(Math.round(Number(game.currentScore))) : 'NEW';
@@ -71,9 +81,9 @@ export function registerVoteRoutes(app: FastifyInstance): void {
       arrowsSvg = arrow(18, '▼', voted === '-1') + arrow(162, '▲', voted === '1');
     }
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="40" viewBox="0 0 180 40" role="img" aria-label="GameRank rating of ${escapeXml(game.name)}">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="40" viewBox="0 0 180 40" role="img" aria-label="WebGameRank rating of ${escapeXml(game.name)}">
   <rect width="180" height="40" rx="7" fill="${background}"/>
-  <text x="90" y="14" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8" letter-spacing="2" fill="${foreground}" opacity="0.6">GAMERANK</text>
+  <text x="90" y="14" text-anchor="middle" font-family="system-ui,sans-serif" font-size="7" letter-spacing="1.5" fill="${foreground}" opacity="0.6">WEBGAMERANK</text>
   <text x="90" y="30" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="${foreground}">${score}</text>
   ${arrowsSvg}
 </svg>`;
@@ -83,26 +93,7 @@ export function registerVoteRoutes(app: FastifyInstance): void {
       .send(svg);
   });
 
-  // Fiche publique minimale : cible du backlink du badge (préfigure l'épic 5).
-  app.get('/g/:id', async (request, reply) => {
-    const { id } = request.params as { id: string };
-    const game = await publicGame(id);
-    if (!game) return reply.code(404).type('text/html').send('<h1>Game not found</h1>');
-    const thumbnail = game.thumbnailUrl
-      ? `<p><img src="${escapeHtml(game.thumbnailUrl)}" alt="" style="max-width:12rem;border-radius:.5rem"></p>`
-      : '';
-    return reply.type('text/html').send(`<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(game.name)} — GameRank</title>
-<style>body{font-family:system-ui,sans-serif;max-width:34rem;margin:3rem auto;padding:0 1rem;color:#222}</style></head>
-<body>
-  <h1>${escapeHtml(game.name)}</h1>
-  ${thumbnail}
-  <p>${escapeHtml(game.description)}</p>
-  <p><a href="${escapeHtml(game.url)}" rel="noopener">Play ${escapeHtml(game.name)}</a></p>
-  <p style="color:#667;font-size:.9rem">Ranking score coming soon — this game is currently being evaluated.</p>
-</body></html>`);
-  });
+  // La fiche publique /g/:id est servie par public.ts (épic 5).
 
   // Vote 👍/👎 (US-4.3) : un par visiteur et par jeu, le dernier remplace.
   app.post('/api/vote', async (request, reply) => {

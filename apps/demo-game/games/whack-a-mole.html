@@ -1,0 +1,48 @@
+<!--meta:{"title":"Whack a Mole","category":"action","short":"Moles pop up, you smack them. Thirty seconds, no mercy.","color":"#7c2d12"}-->
+<h1>Whack a Mole</h1>
+<div class="hud"><span>Hits <b id="hits">0</b></span><span>Missed <b id="missed">0</b></span><span>Time <b id="time">30</b>s</span></div>
+<div class="stage"><div id="field" style="display:grid;grid-template-columns:repeat(3,5rem);gap:.6rem"></div></div>
+<p class="msg" id="msg">Click a hole to start.</p>
+<script>
+  const field = document.getElementById('field');
+  const holes = [];
+  let active = -1, hits = 0, missed = 0, time = 30, spawner = null, clock = null;
+
+  for (let i = 0; i < 9; i++) {
+    const hole = document.createElement('button');
+    hole.style.cssText = 'width:5rem;height:5rem;font-size:2.2rem;background:rgba(0,0,0,.28);border-radius:50%;padding:0';
+    hole.addEventListener('click', () => whack(i));
+    holes.push(hole);
+    field.append(hole);
+  }
+  function spawn() {
+    if (active >= 0) { holes[active].textContent = ''; missed++; document.getElementById('missed').textContent = missed; }
+    active = Math.floor(Math.random() * holes.length);
+    holes[active].textContent = '🐹';
+  }
+  function whack(index) {
+    if (!spawner) return start();
+    if (index !== active) return;
+    holes[active].textContent = '💥';
+    const hit = active; active = -1;
+    setTimeout(() => { if (active !== hit) holes[hit].textContent = ''; }, 150);
+    document.getElementById('hits').textContent = ++hits;
+  }
+  function start() {
+    hits = 0; missed = 0; time = 30;
+    document.getElementById('hits').textContent = 0;
+    document.getElementById('missed').textContent = 0;
+    document.getElementById('msg').textContent = 'Smack them!';
+    spawn();
+    spawner = setInterval(spawn, 850);
+    clock = setInterval(() => {
+      document.getElementById('time').textContent = --time;
+      if (time > 0) return;
+      clearInterval(spawner); clearInterval(clock); spawner = null;
+      if (active >= 0) holes[active].textContent = '';
+      active = -1;
+      document.getElementById('time').textContent = 30;
+      document.getElementById('msg').textContent = 'Time! ' + hits + ' hits, ' + missed + ' missed. Click to replay.';
+    }, 1000);
+  }
+</script>

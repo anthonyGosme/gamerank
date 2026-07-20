@@ -1,0 +1,42 @@
+<!--meta:{"title":"Catch the Square","category":"arcade","short":"Tap the orange square as fast as you can before the clock runs out.","color":"#2e1a5c"}-->
+<h1>Catch the Square</h1>
+<div class="hud"><span>Score <b id="score">0</b></span><span>Time <b id="time">30</b>s</span></div>
+<div class="stage"><div id="grid" style="display:grid;grid-template-columns:repeat(5,3.6rem);gap:.4rem"></div></div>
+<p class="msg" id="msg">Click the orange square to start.</p>
+<script>
+  const grid = document.getElementById('grid');
+  const cells = [];
+  let target = -1, score = 0, time = 30, timer = null;
+
+  for (let i = 0; i < 25; i++) {
+    const cell = document.createElement('button');
+    cell.style.cssText = 'width:3.6rem;height:3.6rem;background:rgba(0,0,0,.28);border-radius:.5rem;padding:0';
+    cell.addEventListener('click', () => hit(i));
+    cells.push(cell);
+    grid.append(cell);
+  }
+  function move() {
+    if (target >= 0) cells[target].style.background = 'rgba(0,0,0,.28)';
+    target = Math.floor(Math.random() * cells.length);
+    cells[target].style.background = 'var(--accent)';
+  }
+  function hit(index) {
+    if (index !== target) return;
+    if (!timer) start();
+    document.getElementById('score').textContent = ++score;
+    move();
+  }
+  function start() {
+    document.getElementById('msg').textContent = 'Go!';
+    timer = setInterval(() => {
+      document.getElementById('time').textContent = --time;
+      if (time > 0) return;
+      clearInterval(timer); timer = null;
+      document.getElementById('msg').textContent = 'Time! Final score: ' + score + '. Click to play again.';
+      score = 0; time = 30;
+      document.getElementById('score').textContent = 0;
+      document.getElementById('time').textContent = 30;
+    }, 1000);
+  }
+  move();
+</script>

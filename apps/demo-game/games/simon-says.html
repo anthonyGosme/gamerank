@@ -1,0 +1,59 @@
+<!--meta:{"title":"Simon Says","category":"puzzle","short":"Watch the colour sequence, repeat it, and watch it grow.","color":"#4a1d5c"}-->
+<h1>Simon Says</h1>
+<div class="hud"><span>Round <b id="round">0</b></span><span>Best <b id="best">0</b></span></div>
+<div class="stage"><div id="pads" style="display:grid;grid-template-columns:repeat(2,6rem);gap:.6rem"></div></div>
+<p class="msg" id="msg">Press Start and repeat the sequence.</p>
+<button id="start" style="margin-top:.8rem">Start</button>
+<script>
+  const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b'];
+  const pads = document.getElementById('pads');
+  const buttons = COLORS.map((color, i) => {
+    const pad = document.createElement('button');
+    pad.style.cssText = 'width:6rem;height:6rem;border-radius:.7rem;padding:0;opacity:.45;background:' + color;
+    pad.addEventListener('click', () => press(i));
+    pads.append(pad);
+    return pad;
+  });
+
+  let sequence = [], step = 0, best = 0, playing = false, accepting = false;
+
+  function light(index, ms) {
+    buttons[index].style.opacity = '1';
+    setTimeout(() => (buttons[index].style.opacity = '.45'), ms);
+  }
+  async function playback() {
+    accepting = false;
+    document.getElementById('msg').textContent = 'Watch…';
+    await new Promise((r) => setTimeout(r, 500));
+    for (const index of sequence) {
+      light(index, 380);
+      await new Promise((r) => setTimeout(r, 620));
+    }
+    accepting = true;
+    document.getElementById('msg').textContent = 'Your turn.';
+  }
+  function nextRound() {
+    sequence.push(Math.floor(Math.random() * 4));
+    step = 0;
+    document.getElementById('round').textContent = sequence.length;
+    playback();
+  }
+  function press(index) {
+    if (!accepting) return;
+    light(index, 180);
+    if (index !== sequence[step]) {
+      accepting = false; playing = false;
+      best = Math.max(best, sequence.length - 1);
+      document.getElementById('best').textContent = best;
+      document.getElementById('msg').textContent = 'Wrong! You reached round ' + sequence.length + '. Press Start.';
+      return;
+    }
+    if (++step === sequence.length) setTimeout(nextRound, 700);
+  }
+  document.getElementById('start').addEventListener('click', () => {
+    if (playing) return;
+    playing = true; sequence = [];
+    document.getElementById('round').textContent = 0;
+    nextRound();
+  });
+</script>

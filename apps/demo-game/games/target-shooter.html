@@ -1,0 +1,52 @@
+<!--meta:{"title":"Target Shooter","category":"shooter","short":"Targets shrink as they age — hit them before they vanish. Three misses and it's over.","color":"#5b1a2e"}-->
+<h1>Target Shooter</h1>
+<div class="hud"><span>Score <b id="score">0</b></span><span>Lives <b id="lives">3</b></span><span>Best <b id="best">0</b></span></div>
+<div class="stage"><div id="field" style="position:relative;width:340px;height:300px;background:rgba(0,0,0,.28);border-radius:.5rem;cursor:crosshair"></div></div>
+<p class="msg" id="msg">Click a target to start.</p>
+<script>
+  const field = document.getElementById('field');
+  let score = 0, lives = 3, best = 0, running = false, current = null, shrink = null;
+
+  function spawn() {
+    if (current) current.remove();
+    const size = 54;
+    const dot = document.createElement('div');
+    const x = Math.random() * (340 - size), y = Math.random() * (300 - size);
+    dot.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + x +
+      'px;top:' + y + 'px;border-radius:50%;background:radial-gradient(circle,#f59e0b 45%,#ef4444 46%);' +
+      'transition:transform .9s linear;transform:scale(1)';
+    dot.addEventListener('click', (event) => { event.stopPropagation(); hit(); });
+    field.append(dot);
+    current = dot;
+    // La cible ne rétrécit (et ne coûte une vie) qu'une fois la partie
+    // lancée : sinon les 3 vies fondent pendant que le joueur lit la page.
+    if (!running) return;
+    requestAnimationFrame(() => (dot.style.transform = 'scale(.15)'));
+    shrink = setTimeout(miss, 950);
+  }
+  function hit() {
+    if (!running) return start();
+    clearTimeout(shrink);
+    document.getElementById('score').textContent = ++score;
+    spawn();
+  }
+  function miss() {
+    document.getElementById('lives').textContent = --lives;
+    if (lives > 0) return spawn();
+    running = false;
+    if (current) current.remove();
+    current = null;
+    best = Math.max(best, score);
+    document.getElementById('best').textContent = best;
+    document.getElementById('msg').textContent = 'Out of lives — score ' + score + '. Click the field to replay.';
+  }
+  function start() {
+    running = true; score = 0; lives = 3;
+    document.getElementById('score').textContent = 0;
+    document.getElementById('lives').textContent = 3;
+    document.getElementById('msg').textContent = 'Fire!';
+    spawn();
+  }
+  field.addEventListener('click', () => { if (!running) start(); });
+  spawn();
+</script>

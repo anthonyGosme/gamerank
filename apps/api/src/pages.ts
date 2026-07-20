@@ -1,36 +1,28 @@
-// Minimal HTML pages exercising the flows (US-1, US-2.1, US-6.0).
-// The real front-end (apps/web) will come with US 5-6; user data is
-// injected via textContent (no innerHTML) to avoid XSS.
+// Pages du parcours développeur (US-1, US-2.x, US-6.0, US-8.0).
+// Elles partagent la coquille du site public (layout.ts) : même header,
+// même identité. Les données utilisateur sont injectées via textContent
+// (jamais innerHTML) pour éviter tout XSS.
+import { shell } from './layout.js';
 
-const layout = (title: string, body: string) => `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${title} — GameRank</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 34rem; margin: 3rem auto; padding: 0 1rem; color: #222; }
-    h1 { font-size: 1.4rem; }
-    input, textarea, button { font-size: 1rem; padding: .5rem .75rem; }
-    input, textarea { width: 100%; box-sizing: border-box; margin-bottom: .75rem; }
-    button { cursor: pointer; }
-    a { color: #1a56db; }
-    .notice { padding: .75rem; border-radius: .5rem; background: #eef6ee; margin: 1rem 0; }
-    .error { background: #fdeaea; }
-    .muted { color: #667; font-size: .9rem; }
-    .game { display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-            padding: .75rem 0; border-bottom: 1px solid #eee; }
-    .badge { font-size: .8rem; padding: .15rem .5rem; border-radius: 1rem; background: #eef; white-space: nowrap; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    code { background: #f4f4f4; padding: .2rem .4rem; border-radius: .3rem; word-break: break-all; }
-  </style>
-</head>
-<body>${body}</body>
-</html>`;
+const layout = (title: string, body: string, options?: { wide?: boolean }) =>
+  shell({
+    title: `${title} — WebGameRank`,
+    body: `<style>
+      .game { display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+              padding: .8rem 0; border-bottom: 1px solid var(--line); }
+      .badge { font-size: .8rem; padding: .15rem .55rem; border-radius: 1rem;
+               background: #eef2ff; color: #4338ca; white-space: nowrap; }
+      .topbar { display: flex; justify-content: space-between; align-items: center;
+                gap: 1rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+    </style>${body}`,
+    activeCategory: '@dev',
+    narrow: !options?.wide,
+  });
 
 const STATUS_LABELS = `{
+  awaiting_snippet: 'Awaiting snippet',
+  awaiting_peer_review: 'Awaiting your review of 5 games',
   awaiting_jury: 'Awaiting jury',
-  in_evaluation: 'In evaluation',
   ranked: 'Ranked',
   hidden: 'Hidden'
 }`;
@@ -39,7 +31,8 @@ export const loginPage = layout('Login', `
   <h1>Login</h1>
   <div id="zone">
     <form id="form">
-      <input type="email" id="email" placeholder="you@example.com" required autofocus>
+      <input type="email" id="email" name="email" autocomplete="email" inputmode="email"
+             spellcheck="false" placeholder="you@example.com" required autofocus>
       <button type="submit">Send me a login link</button>
     </form>
   </div>
@@ -51,10 +44,12 @@ export const loginPage = layout('Login', `
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value;
+      // On mémorise la page demandée pour y revenir après connexion.
+      const next = new URLSearchParams(location.search).get('next');
       const res = await fetch('/api/auth/magic-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, next }),
       });
       document.getElementById('zone').innerHTML = res.ok
         ? '<p class="notice">If this address is valid, a login link is on its way. It expires in 15 minutes.</p>'
@@ -66,7 +61,8 @@ export const loginPage = layout('Login', `
 export const dashboardPage = layout('Dashboard', `
   <div class="topbar">
     <h1>My games</h1>
-    <span><span id="who" class="muted"></span> <button id="logout">Log out</button></span>
+    <span><span id="who" class="muted"></span>
+      <a href="/signout" style="margin-left:.6rem;font-size:.9rem">Sign out</a></span>
   </div>
   <p><a href="/games/new">+ Add a game</a></p>
   <div id="games"><p class="muted">Loading…</p></div>
@@ -109,10 +105,6 @@ export const dashboardPage = layout('Dashboard', `
         zone.append(row);
       }
     }
-    document.getElementById('logout').addEventListener('click', async () => {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      location.href = '/login';
-    });
     load();
   </script>
 `);
@@ -134,6 +126,16 @@ export const newGamePage = layout('Add a game', `
     <p class="hint"><label style="display:inline;font-weight:400">
       <input type="checkbox" id="isLocal" style="width:auto;margin:0 .3rem 0 0;vertical-align:middle">
       This is a local address (localhost or IP), not an internet domain name</label></p>
+    <label for="category">Category</label>
+    <select id="category" required>
+      <option value="">— pick one —</option>
+      <option>action</option><option>puzzle</option><option>arcade</option>
+      <option>strategy</option><option>sports</option><option>racing</option>
+      <option>rpg</option><option>idle-clicker</option><option>card-board</option>
+      <option>shooter</option><option>platformer</option><option>other</option>
+    </select>
+    <label for="shortDescription">Short description</label>
+    <input id="shortDescription" placeholder="One catchy sentence, shown on ranking pages" required maxlength="160">
     <label for="description">Description</label>
     <textarea id="description" placeholder="What makes your game fun?" rows="4" required></textarea>
     <label for="thumbnail">Thumbnail (PNG, JPEG, WebP or GIF — 2 MB max)</label>
@@ -159,6 +161,8 @@ export const newGamePage = layout('Add a game', `
       body.append('name', document.getElementById('name').value);
       body.append('url', document.getElementById('url').value);
       body.append('description', document.getElementById('description').value);
+      body.append('shortDescription', document.getElementById('shortDescription').value);
+      body.append('category', document.getElementById('category').value);
       body.append('isLocal', document.getElementById('isLocal').checked ? 'true' : 'false');
       body.append('thumbnail', document.getElementById('thumbnail').files[0]);
       const res = await fetch('/api/games', { method: 'POST', body });
@@ -172,10 +176,10 @@ export const newGamePage = layout('Add a game', `
   </script>
 `);
 
-export const adminPage = layout('Admin', `
-  <style>body { max-width: 72rem; } table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
-    th, td { text-align: left; padding: .4rem .6rem; border-bottom: 1px solid #eee; font-size: .85rem; }
-    th { color: #667; font-weight: 600; }</style>
+export const adminPage = layout(
+  'Admin',
+  `
+  <style>table { margin-bottom: 2rem; } td, th { font-size: .85rem; }</style>
   <div class="topbar">
     <h1>Admin — ingestion overview</h1>
     <a href="/dashboard">← Dashboard</a>
@@ -259,7 +263,9 @@ export const adminPage = layout('Admin', `
     }
     load();
   </script>
-`);
+`,
+  { wide: true },
+);
 
 export const gamePage = layout('Game', `
   <p><a href="/dashboard">← My games</a></p>
@@ -308,7 +314,7 @@ export const gamePage = layout('Game', `
         + '<div style="position:relative;display:inline-block;width:180px;height:40px">'
         + '<script src="' + location.origin + '/widget.js" data-key="' + game.sdkKey + '" async><\\/script>'
         + '<a href="' + location.origin + '/g/' + game.id + '">'
-        + '<img src="' + location.origin + '/games/' + game.id + '/badge.svg" width="180" height="40" alt="' + game.name.replaceAll('"', '') + ' on GameRank"></a></div>';
+        + '<img src="' + location.origin + '/games/' + game.id + '/badge.svg" width="180" height="40" alt="' + game.name.replaceAll('"', '') + ' on WebGameRank"></a></div>';
       document.getElementById('snippet').textContent = snippet;
       document.getElementById('copy').addEventListener('click', () =>
         navigator.clipboard.writeText(snippet));

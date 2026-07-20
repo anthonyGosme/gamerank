@@ -10,6 +10,7 @@
     "migrate": "npm run migrate -w apps/api",
     "test": "npm run test -w apps/api",
     "build:sdk": "npm run build -w packages/sdk",
+    "seed:demo": "tsx --env-file=.env apps/api/scripts/seed-demo.ts",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down"
   }

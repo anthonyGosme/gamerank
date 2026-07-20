@@ -16,7 +16,7 @@ export const config = {
   port,
   smtpHost: process.env.SMTP_HOST ?? 'localhost',
   smtpPort: Number(process.env.SMTP_PORT ?? 1025),
-  mailFrom: process.env.MAIL_FROM ?? 'GameRank <no-reply@gamerank.local>',
+  mailFrom: process.env.MAIL_FROM ?? 'WebGameRank <no-reply@webgamerank.local>',
   adminEmails: (process.env.ADMIN_EMAILS ?? '')
     .split(',')
     .map((email) => email.trim().toLowerCase())

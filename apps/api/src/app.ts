@@ -6,10 +6,11 @@ import cors from '@fastify/cors';
 import multipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import { config } from './config.js';
-import { registerAuthRoutes } from './auth.js';
+import { currentDeveloper, registerAuthRoutes } from './auth.js';
 import { registerGameRoutes, uploadsDir } from './games.js';
 import { registerIngestRoutes } from './ingest.js';
 import { registerVoteRoutes } from './votes.js';
+import { registerPublicRoutes } from './public.js';
 import { registerAdminRoutes } from './admin.js';
 import { loginPage, dashboardPage, newGamePage, gamePage, adminPage } from './pages.js';
 
@@ -44,14 +45,24 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   registerGameRoutes(app);
   registerIngestRoutes(app);
   registerVoteRoutes(app);
+  registerPublicRoutes(app); // sert aussi la home publique « / »
   registerAdminRoutes(app);
 
-  app.get('/', async (_request, reply) => reply.redirect('/login'));
   app.get('/login', async (_request, reply) => reply.type('text/html').send(loginPage));
-  app.get('/dashboard', async (_request, reply) => reply.type('text/html').send(dashboardPage));
-  app.get('/games/new', async (_request, reply) => reply.type('text/html').send(newGamePage));
-  app.get('/games/:id', async (_request, reply) => reply.type('text/html').send(gamePage));
-  app.get('/admin', async (_request, reply) => reply.type('text/html').send(adminPage));
+
+  // Pages développeur : la connexion est exigée AVANT l'affichage, sinon un
+  // formulaire rempli serait perdu au moment de l'envoi (US-2.1).
+  const authed = (path: string, page: string) =>
+    app.get(path, async (request, reply) => {
+      if (!(await currentDeveloper(request))) {
+        return reply.redirect(`/login?next=${encodeURIComponent(request.url)}`);
+      }
+      return reply.type('text/html').send(page);
+    });
+  authed('/dashboard', dashboardPage);
+  authed('/games/new', newGamePage);
+  authed('/games/:id', gamePage);
+  authed('/admin', adminPage);
   app.get('/health', async () => ({ ok: true }));
 
   // Fichiers buildés par packages/sdk (npm run build:sdk).

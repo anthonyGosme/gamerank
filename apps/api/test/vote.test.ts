@@ -138,6 +138,14 @@ test('le badge SVG affiche NEW sans score, puis le score dès qu’il existe', a
   assert.match(scored.body, />73</);
 });
 
+test('le webmaster peut forcer la couleur du badge via ?bg= (hex valide)', async () => {
+  const forced = await app.inject({ method: 'GET', url: `/games/${game.id}/badge.svg?bg=0ea5e9` });
+  assert.match(forced.body, /rx="7" fill="#0ea5e9"/);
+  // Une valeur non-hex est ignorée (pas d'injection dans le SVG).
+  const bad = await app.inject({ method: 'GET', url: `/games/${game.id}/badge.svg?bg=zzz` });
+  assert.doesNotMatch(bad.body, /zzz/);
+});
+
 test('la fiche publique /g/:id est servie sans authentification', async () => {
   const response = await app.inject({ method: 'GET', url: `/g/${game.id}` });
   assert.equal(response.statusCode, 200);

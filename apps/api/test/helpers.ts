@@ -75,8 +75,9 @@ export function multipartGame(fields: Record<string, string>): {
   headers: { 'content-type': string };
 } {
   const boundary = 'testboundary'.padEnd(24, 'x');
+  const withDefaults = { category: 'other', shortDescription: 'a short test game', ...fields };
   let payload = '';
-  for (const [name, value] of Object.entries(fields)) {
+  for (const [name, value] of Object.entries(withDefaults)) {
     payload += `--${boundary}\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`;
   }
   payload +=

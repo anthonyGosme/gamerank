@@ -70,6 +70,25 @@ test('jeu local avec événements : vérification acceptée', async () => {
   assert.notEqual(response.json().integrationVerifiedAt, null);
 });
 
+test('le cycle de vie suit la vérification du snippet', async () => {
+  const game = await createGame(developer.id);
+  // À la création, rien n'est vérifié : le jeu attend son snippet.
+  const { rows: created } = await pool.query('SELECT status FROM games WHERE id = $1', [game.id]);
+  assert.equal(created[0].status, 'awaiting_snippet');
+
+  // Vérification réussie → au dev de juger 5 jeux.
+  await pool.query('UPDATE games SET is_local = true, last_event_at = now() WHERE id = $1', [game.id]);
+  assert.equal((await verify(game.id)).statusCode, 200);
+  const { rows: verified } = await pool.query('SELECT status FROM games WHERE id = $1', [game.id]);
+  assert.equal(verified[0].status, 'awaiting_peer_review');
+
+  // Le snippet disparaît → retour à l'étape précédente.
+  await pool.query('UPDATE games SET last_event_at = NULL WHERE id = $1', [game.id]);
+  assert.equal((await verify(game.id)).statusCode, 400);
+  const { rows: back } = await pool.query('SELECT status FROM games WHERE id = $1', [game.id]);
+  assert.equal(back[0].status, 'awaiting_snippet');
+});
+
 test('NDD : balise présente sur la page → vérifié', async () => {
   const game = await createGame(developer.id);
   await pool.query('UPDATE games SET url = $1 WHERE id = $2', [`${fakeSiteUrl}with-snippet`, game.id]);

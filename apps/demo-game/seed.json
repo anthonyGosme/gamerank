@@ -1,0 +1,106 @@
+{
+  "developerEmail": "anthonygosme@gmail.com",
+  "baseUrl": "http://localhost:4600",
+  "games": [
+    {
+      "slug": "snake",
+      "title": "Snake",
+      "emoji": "🐍",
+      "category": "arcade",
+      "color": "#14532d",
+      "short": "Eat, grow, and try not to bite your own tail. One more run, always.",
+      "description": "The timeless classic, tuned for the browser. Wrap around the edges, chase the fruit, and see how long you last before your own tail does you in. Arrow keys or WASD.",
+      "visitors": 640, "retentionPct": 46, "avgSessionSec": 190, "votesUp": 210, "votesDown": 24
+    },
+    {
+      "slug": "click-tycoon",
+      "title": "Click Tycoon",
+      "emoji": "🪙",
+      "category": "idle-clicker",
+      "color": "#1f2937",
+      "short": "Click for coins, hire helpers, watch the numbers run away from you.",
+      "description": "Start with a single coin and one weary finger. Buy interns, robot arms and coin factories until the screen prints money on its own. The idle game that respects your lunch break.",
+      "visitors": 520, "retentionPct": 58, "avgSessionSec": 320, "votesUp": 180, "votesDown": 30
+    },
+    {
+      "slug": "memory-match",
+      "title": "Memory Match",
+      "emoji": "🧠",
+      "category": "puzzle",
+      "color": "#0f3d3e",
+      "short": "Flip the cards and find all eight pairs in as few moves as you can.",
+      "description": "A calm, satisfying test of memory. Sixteen cards, eight pairs, and a move counter judging you quietly. Perfect for a quick brain warm-up.",
+      "visitors": 300, "retentionPct": 41, "avgSessionSec": 150, "votesUp": 132, "votesDown": 12
+    },
+    {
+      "slug": "reaction-test",
+      "title": "Reaction Test",
+      "emoji": "⚡",
+      "category": "sports",
+      "color": "#0c4a6e",
+      "short": "Wait for green, then click. Five rounds, one average — no cheating.",
+      "description": "How fast are you, really? Wait for the pad to turn green then click as fast as you can, five times. Click too early and you start over. Bragging rights measured in milliseconds.",
+      "visitors": 410, "retentionPct": 33, "avgSessionSec": 95, "votesUp": 120, "votesDown": 28
+    },
+    {
+      "slug": "whack-a-mole",
+      "title": "Whack a Mole",
+      "emoji": "🔨",
+      "category": "action",
+      "color": "#7c2d12",
+      "short": "Moles pop up, you smack them. Thirty seconds, no mercy.",
+      "description": "Nine holes, endless moles, and thirty frantic seconds. Hit fast, miss rarely, and try to keep your composure as the spawns speed up.",
+      "visitors": 260, "retentionPct": 29, "avgSessionSec": 110, "votesUp": 88, "votesDown": 20
+    },
+    {
+      "slug": "tic-tac-toe",
+      "title": "Tic Tac Toe",
+      "emoji": "⭕",
+      "category": "strategy",
+      "color": "#1e3a5f",
+      "short": "Three in a row against an AI that never misses an open win.",
+      "description": "The playground classic against a small but ruthless AI. It takes every win and blocks every threat — your best realistic hope is a draw. Can you force one?",
+      "visitors": 175, "retentionPct": 26, "avgSessionSec": 130, "votesUp": 54, "votesDown": 18
+    },
+    {
+      "slug": "target-shooter",
+      "title": "Target Shooter",
+      "emoji": "🎯",
+      "category": "shooter",
+      "color": "#5b1a2e",
+      "short": "Targets shrink as they age — hit them before they vanish.",
+      "description": "Sharpshooting against the clock. Each target starts big and shrinks fast; nail it before it disappears. Three misses and it's over. How high can your streak climb?",
+      "visitors": 220, "retentionPct": 31, "avgSessionSec": 140, "votesUp": 76, "votesDown": 22
+    },
+    {
+      "slug": "lane-racer",
+      "title": "Lane Racer",
+      "emoji": "🏎️",
+      "category": "racing",
+      "color": "#3a2e0a",
+      "short": "Three lanes, oncoming traffic, and a speed that never stops rising.",
+      "description": "Dodge left, dodge right, survive. Traffic comes faster the longer you last, and one wrong lane ends the run. Pure reflex racing in a single tap.",
+      "visitors": 150, "retentionPct": 24, "avgSessionSec": 100, "votesUp": 48, "votesDown": 26
+    },
+    {
+      "slug": "simon-says",
+      "title": "Simon Says",
+      "emoji": "🎨",
+      "category": "puzzle",
+      "color": "#4a1d5c",
+      "short": "Watch the colour sequence, repeat it, and watch it grow.",
+      "description": "Four pads, one growing pattern, and your fragile short-term memory. Each round adds a colour. Miss one and it's back to the start. Deceptively addictive.",
+      "visitors": 95, "retentionPct": 22, "avgSessionSec": 120, "votesUp": 30, "votesDown": 8
+    },
+    {
+      "slug": "catch-the-square",
+      "title": "Catch the Square",
+      "emoji": "🟧",
+      "category": "arcade",
+      "color": "#2e1a5c",
+      "short": "Tap the orange square as fast as you can before the clock runs out.",
+      "description": "The original WebGameRank demo. A five-by-five grid, one orange square, thirty seconds. Simple, frantic, and strangely hard to put down.",
+      "visitors": 40, "retentionPct": 18, "avgSessionSec": 80, "votesUp": 9, "votesDown": 3
+    }
+  ]
+}

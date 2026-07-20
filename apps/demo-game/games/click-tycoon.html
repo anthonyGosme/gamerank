@@ -1,0 +1,54 @@
+<!--meta:{"title":"Click Tycoon","category":"idle-clicker","short":"Click for coins, buy helpers, watch the numbers run away from you.","color":"#1f2937"}-->
+<h1>Click Tycoon</h1>
+<div class="hud"><span>Coins <b id="coins">0</b></span><span>Per second <b id="cps">0</b></span></div>
+<div class="stage" style="text-align:center">
+  <button id="coin" style="width:9rem;height:9rem;border-radius:50%;font-size:3rem">🪙</button>
+  <div id="shop" style="display:grid;gap:.5rem;margin-top:1rem;min-width:19rem"></div>
+</div>
+<p class="msg" id="msg">Click the coin. Then let others click for you.</p>
+<script>
+  const UPGRADES = [
+    { name: 'Intern', emoji: '🧑‍💻', cost: 25, cps: 1 },
+    { name: 'Robot arm', emoji: '🦾', cost: 150, cps: 6 },
+    { name: 'Server farm', emoji: '🖥️', cost: 900, cps: 30 },
+    { name: 'Coin factory', emoji: '🏭', cost: 5000, cps: 140 },
+  ].map((u) => ({ ...u, owned: 0 }));
+
+  let coins = 0;
+  const shop = document.getElementById('shop');
+  const rows = UPGRADES.map((upgrade) => {
+    const row = document.createElement('button');
+    row.className = 'ghost';
+    row.style.cssText = 'text-align:left;background:rgba(0,0,0,.28);color:var(--ink);font-weight:500';
+    row.addEventListener('click', () => buy(upgrade));
+    shop.append(row);
+    return row;
+  });
+
+  const format = (n) => Math.floor(n).toLocaleString('en-US');
+  function cps() {
+    return UPGRADES.reduce((total, u) => total + u.owned * u.cps, 0);
+  }
+  function render() {
+    document.getElementById('coins').textContent = format(coins);
+    document.getElementById('cps').textContent = format(cps());
+    UPGRADES.forEach((upgrade, i) => {
+      rows[i].textContent = `${upgrade.emoji} ${upgrade.name} ×${upgrade.owned} — ${format(upgrade.cost)} coins (+${upgrade.cps}/s)`;
+      rows[i].style.opacity = coins >= upgrade.cost ? '1' : '.5';
+    });
+  }
+  function buy(upgrade) {
+    if (coins < upgrade.cost) {
+      document.getElementById('msg').textContent = 'Not enough coins for a ' + upgrade.name + ' yet.';
+      return;
+    }
+    coins -= upgrade.cost;
+    upgrade.owned++;
+    upgrade.cost = Math.ceil(upgrade.cost * 1.6);
+    document.getElementById('msg').textContent = upgrade.name + ' hired!';
+    render();
+  }
+  document.getElementById('coin').addEventListener('click', () => { coins++; render(); });
+  setInterval(() => { coins += cps() / 10; render(); }, 100);
+  render();
+</script>

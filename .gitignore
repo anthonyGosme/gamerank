@@ -4,3 +4,4 @@ dist/
 .idea/
 .DS_Store
 apps/api/uploads/
+apps/demo-game/games.json
