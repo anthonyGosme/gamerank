@@ -89,22 +89,43 @@ poids d'un visiteur =
 
 ### 4.1 Poids dégressif par préfixe IP
 
-Au sein d'un même préfixe (/32, /24, /16), pour un même jeu, chaque visiteur
-supplémentaire compte de moins en moins :
+Au sein d'un même préfixe, pour un même jeu, chaque visiteur supplémentaire
+compte de moins en moins. **Cinq niveaux**, du plus large au plus fin, avec
+une dégressivité de moins en moins sévère en remontant (un bloc opérateur
+national ne doit pas écraser un jeu populaire légitime) :
 
 ```text
-contribution d'un préfixe = √(visiteurs du préfixe)
+niveau     IPv4   IPv6    exposant
+bloc FAI   /8     /32     0,90
+région     /16    /48     0,85
+allocation /20    /56     0,75
+foyer      /24    /64     0,65
+exact      /32    /128    0,50
+
+contribution d'un préfixe = (visiteurs du préfixe) ^ exposant
+poids retenu = le niveau le plus restrictif
 ```
 
-Exemple : 100 visiteurs depuis la même /24 ≈ 10 visiteurs comptés.
+Exemple : 100 visiteurs depuis la même /24 ≈ 20 visiteurs comptés.
+
+**IPv6** (~40-45 % du trafic) : les adresses IPv4-mappées (`::ffff:…`)
+sont normalisées en IPv4 avant groupement. Le **/64 joue le rôle du /32
+IPv4** — un foyer dispose d'un /64 entier et les extensions de
+confidentialité font tourner les /128, donc l'adresse exacte n'est pas une
+identité exploitable de ce côté.
 
 Un poids dégressif est préféré à un quota dur : pas d'effet de seuil
 contournable, et les concentrations légitimes (campus, CGNAT mobile,
 événement local) gardent l'essentiel de leur poids.
 
-### 4.2 Facteur ASN
+### 4.2 Facteur ASN — **reporté après le MVP**
 
-Chaque IP est résolue vers son ASN (base MaxMind GeoLite2-ASN, lookup local) :
+Nécessite la base MaxMind GeoLite2-ASN (clé de compte gratuite). Il s'agit
+d'un **lookup local** sur un fichier téléchargé : aucun appel réseau par
+requête, donc aucun impact de latence ni de scalabilité. Facteur ×1,0 en
+attendant ; le poids par préfixe IP (§4.1) assure seul la défense au MVP.
+
+Chaque IP est résolue vers son ASN :
 
 ```text
 résidentiel / mobile     × 1,0
@@ -311,12 +332,26 @@ L'affectation est imposée (le juré ne choisit pas quels jeux il juge), et
 « choisir 2 parmi 5 » produit 2×3 = 6 comparaisons par paires par juré —
 les jugements relatifs sont plus fiables que les notes absolues.
 
-**Score peer**
+**Score peer — barème sur 7 points**
 
 ```text
-P = Wilson( Σ poids des jurés ayant élu le jeu
-          / Σ poids des jurés à qui le jeu a été présenté )
+5 points max : élections reçues (1 point par juré ayant élu le jeu,
+               5 présentations donc 5 au maximum)
+2 points max : consensus (le développeur a élu des jeux également élus
+               par d'autres jurés)
+P = points obtenus / 7, ramené sur 0-100
 ```
+
+La composante « élections reçues » est lissée par Wilson comme les votes
+joueurs (§7.2), avec les poids de juré ci-dessous en dénominateur :
+
+```text
+élections = Wilson( Σ poids des jurés ayant élu le jeu
+                  / Σ poids des jurés à qui le jeu a été présenté )
+```
+
+Valeur par défaut avant l'existence du jury : **2/7** (≈ 28,6/100),
+identique pour tous les jeux — sans effet sur l'ordre du classement.
 
 **Exception à la décroissance (§5)** : les cumuls peer ne décroissent PAS.
 L'échantillon est fixe (5 présentations à vie, aucun flux entrant) — avec
@@ -502,8 +537,9 @@ constante de confiance (métriques hors votes)
 valeur neutre (prior empirique global)
 pondération grandeur / qualité               (35/65)
 pondérations internes de G et Q
-exposant du poids dégressif par préfixe      (√)
-facteurs ASN                                 (1,0 / 0,3 / 0,1)
+exposants du poids dégressif par préfixe     (0,9 / 0,85 / 0,75 / 0,65 / 0,5)
+facteurs ASN                                 (1,0 / 0,3 / 0,1) — reporté v2+
+cadence du pipeline de scoring, en secondes  (30 en dev/lancement)
 seuil minimum d'éligibilité
 pourcentage d'exposition exploratoire        (10-20 %)
 délai de cohorte pour la fidélisation        (7 j)

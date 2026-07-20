@@ -286,29 +286,65 @@ de savoir quoi améliorer.
 
 ## Épic 7 — Calcul des scores (Système)
 
-### US-7.1 Agrégation périodique
-En tant que système, je veux agréger ClickHouse → PostgreSQL par jeu,
-visiteur et jour afin d'alimenter le scoring (§11).
+### US-7.1 Agrégation périodique — ✅ fait
+En tant que système, je veux agréger les événements en quotidiens (jeu,
+visiteur, jour + sessions) afin d'alimenter le scoring (§11).
 
-### US-7.2 Poids des visiteurs
-En tant que système, je veux appliquer le poids anti-triche
-(dégressif √ par préfixe IP × facteur ASN × comportement) à chaque visiteur
-afin que la triche ne paie pas (§4).
+* ré-agrégation idempotente de la fenêtre des événements bruts (3 j) vers
+  `daily_activity` / `daily_sessions` (ClickHouse, TTL 45 j).
 
-### US-7.3 Cumuls décroissants
-En tant que système, je veux maintenir les cumuls ×0,95/jour par métrique et
-par jeu (§5) — sauf l'axe peer, à échantillon fixe (§7.4).
+### US-7.2 Poids des visiteurs — ✅ fait (ASN différé)
+En tant que système, je veux appliquer le poids anti-triche à chaque
+visiteur afin que la triche ne paie pas (§4).
 
-### US-7.4 Calcul des scores
-En tant que système, je veux recalculer toutes les 5 minutes :
-corrections (Wilson, confiance) → normalisation (50 % absolu +
-50 % percentile) → moyennes pondérées → `Score = 0,30 G + 0,55 Q + 0,15 P`
-(§6-§9).
+* dégressivité par préfixe IP sur **5 niveaux**, du plus large au plus fin,
+  de moins en moins sévère en remontant (exposants 0,9 / 0,85 / 0,75 /
+  0,65 / 0,5 configurables) ; le niveau le plus restrictif gagne :
 
-* le score v1 (proposition A) est calculé en parallèle et conservé en
-  interne (§9) ;
+```text
+IPv4 : /8    /16   /20   /24   /32 (adresse exacte)
+IPv6 : /32   /48   /56   /64   /128
+```
+
+* IPv6 : ~40-45 % du trafic réel, donc géré nativement. Les adresses
+  IPv4-mappées (`::ffff:81.2.3.4`, renvoyées par un socket dual-stack)
+  sont normalisées en IPv4 avant tout groupement, et la forme compressée
+  (`::`) est développée. Le **/64 IPv6 joue le rôle du /32 IPv4** : un
+  foyer possède un /64 entier et les extensions de confidentialité font
+  tourner les /128, donc l'adresse exacte n'est pas une identité fiable ;
+* **[reporté]** facteur ASN : nécessite la base MaxMind (clé gratuite).
+  Lookup local sans appel réseau — pas de risque de lenteur — mais activé
+  en v2+ ; facteur ×1,0 en attendant.
+
+### US-7.3 Cumuls décroissants — ✅ fait
+En tant que système, je veux des cumuls ×0,95/jour par métrique et par jeu
+(§5) — sauf l'axe peer, à échantillon fixe (§7.4).
+
+* implémentés en recalcul complet depuis les 45 j d'agrégats à chaque
+  passe (auto-réparant, sans état) plutôt qu'en accumulateur incrémental —
+  la queue au-delà de 45 j (~10 % de poids) est assumée perdue.
+
+### US-7.4 Calcul des scores — ✅ fait
+En tant que système, je veux recalculer périodiquement : corrections
+(Wilson, confiance) → normalisation (50 % absolu + 50 % percentile) →
+moyennes pondérées → `Score = 0,30 G + 0,55 Q + 0,15 P` (§6-§9).
+
+* cadence **réglable en secondes** (`PIPELINE_INTERVAL_SECONDS`, 30 s en
+  dev/lancement) + bouton « Recompute now » dans l'admin ; la **durée de
+  chaque passe** est historisée et affichée dans l'admin pour ajuster la
+  cadence si ça rame ;
+* P suit le barème sur **7 points** du jury (§7.4 : 5 points d'élections
+  reçues + 2 points de consensus) ; **2/7 par défaut** tant que le jury
+  (épic 3) n'existe pas — valeur uniforme, donc sans effet sur l'ordre ;
+* **aucun seuil d'éligibilité** : tous les jeux entrent au classement dès
+  la première donnée (le shrinkage protège des petits échantillons) ;
+* le score v1 (proposition A, percentiles purs) est calculé en parallèle
+  et conservé en interne (§9) ;
 * toutes les constantes sont en configuration, pas en dur (§13) ;
-* un calcul échoué n'écrase jamais le dernier classement valide.
+* un calcul échoué n'écrase jamais le dernier classement valide
+  (`current_score` n'est mis à jour que sur run réussi) ;
+* le badge affiche le score dès qu'il existe (« NEW » sinon), la page du
+  jeu montre score + rang.
 
 ---
 
@@ -321,8 +357,11 @@ visualise pas dérive sans qu'on le voie).
 
 * `/admin` réservé aux emails listés dans `ADMIN_EMAILS` (404 sinon, pas
   d'énumération de la route) ;
-* tableau de tous les jeux (tous comptes) : développeur, domaine, statut,
-  dernier événement, événements / visiteurs / minutes actives sur 24 h ;
+* tableau de tous les jeux (tous comptes) : rang, score, développeur,
+  domaine, statut, dernier événement, événements / visiteurs / minutes
+  actives sur 24 h ;
+* **20 dernières passes de scoring** avec leur durée (pour régler la
+  cadence si ça rame) et bouton « Recompute now » ;
 * liste des 30 derniers événements bruts (type, visiteur, session,
   activeMs, IP, version SDK) ;
 * la page dégrade proprement si ClickHouse est indisponible.

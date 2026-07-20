@@ -6,7 +6,7 @@ import type { AddressInfo } from 'node:net';
 import { buildApp } from '../src/app.js';
 import { pool } from '../src/db.js';
 import { clickhouse } from '../src/clickhouse.js';
-import { createDeveloper, createGame } from './helpers.js';
+import { createDeveloper, createGame , cleanupCreated} from './helpers.js';
 
 let app: FastifyInstance;
 let developer: { id: string; email: string };
@@ -37,6 +37,7 @@ before(async () => {
 });
 
 after(async () => {
+  await cleanupCreated();
   fakeSite.close();
   await app.close();
   await clickhouse.close();

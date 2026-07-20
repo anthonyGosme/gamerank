@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { pool } from './db.js';
 import { clickhouse } from './clickhouse.js';
+import { normalizeIp } from './scoring/math.js';
 
 const EVENT_TYPES = new Set(['load', 'session_start', 'heartbeat', 'session_end']);
 const MAX_EVENTS_PER_BATCH = 50;
@@ -69,6 +70,8 @@ async function handleBatch(request: FastifyRequest): Promise<void> {
 
   const sdkVersion = typeof body.sdkVersion === 'string' ? body.sdkVersion.slice(0, 32) : '';
   const userAgent = (request.headers['user-agent'] ?? '').slice(0, 256);
+  // Stockée normalisée : une IPv4 arrivant en ::ffff:… reste de l'IPv4.
+  const ip = normalizeIp(request.ip)?.value ?? request.ip;
 
   const rows = (body.events as IncomingEvent[])
     .slice(0, MAX_EVENTS_PER_BATCH)
@@ -89,7 +92,7 @@ async function handleBatch(request: FastifyRequest): Promise<void> {
       session_id: event.sessionId as string,
       event_type: event.type as string,
       active_ms: Math.min(Math.max(Number(event.activeMs) || 0, 0), MAX_ACTIVE_MS),
-      ip: request.ip,
+      ip,
       user_agent: userAgent,
       sdk_version: sdkVersion,
     }));

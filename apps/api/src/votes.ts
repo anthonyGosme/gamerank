@@ -18,7 +18,7 @@ async function publicGame(id: string): Promise<Record<string, string> | null> {
   if (!/^[0-9a-f-]{36}$/.test(id)) return null;
   const { rows } = await pool.query(
     `SELECT id, name, url, domain, description, thumbnail_url AS "thumbnailUrl", status,
-            badge_color AS "badgeColor"
+            badge_color AS "badgeColor", current_score AS "currentScore"
        FROM games WHERE id = $1 AND status <> 'hidden'`,
     [id],
   );
@@ -59,7 +59,9 @@ export function registerVoteRoutes(app: FastifyInstance): void {
 
     const background = game.badgeColor ?? '#111827';
     const foreground = contrastColor(background);
-    const score = 'NEW';
+    // Score affiché dès qu'il existe ; « NEW » tant qu'aucun calcul n'a eu lieu.
+    const score =
+      game.currentScore != null ? String(Math.round(Number(game.currentScore))) : 'NEW';
 
     let arrowsSvg = '';
     if (arrows === '1') {

@@ -32,4 +32,44 @@ export const config = {
   magicLinkTtlMinutes: 15,
   magicLinkThrottleSeconds: 60,
   sessionTtlDays: 30,
+
+  // Épic 7 — tous ces paramètres sont volontairement configurables (CDC §13).
+  scoring: {
+    // Intervalle du pipeline agrégation + score, en secondes (0 = désactivé).
+    pipelineIntervalSeconds: Number(process.env.PIPELINE_INTERVAL_SECONDS ?? 30),
+    decayFactor: Number(process.env.DECAY_FACTOR ?? 0.95),
+    qualifiedVisitorMs: Number(process.env.QUALIFIED_VISITOR_MS ?? 30_000),
+    activeDayMs: Number(process.env.ACTIVE_DAY_MS ?? 60_000),
+    cohortDays: Number(process.env.COHORT_DAYS ?? 7),
+    medianWindowDays: 30,
+    // P (jury des pairs, épic 3 à venir) : 2 points sur 7 par défaut.
+    peerDefaultRatio: Number(process.env.PEER_DEFAULT_RATIO ?? 2 / 7),
+    // Dégressivité par préfixe IP (CDC §4.1), 5 niveaux du plus large au plus
+    // fin : sévère sur l'IP exacte, quasi neutre sur le bloc opérateur.
+    // v6 : le /64 est l'équivalent du /32 v4 (un foyer = un /64 entier,
+    // et les extensions de confidentialité font tourner les /128).
+    prefixLevels: [
+      { v4: 8, v6: 32, exponent: 0.9 },
+      { v4: 16, v6: 48, exponent: 0.85 },
+      { v4: 20, v6: 56, exponent: 0.75 },
+      { v4: 24, v6: 64, exponent: 0.65 },
+      { v4: 32, v6: 128, exponent: 0.5 },
+    ],
+    // Constantes de confiance (shrinkage vers le prior global, CDC §7.3).
+    shrinkSamples: { fidelity: 20, session: 20, engagement: 50 },
+    // Bornes de référence des échelles absolues (CDC §6) — à recalibrer.
+    referenceBounds: {
+      visitors: 1000,
+      activeHours: 500,
+      voters: 200,
+      fidelity: 0.4,
+      medianMinutes: 15,
+      engagement: 1,
+    },
+    weights: {
+      g: { v: 0.5, t: 0.35, x: 0.15 },
+      q: { r: 0.35, s: 0.25, v: 0.25, e: 0.15 },
+      final: { g: 0.3, q: 0.55, p: 0.15 },
+    },
+  },
 };

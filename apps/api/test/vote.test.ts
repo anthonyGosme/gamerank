@@ -5,7 +5,7 @@ import { buildApp } from '../src/app.js';
 import { config } from '../src/config.js';
 import { clickhouse, ensureClickhouseSchema } from '../src/clickhouse.js';
 import { pool } from '../src/db.js';
-import { createDeveloper, createGame, uniqueId } from './helpers.js';
+import { createDeveloper, createGame, uniqueId , cleanupCreated} from './helpers.js';
 
 let app: FastifyInstance;
 let game: { id: string; sdkKey: string; domain: string };
@@ -18,6 +18,7 @@ before(async () => {
 });
 
 after(async () => {
+  await cleanupCreated();
   await app.close();
   await clickhouse.close();
   await pool.end();
@@ -124,12 +125,17 @@ test('clé inconnue ou valeur invalide refusées', async () => {
   assert.equal(badValue.statusCode, 400);
 });
 
-test('le badge SVG public est servi', async () => {
-  const response = await app.inject({ method: 'GET', url: `/games/${game.id}/badge.svg` });
-  assert.equal(response.statusCode, 200);
-  assert.match(response.headers['content-type'] as string, /image\/svg\+xml/);
-  assert.match(response.body, /GAMERANK/);
-  assert.match(response.body, /NEW/);
+test('le badge SVG affiche NEW sans score, puis le score dès qu’il existe', async () => {
+  await pool.query('UPDATE games SET current_score = NULL WHERE id = $1', [game.id]);
+  const blank = await app.inject({ method: 'GET', url: `/games/${game.id}/badge.svg` });
+  assert.equal(blank.statusCode, 200);
+  assert.match(blank.headers['content-type'] as string, /image\/svg\+xml/);
+  assert.match(blank.body, /GAMERANK/);
+  assert.match(blank.body, /NEW/);
+
+  await pool.query('UPDATE games SET current_score = 73.4 WHERE id = $1', [game.id]);
+  const scored = await app.inject({ method: 'GET', url: `/games/${game.id}/badge.svg` });
+  assert.match(scored.body, />73</);
 });
 
 test('la fiche publique /g/:id est servie sans authentification', async () => {

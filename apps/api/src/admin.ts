@@ -3,22 +3,34 @@ import { pool } from './db.js';
 import { clickhouse } from './clickhouse.js';
 import { config } from './config.js';
 import { currentDeveloper } from './auth.js';
+import { runPipeline } from './scoring/score.js';
+
+async function isAdmin(request: Parameters<typeof currentDeveloper>[0]): Promise<boolean> {
+  const developer = await currentDeveloper(request);
+  return !!developer && config.adminEmails.includes(developer.email);
+}
 
 // Observabilité interne (US-8.0) : réservée aux emails de ADMIN_EMAILS.
 // Réponse 404 (et non 403) pour ne pas révéler l'existence de la route.
 export function registerAdminRoutes(app: FastifyInstance): void {
   app.get('/api/admin/overview', async (request, reply) => {
-    const developer = await currentDeveloper(request);
-    if (!developer || !config.adminEmails.includes(developer.email)) {
+    if (!(await isAdmin(request))) {
       return reply.code(404).send({ error: 'not found' });
     }
 
     const { rows: games } = await pool.query(
       `SELECT g.id, g.name, g.domain, g.status, g.last_event_at AS "lastEventAt",
+              g.current_score AS "currentScore", g.current_rank AS "currentRank",
               g.created_at AS "createdAt", d.email AS "developerEmail"
          FROM games g
          JOIN developers d ON d.id = g.developer_id
-        ORDER BY g.created_at DESC`,
+        ORDER BY g.current_rank NULLS LAST, g.created_at DESC`,
+    );
+
+    const { rows: runs } = await pool.query(
+      `SELECT id, started_at AS "startedAt", duration_ms AS "durationMs",
+              status, error, games_count AS "gamesCount"
+         FROM score_runs ORDER BY started_at DESC LIMIT 20`,
     );
 
     let stats: unknown[] = [];
@@ -52,6 +64,16 @@ export function registerAdminRoutes(app: FastifyInstance): void {
       request.log.warn({ err }, 'clickhouse unavailable for admin overview');
     }
 
-    return { games, stats, recent };
+    return { games, stats, recent, runs };
+  });
+
+  // Recalcul à la demande (épic 7) — la durée mesurée aide à régler la cadence.
+  app.post('/api/admin/recompute', async (request, reply) => {
+    if (!(await isAdmin(request))) {
+      return reply.code(404).send({ error: 'not found' });
+    }
+    const summary = await runPipeline();
+    if (!summary) return reply.code(409).send({ error: 'a pipeline run is already in progress' });
+    return summary;
   });
 }

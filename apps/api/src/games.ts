@@ -9,6 +9,7 @@ import { currentDeveloper, type CurrentDeveloper } from './auth.js';
 const GAME_COLUMNS = `id, name, url, domain, description, thumbnail_url AS "thumbnailUrl",
   sdk_key AS "sdkKey", status, badge_color AS "badgeColor", last_event_at AS "lastEventAt",
   is_local AS "isLocal", integration_verified_at AS "integrationVerifiedAt",
+  current_score AS "currentScore", current_rank AS "currentRank",
   created_at AS "createdAt"`;
 
 const THUMBNAIL_TYPES: Record<string, string> = {

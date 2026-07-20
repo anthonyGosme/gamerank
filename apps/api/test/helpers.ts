@@ -1,6 +1,10 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import { pool } from '../src/db.js';
 
+// Développeurs créés par CE fichier de test (un processus par fichier),
+// pour un nettoyage ciblé qui ne touche pas les données des autres.
+const createdDevelopers: string[] = [];
+
 export async function createDeveloper(
   email = `test-${randomUUID()}@test.local`,
 ): Promise<{ id: string; email: string }> {
@@ -8,7 +12,15 @@ export async function createDeveloper(
     'INSERT INTO developers (email) VALUES ($1) RETURNING id, email',
     [email],
   );
+  createdDevelopers.push(rows[0].id);
   return rows[0];
+}
+
+// À appeler dans after() : supprime en cascade jeux, votes et scores de test.
+export async function cleanupCreated(): Promise<void> {
+  if (createdDevelopers.length === 0) return;
+  await pool.query('DELETE FROM developers WHERE id = ANY($1::uuid[])', [createdDevelopers]);
+  createdDevelopers.length = 0;
 }
 
 export async function createGame(
@@ -27,6 +39,20 @@ export async function createGame(
 
 export function uniqueId(prefix: string): string {
   return `${prefix}-${randomUUID()}`;
+}
+
+// Affiche un tableau aligné dans la sortie des tests, pour que les
+// scénarios soient lisibles et pas seulement « ✔ ».
+export function printTable(title: string, headers: string[], rows: string[][]): void {
+  const widths = headers.map((header, i) =>
+    Math.max(header.length, ...rows.map((row) => (row[i] ?? '').length)),
+  );
+  const line = (cells: string[]) =>
+    '  ' + cells.map((cell, i) => (cell ?? '').padEnd(widths[i])).join('  ');
+  console.log(`\n${title}`);
+  console.log(line(headers));
+  console.log('  ' + widths.map((w) => '─'.repeat(w)).join('  '));
+  for (const row of rows) console.log(line(row));
 }
 
 // Corps multipart minimal pour POST /api/games via app.inject().

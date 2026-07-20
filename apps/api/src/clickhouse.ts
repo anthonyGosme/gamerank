@@ -28,4 +28,38 @@ export async function ensureClickhouseSchema(): Promise<void> {
       TTL ts + INTERVAL 3 DAY
     `,
   });
+
+  // Agrégats quotidiens (CDC §11 : rétention 40-45 j). ReplacingMergeTree :
+  // la ré-agrégation est idempotente, la dernière version (ver) gagne.
+  await clickhouse.command({
+    query: `
+      CREATE TABLE IF NOT EXISTS daily_activity (
+        game_id    UUID,
+        visitor_id String,
+        day        Date,
+        active_ms  UInt64,
+        sessions   UInt32,
+        loads      UInt32,
+        ip         String,
+        ver        UInt32
+      )
+      ENGINE = ReplacingMergeTree(ver)
+      ORDER BY (game_id, visitor_id, day)
+      TTL day + INTERVAL 45 DAY
+    `,
+  });
+  await clickhouse.command({
+    query: `
+      CREATE TABLE IF NOT EXISTS daily_sessions (
+        game_id    UUID,
+        session_id String,
+        day        Date,
+        active_ms  UInt64,
+        ver        UInt32
+      )
+      ENGINE = ReplacingMergeTree(ver)
+      ORDER BY (game_id, session_id, day)
+      TTL day + INTERVAL 45 DAY
+    `,
+  });
 }

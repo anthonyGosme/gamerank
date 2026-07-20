@@ -4,7 +4,7 @@ import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../src/app.js';
 import { clickhouse, ensureClickhouseSchema } from '../src/clickhouse.js';
 import { pool } from '../src/db.js';
-import { createDeveloper, createGame, uniqueId } from './helpers.js';
+import { createDeveloper, createGame, uniqueId , cleanupCreated} from './helpers.js';
 
 let app: FastifyInstance;
 let game: { id: string; sdkKey: string; domain: string };
@@ -17,6 +17,7 @@ before(async () => {
 });
 
 after(async () => {
+  await cleanupCreated();
   await app.close();
   await clickhouse.close();
   await pool.end();

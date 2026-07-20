@@ -192,19 +192,47 @@ export const adminPage = layout('Admin', `
     async function load() {
       const res = await fetch('/api/admin/overview');
       if (!res.ok) { location.href = '/dashboard'; return; }
-      const { games, stats, recent } = await res.json();
+      const data = await res.json();
+      const { games, stats, recent } = data;
       const byGame = Object.fromEntries(stats.map((s) => [s.gameId, s]));
       const names = Object.fromEntries(games.map((g) => [g.id, g.name]));
       const zone = document.getElementById('zone');
-      zone.innerHTML = '<h2>Games</h2><table id="games"><tr><th>Name</th><th>Developer</th>'
-        + '<th>Domain</th><th>Status</th><th>Last event</th><th>Events 24h</th>'
+      zone.innerHTML = '<h2>Games</h2><table id="games"><tr><th>Rank</th><th>Score</th><th>Name</th>'
+        + '<th>Developer</th><th>Domain</th><th>Status</th><th>Last event</th><th>Events 24h</th>'
         + '<th>Visitors 24h</th><th>Active min 24h</th></tr></table>'
+        + '<h2>Last 20 score runs <button id="recompute">Recompute now</button> '
+        + '<span id="recompute-status" class="muted"></span></h2>'
+        + '<table id="runs"><tr><th>Started</th><th>Duration</th><th>Status</th><th>Games</th><th>Error</th></tr></table>'
         + '<h2>Last 30 events</h2><table id="events"><tr><th>Time (UTC)</th><th>Game</th>'
         + '<th>Type</th><th>Visitor</th><th>Session</th><th>Active ms</th><th>IP</th><th>SDK</th></tr></table>';
+      const runsTable = document.getElementById('runs');
+      for (const run of data.runs ?? []) {
+        const row = document.createElement('tr');
+        cell(row, new Date(run.startedAt).toLocaleString());
+        cell(row, run.durationMs != null ? run.durationMs + ' ms' : '…');
+        cell(row, run.status);
+        cell(row, run.gamesCount != null ? String(run.gamesCount) : '');
+        cell(row, run.error || '');
+        runsTable.append(row);
+      }
+      document.getElementById('recompute').addEventListener('click', async () => {
+        const status = document.getElementById('recompute-status');
+        status.textContent = 'running…';
+        const res = await fetch('/api/admin/recompute', { method: 'POST' });
+        if (res.ok) {
+          const summary = await res.json();
+          status.textContent = 'done in ' + summary.durationMs + ' ms (' + summary.gamesCount + ' games)';
+          load();
+        } else {
+          status.textContent = 'failed';
+        }
+      });
       const gamesTable = document.getElementById('games');
       for (const game of games) {
         const s = byGame[game.id];
         const row = document.createElement('tr');
+        cell(row, game.currentRank != null ? '#' + game.currentRank : '—');
+        cell(row, game.currentScore != null ? String(Math.round(game.currentScore)) : '—');
         cell(row, game.name);
         cell(row, game.developerEmail);
         cell(row, game.domain);
@@ -250,7 +278,8 @@ export const gamePage = layout('Game', `
       const zone = document.getElementById('zone');
       zone.innerHTML = '<h1></h1>'
         + '<p><img id="thumb" alt="" style="max-width:12rem;border-radius:.5rem"></p>'
-        + '<p><a id="url" target="_blank" rel="noopener"></a> <span class="badge" id="status"></span></p>'
+        + '<p><a id="url" target="_blank" rel="noopener"></a> <span class="badge" id="status"></span> '
+        + '<span class="badge" id="score-badge" hidden></span></p>'
         + '<p id="description"></p>'
         + '<h2>Integration</h2>'
         + '<p>Paste this snippet in your game page. The first line measures real play time '
@@ -269,6 +298,11 @@ export const gamePage = layout('Game', `
       const url = document.getElementById('url');
       url.textContent = game.url; url.href = game.url;
       document.getElementById('status').textContent = STATUS[game.status] ?? game.status;
+      if (game.currentScore != null) {
+        const scoreBadge = document.getElementById('score-badge');
+        scoreBadge.hidden = false;
+        scoreBadge.textContent = 'Score ' + Math.round(game.currentScore) + ' · rank #' + game.currentRank;
+      }
       document.getElementById('description').textContent = game.description || '';
       const snippet = '<script src="' + location.origin + '/sdk.js" data-key="' + game.sdkKey + '" async><\\/script>\\n'
         + '<div style="position:relative;display:inline-block;width:180px;height:40px">'

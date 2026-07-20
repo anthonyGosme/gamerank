@@ -179,10 +179,23 @@ ClickHouse) :
 4. Envoyer un batch (scénario 4) puis recharger → les compteurs bougent.
 5. Avec un compte non listé dans `ADMIN_EMAILS` → renvoyé au dashboard.
 
+## Scénario 8 — Scores (épic 7)
+
+1. Le pipeline tourne toutes les 30 s (`PIPELINE_INTERVAL_SECONDS`).
+   Jouer au jeu de démo, attendre ~1 min → le badge affiche un score
+   chiffré à la place de « NEW », la page du jeu montre « Score N · rank #R ».
+2. Sur `/admin` : colonnes Rank/Score, section **Score runs** (durée de
+   chaque passe en ms — à surveiller pour régler la cadence) et bouton
+   **Recompute now**.
+3. La recette fine de la formule est automatisée : `npm test` inclut les
+   scénarios synthétiques (petit-excellent > gros-médiocre, botnet /24
+   écrasé, Wilson 90/100 > 3/3, décroissance à 40 jours).
+
 ## Pas encore développé (ne pas recetter)
 
-Widget de vote (US-4.3), jury (épic 3), site public (épic 5), métriques et
-scores (US-6.1/6.2, épic 7), file de revue et masquage admin (US-8.1/8.2).
+Jury des pairs (épic 3, avec les transitions de statut US-2.3 et le bandeau
+US-2.4), site public (épic 5), métriques détaillées du dashboard dev
+(US-6.1/6.2), file de revue et masquage admin (US-8.1/8.2).
 
 ## Réinitialiser l'environnement
 
