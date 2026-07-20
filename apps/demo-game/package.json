@@ -1,0 +1,7 @@
+{
+  "name": "@gamerank/demo-game",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "gamerank",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w apps/api",
+    "migrate": "npm run migrate -w apps/api",
+    "test": "npm run test -w apps/api",
+    "build:sdk": "npm run build -w packages/sdk",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down"
+  }
+}

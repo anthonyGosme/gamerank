@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catch the Square — GameRank demo game</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 26rem; margin: 3rem auto; text-align: center; }
+    #grid { display: grid; grid-template-columns: repeat(5, 4rem); gap: .4rem; justify-content: center; margin: 1.5rem 0; }
+    .cell { width: 4rem; height: 4rem; background: #e5e7eb; border-radius: .5rem; cursor: pointer; border: none; }
+    .cell.target { background: #f59e0b; }
+    .warn { background: #fdeaea; padding: .75rem; border-radius: .5rem; }
+  </style>
+</head>
+<body>
+  <h1>Catch the Square</h1>
+  <p>Score: <strong id="score">0</strong></p>
+  <div id="grid"></div>
+  <!--GAMERANK_SNIPPET-->
+
+  <script>
+    // Le jeu : cliquer la case orange.
+    const grid = document.getElementById('grid');
+    const cells = [];
+    let target = -1, score = 0;
+    for (let i = 0; i < 25; i++) {
+      const cell = document.createElement('button');
+      cell.className = 'cell';
+      cell.addEventListener('click', () => {
+        if (i === target) {
+          document.getElementById('score').textContent = String(++score);
+          moveTarget();
+        }
+      });
+      cells.push(cell);
+      grid.append(cell);
+    }
+    function moveTarget() {
+      if (target >= 0) cells[target].classList.remove('target');
+      target = Math.floor(Math.random() * cells.length);
+      cells[target].classList.add('target');
+    }
+    moveTarget();
+  </script>
+</body>
+</html>

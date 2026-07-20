@@ -26,7 +26,7 @@ Système       : jobs périodiques (agrégation, scoring, purge)
 
 ## Épic 1 — Compte développeur
 
-### US-1.1 Inscription par magic link
+### US-1.1 Inscription par magic link — ✅ fait
 En tant que développeur, je veux créer un compte avec mon seul email afin de
 m'inscrire sans gérer de mot de passe.
 
@@ -36,7 +36,7 @@ m'inscrire sans gérer de mot de passe.
 * l'IP et l'ASN d'inscription sont enregistrés (signaux §4 appliqués au
   futur poids de juré).
 
-### US-1.2 Reconnexion
+### US-1.2 Reconnexion — ✅ fait
 En tant que développeur, je veux me reconnecter par magic link afin de
 retrouver mon dashboard et mes jeux.
 
@@ -46,17 +46,20 @@ retrouver mon dashboard et mes jeux.
 
 ## Épic 2 — Enregistrement d'un jeu
 
-### US-2.1 Déclarer un jeu
+### US-2.1 Déclarer un jeu — ✅ fait
 En tant que développeur, je veux enregistrer mon jeu (nom, URL, description,
 vignette) afin qu'il entre dans le classement.
 
+* nom, URL, description et vignette sont tous obligatoires ;
+* la vignette est téléversée (PNG/JPEG/WebP/GIF, taille max configurable)
+  et hébergée par GameRank — pas d'URL d'image externe ;
 * l'URL du jeu est unique dans la base ;
 * une **clé SDK** est générée, liée au jeu et au domaine déclaré ;
 * le jeu est créé en statut `en attente du jury` : il n'apparaît pas encore
   dans le classement (voir US-3.x) ;
 * limite configurable de jeux par compte (anti-sybil).
 
-### US-2.2 Installer le SDK
+### US-2.2 Installer le SDK — ✅ fait
 En tant que développeur, je veux un snippet d'intégration copiable afin
 d'installer le SDK en une balise.
 
@@ -77,6 +80,16 @@ suis.
 * `classé` : le jeu a reçu ses 5 présentations au jury (§7.4) **ou** 14
   jours se sont écoulés (garde-fou si les inscriptions ralentissent) ; il
   entre dans le classement officiel.
+
+### US-2.4 Parcours de première connexion
+En tant que développeur nouvellement inscrit, je veux être guidé pas à pas
+afin de terminer mon inscription sans me perdre.
+
+* à la première connexion, le dashboard affiche les étapes dans l'ordre :
+  `1. déclarer mon jeu → 2. installer le SDK → 3. juger 5 jeux` avec l'état
+  de chacune ;
+* chaque étape non terminée pointe vers l'écran correspondant ;
+* le bandeau disparaît une fois les trois étapes accomplies.
 
 ---
 
@@ -129,31 +142,57 @@ ne pèsent rien.
 
 ## Épic 4 — SDK & mesure
 
-### US-4.1 Identifiant visiteur
+### US-4.1 Identifiant visiteur — ✅ fait
 En tant que système, je veux identifier chaque visiteur par un UUID
 localStorage par jeu afin de compter les uniques et la fidélisation sans
 fingerprinting (§3).
 
-### US-4.2 Mesure du temps actif
+### US-4.2 Mesure du temps actif — ✅ fait
 En tant que système, je veux ne compter que le temps réellement joué afin
 que les métriques soient honnêtes (§2).
 
-* heartbeats périodiques ; comptage seulement si page visible + activité
-  récente ; la durée déclarée est plafonnée par le temps réellement écoulé
-  côté serveur ;
-* événements : chargement, début de session, heartbeat, fin de session.
+* heartbeats à cadence exponentielle : 5 s → 15 s → 45 s → 135 s (plafond,
+  et plafond serveur à 150 s par événement) ; la progression repart à 5 s à
+  chaque nouvelle session ;
+* comptage seulement si page visible + input < 60 s ; nouvelle session
+  après 30 min d'inactivité ;
+* événements : chargement, début de session, heartbeat, fin de session
+  (sendBeacon à la fermeture) ;
+* le SDK n'émet jamais d'exception vers le jeu hôte (échec silencieux) ;
+* recette locale : jeu de démo `apps/demo-game` (les URL localhost sont
+  acceptées à la déclaration).
 
 ### US-4.3 Widget de vote in-game
 En tant que visiteur, je veux voter 👍/👎 depuis le jeu afin de donner mon
 avis après y avoir vraiment joué.
 
-* le widget (discret, coin de l'écran) n'apparaît qu'après le temps de jeu
-  minimal (60 s actives, §7.2) ;
-* un vote par visiteur (UUID) et par jeu, modifiable (le dernier remplace) ;
-* le vote part avec l'identifiant de session : le serveur vérifie le temps
-  actif avant de l'accepter.
+* le widget est un embed à taille fixe (pas de layout shift) :
 
-### US-4.4 Ingestion des événements (Système)
+```html
+<div class="gamerank-badge" style="width/height fixes">
+  <script src="https://gamerank…/widget.js"></script>
+  <a href="https://gamerank…/g/<slug>">          ← backlink SEO, ancre neutre
+    <img src="https://gamerank…/games/<id>/badge.png">  ← score rendu serveur
+  </a>
+</div>
+```
+
+* `badge.png` est générée côté serveur avec le score courant, dimensions
+  fixes, cacheable (TTL court) — le badge fonctionne sans JavaScript
+  (image + lien, pas de vote) ;
+* `widget.js` découpe le badge en trois zones : gauche = 👎, droite = 👍,
+  centre = lien normal vers la fiche GameRank ;
+* le vote n'est actif qu'après le temps de jeu minimal (60 s actives, §7.2),
+  vérifié via la session SDK ;
+* un vote par visiteur (UUID) et par jeu, modifiable (le dernier remplace) ;
+* contrôle d'origine : le POST de vote doit porter un en-tête
+  `Origin`/`Referer` correspondant au domaine déclaré du jeu — un widget
+  posé sur un autre domaine ne peut pas voter (même règle que l'ingestion
+  US-4.4) ;
+* SEO : ancre neutre imposée (nom du jeu ou « GameRank ») — pas d'ancre
+  optimisée (politique Google sur les widget links).
+
+### US-4.4 Ingestion des événements (Système) — ✅ fait
 En tant que système, je veux stocker les événements dans ClickHouse afin de
 supporter le volume (§11).
 
@@ -197,6 +236,17 @@ faire confiance au classement (§12.14).
 ---
 
 ## Épic 6 — Dashboard développeur
+
+### US-6.0 Hub : retrouver mes jeux — ✅ fait
+En tant que développeur, je veux une page d'accueil de dashboard listant mes
+jeux afin d'y accéder d'un coup d'œil (référencée par US-1.2).
+
+* liste de mes jeux : vignette, nom, statut (US-2.3), score si classé ;
+* chaque jeu mène à sa page (métriques US-6.1, score US-6.2, snippet
+  US-2.2) ;
+* bouton « Ajouter un jeu » (US-2.1) ;
+* si mon devoir de jury n'est pas accompli, un rappel y mène (US-3.x) ;
+* état vide soigné à la première visite (guidé par US-2.4).
 
 ### US-6.1 Suivre mes métriques
 En tant que développeur, je veux voir les métriques de mon jeu afin de
@@ -244,6 +294,19 @@ corrections (Wilson, confiance) → normalisation (50 % absolu +
 ---
 
 ## Épic 8 — Administration
+
+### US-8.0 Observabilité de l'ingestion — ✅ fait
+En tant qu'admin, je veux une page interne montrant les jeux et les
+événements reçus afin de vérifier que la mesure fonctionne (ce qu'on ne
+visualise pas dérive sans qu'on le voie).
+
+* `/admin` réservé aux emails listés dans `ADMIN_EMAILS` (404 sinon, pas
+  d'énumération de la route) ;
+* tableau de tous les jeux (tous comptes) : développeur, domaine, statut,
+  dernier événement, événements / visiteurs / minutes actives sur 24 h ;
+* liste des 30 derniers événements bruts (type, visiteur, session,
+  activeMs, IP, version SDK) ;
+* la page dégrade proprement si ClickHouse est indisponible.
 
 ### US-8.1 File de revue
 En tant qu'admin, je veux voir les jeux et jurys marqués par l'anti-triche
