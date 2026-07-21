@@ -1,10 +1,16 @@
 import nodemailer from 'nodemailer';
 import { config } from './config.js';
 
+// En dev (Mailpit) : pas d'auth, pas de TLS. En prod (Resend/SES/Poste.io) :
+// auth activée dès que SMTP_USER est fourni ; TLS selon le port (465 = TLS
+// direct, 587 = STARTTLS). Le port 25 n'est jamais nécessaire côté envoi.
 const transport = nodemailer.createTransport({
   host: config.smtpHost,
   port: config.smtpPort,
-  secure: false,
+  secure: config.smtpSecure,
+  ...(config.smtpUser
+    ? { auth: { user: config.smtpUser, pass: config.smtpPass } }
+    : {}),
 });
 
 export async function sendMagicLink(email: string, url: string): Promise<void> {

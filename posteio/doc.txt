@@ -1,0 +1,112 @@
+https://claude.ai/chat/e87ded77-1324-4f1b-b01d-f5c3f91459ed
+
+
+https://mafreebox.freebox.fr/#Fbx.os.app.settings.app
+ssh toto@192.168.1.21 -p 56789
+    F....8
+ssh-copy-id -p 56789 user@192.168.1.21
+
+82.67.10.247
+
+sudo ufw status
+sudo ufw allow 56789/tcp
+sudo ufw enable
+
+
+
+----
+sudo mkdir -p /posteio/data
+sudo chown -R 1000:1000 /posteio/data
+
+
+
+mail.quaiz.com.    A     82.67.10.247
+quaiz.com.         MX    10 mail.quaiz.com.
+quaiz.com.         TXT   "v=spf1 mx ip4:82.67.10.247 ~all"
+
+dig mail.quaiz.com A
+-------
+
+
+
+
+Voici un résumé des principales actions et commandes de notre configuration du serveur mail :
+
+Configuration DNS pour quiaz.com
+
+bashCopy# Enregistrements DNS configurés
+mail.quiaz.com.    A     82.67.10.247
+quiaz.com.         MX    10 mail.quiaz.com.
+quiaz.com.         TXT   "v=spf1 mx ip4:82.67.10.247 ~all"
+
+Configuration Reverse DNS chez Free
+
+
+Interface Free : "Reverse DNS personnalisé" → mail.quiaz.com
+Vérification : dig -x 82.67.10.247
+
+
+Docker Compose du serveur mail
+
+yamlCopyversion: '3'
+
+
+services:
+  mail:
+    image: analogic/poste.io
+    restart: always
+    ports:
+      - "80:08"     # pour let encrytp
+      - "25:25"     # SMTP
+      - "8443:443"  # HTTPS webmail/admin
+      - "587:587"   # SMTP soumission
+      - "993:993"   # IMAP sécurisé
+    volumes:
+      - /posteio/data:/data
+    environment:
+      - HTTPS=ON
+      - DOMAIN=quiaz.com
+
+
+premiere install :  https://mail.quiaz.com:8443/
+mail_posteio_data
+
+admin Fr----8
+Configuration UFW (pare-feu)
+
+bashCopysudo ufw allow 25/tcp
+sudo ufw allow 8443/tcp
+sudo ufw allow 587/tcp
+sudo ufw allow 993/tcp
+
+Commandes utiles
+
+bashCopy# Gestion du conteneur
+docker-compose up -d
+docker-compose down
+docker-compose logs mail
+
+# Vérification des ports
+netstat -tulpn | grep LISTEN
+
+# Tests DNS
+dig mail.quiaz.com A
+dig quiaz.com MX
+dig quiaz.com TXT
+
+URLs importantes
+
+
+Interface admin : https://mail.quiaz.com:8443/admin
+Webmail : https://mail.quiaz.com:8443
+
+
+Points de vérification
+
+
+Redirection des ports dans la Freebox (25, 8443, 587, 993)
+Certificat SSL Let's Encrypt installé
+Configuration SPF dans les DNS
+Reverse DNS configuré
+
+Voulez-vous des détails supplémentaires sur une partie spécifique ?

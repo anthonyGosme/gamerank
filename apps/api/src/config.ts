@@ -16,6 +16,12 @@ export const config = {
   port,
   smtpHost: process.env.SMTP_HOST ?? 'localhost',
   smtpPort: Number(process.env.SMTP_PORT ?? 1025),
+  // TLS direct si port 465, sinon STARTTLS/clair. Surchargeable par SMTP_SECURE.
+  smtpSecure: process.env.SMTP_SECURE
+    ? process.env.SMTP_SECURE === 'true'
+    : Number(process.env.SMTP_PORT ?? 1025) === 465,
+  smtpUser: process.env.SMTP_USER ?? '',
+  smtpPass: process.env.SMTP_PASS ?? '',
   mailFrom: process.env.MAIL_FROM ?? 'WebGameRank <no-reply@webgamerank.local>',
   adminEmails: (process.env.ADMIN_EMAILS ?? '')
     .split(',')

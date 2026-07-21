@@ -1,0 +1,18 @@
+  mail:
+    image: analogic/poste.io
+    restart: always
+    ports:
+      #- "80:80"  # activer uniquement pour la dance let's encrypt
+      - "25:25"     # Réception SMTP
+      - "8443:443"   # HTTPS webmail/admin
+      - "587:587"   # Envoi SMTP
+      - "993:993"   # IMAP sécurisé
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /posteio/data:/data
+    environment:
+      - HTTPS=ON
+      - DOMAIN=quiaz.com
+      - TZ=Europe/Paris
+    cap_add:
+      - SYS_PTRACE
