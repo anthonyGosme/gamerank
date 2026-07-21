@@ -22,6 +22,9 @@ export const config = {
     : Number(process.env.SMTP_PORT ?? 1025) === 465,
   smtpUser: process.env.SMTP_USER ?? '',
   smtpPass: process.env.SMTP_PASS ?? '',
+  // Accepte un certif auto-signé (ex. Poste.io sans Let's Encrypt, app et
+  // serveur mail sur le même VPS). La connexion reste chiffrée.
+  smtpTlsInsecure: process.env.SMTP_TLS_INSECURE === 'true',
   mailFrom: process.env.MAIL_FROM ?? 'WebGameRank <no-reply@webgamerank.local>',
   adminEmails: (process.env.ADMIN_EMAILS ?? '')
     .split(',')

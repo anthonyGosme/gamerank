@@ -1,0 +1,32 @@
+# Poste.io pour WebGameRank — repris de la config quaiz qui fonctionnait.
+# À copier sur le VPS dans /posteio/docker-compose.yml puis : docker compose up -d
+#
+# Seuls changements vs la config quaiz :
+#   - DOMAIN : le FQDN du serveur mail (doit matcher le PTR de l'IP)
+#   - image épinglée en :2 (reproductibilité)
+#   - admin (8443) exposé en local seulement (accès par tunnel SSH)
+# Tout le reste (ports, volumes, HTTPS, TZ, cap_add) est conservé à l'identique.
+
+services:
+  mail:
+    image: analogic/poste.io:2
+    restart: always
+    ports:
+      # PAS de "80:80" : le serveur web du VPS tient déjà le port 80.
+      # Conséquence : Poste.io ne peut pas faire Let's Encrypt (HTTP-01) et
+      # utilise un certif auto-signé. C'est OK — l'envoi vers Gmail reste en
+      # TLS opportuniste (mail-tester 10/10) et l'app accepte le certif via
+      # SMTP_TLS_INSECURE=true (liaison locale app ↔ Poste.io). Voir DEPLOY-LOG.
+      - "25:25"          # réception SMTP + livraison sortante (25 débloqué chez IONOS)
+      - "587:587"        # envoi authentifié — utilisé par l'app WebGameRank
+      - "993:993"        # IMAP sécurisé
+      - "127.0.0.1:8443:443"   # webmail/admin : LOCAL uniquement (tunnel SSH)
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /posteio/data:/data     # DKIM + comptes + certs — À SAUVEGARDER
+    environment:
+      - HTTPS=ON
+      - DOMAIN=mail.webgamerank.com   # ← FQDN du serveur (matcher le PTR de l'IP)
+      - TZ=Europe/Paris
+    cap_add:
+      - SYS_PTRACE

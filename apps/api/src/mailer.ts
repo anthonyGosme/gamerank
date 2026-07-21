@@ -11,6 +11,9 @@ const transport = nodemailer.createTransport({
   ...(config.smtpUser
     ? { auth: { user: config.smtpUser, pass: config.smtpPass } }
     : {}),
+  // Certif auto-signé accepté si demandé (liaison app ↔ serveur mail que
+  // l'on contrôle). La connexion reste chiffrée (STARTTLS/TLS).
+  ...(config.smtpTlsInsecure ? { tls: { rejectUnauthorized: false } } : {}),
 });
 
 export async function sendMagicLink(email: string, url: string): Promise<void> {
