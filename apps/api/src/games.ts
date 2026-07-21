@@ -6,6 +6,7 @@ import { pool } from './db.js';
 import { config } from './config.js';
 import { currentDeveloper, type CurrentDeveloper } from './auth.js';
 import { isCategory } from './categories.js';
+import { safeFetch, SsrfError } from './ssrf.js';
 
 const GAME_COLUMNS = `id, name, url, domain, description,
   short_description AS "shortDescription", category, thumbnail_url AS "thumbnailUrl",
@@ -209,15 +210,21 @@ export function registerGameRoutes(app: FastifyInstance): void {
     } else {
       let html: string;
       try {
-        const response = await fetch(game.url, {
+        const response = await safeFetch(game.url, {
           signal: AbortSignal.timeout(8000),
           headers: { 'User-Agent': 'GameRankBot/1.0 (+integration check)' },
+          // Prod : refuse les cibles internes (SSRF). Dev/test : autorise le
+          // privé pour vérifier une intégration en local.
+          allowPrivate: !config.isProduction,
         });
         if (!response.ok) {
           return fail(`your page answered HTTP ${response.status}`);
         }
         html = (await response.text()).slice(0, 1_000_000);
-      } catch {
+      } catch (err) {
+        if (err instanceof SsrfError) {
+          return fail('that URL must be a public http(s) address');
+        }
         return fail('could not fetch your page — is it online?');
       }
       if (!html.includes('/sdk.js') || !html.includes(game.sdk_key)) {
