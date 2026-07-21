@@ -1,0 +1,684 @@
+Migrations à jour.
+
+  dist/sdk.js  1.6kb
+
+⚡ Done in 16ms
+
+  dist/widget.js  1.8kb
+
+⚡ Done in 8ms
+demo games on http://localhost:4600
+  · http://localhost:4600/catch-the-square  [arcade]
+  · http://localhost:4600/click-tycoon  [idle-clicker]
+  · http://localhost:4600/lane-racer  [racing]
+  · http://localhost:4600/memory-match  [puzzle]
+  · http://localhost:4600/reaction-test  [sports]
+  · http://localhost:4600/simon-says  [puzzle]
+  · http://localhost:4600/snake  [arcade]
+  · http://localhost:4600/target-shooter  [shooter]
+  · http://localhost:4600/tic-tac-toe  [strategy]
+  · http://localhost:4600/whack-a-mole  [action]
+{"level":30,"time":1784661195125,"pid":98390,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1784661195126,"pid":98390,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://192.168.1.224:3000"}
+{"level":30,"time":1784661195126,"pid":98390,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://192.168.2.1:3000"}
+{"level":30,"time":1784661219636,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-1","req":{"method":"GET","url":"/","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65103},"msg":"incoming request"}
+{"level":30,"time":1784661219683,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-1","res":{"statusCode":200},"responseTime":45.731746000001294,"msg":"request completed"}
+{"level":30,"time":1784661219766,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-2","req":{"method":"GET","url":"/api/me","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65103},"msg":"incoming request"}
+{"level":30,"time":1784661219768,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-2","res":{"statusCode":401},"responseTime":2.0905410000013944,"msg":"request completed"}
+{"level":30,"time":1784661219859,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-3","req":{"method":"GET","url":"/uploads/demo-snake.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65103},"msg":"incoming request"}
+{"level":30,"time":1784661219862,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-4","req":{"method":"GET","url":"/uploads/demo-click-tycoon.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65104},"msg":"incoming request"}
+{"level":30,"time":1784661219867,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-3","res":{"statusCode":304},"responseTime":6.359886999998707,"msg":"request completed"}
+{"level":30,"time":1784661219869,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-4","res":{"statusCode":304},"responseTime":6.5376649999998335,"msg":"request completed"}
+{"level":30,"time":1784661219872,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-5","req":{"method":"GET","url":"/uploads/demo-tic-tac-toe.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65104},"msg":"incoming request"}
+{"level":30,"time":1784661219875,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-5","res":{"statusCode":304},"responseTime":2.5784830000011425,"msg":"request completed"}
+{"level":30,"time":1784661219875,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-6","req":{"method":"GET","url":"/uploads/demo-reaction-test.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65108},"msg":"incoming request"}
+{"level":30,"time":1784661219877,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-7","req":{"method":"GET","url":"/uploads/demo-lane-racer.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65103},"msg":"incoming request"}
+{"level":30,"time":1784661219878,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-6","res":{"statusCode":304},"responseTime":2.493514999998297,"msg":"request completed"}
+{"level":30,"time":1784661219878,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-8","req":{"method":"GET","url":"/uploads/demo-simon-says.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65109},"msg":"incoming request"}
+{"level":30,"time":1784661219881,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-7","res":{"statusCode":304},"responseTime":4.501865999998699,"msg":"request completed"}
+{"level":30,"time":1784661219885,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-8","res":{"statusCode":304},"responseTime":6.403612999998586,"msg":"request completed"}
+{"level":30,"time":1784661219885,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-9","req":{"method":"GET","url":"/uploads/63acf96e-f449-419d-a388-b8cba3a2cac0.gif","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65108},"msg":"incoming request"}
+{"level":30,"time":1784661219887,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-a","req":{"method":"GET","url":"/uploads/demo-memory-match.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65110},"msg":"incoming request"}
+{"level":30,"time":1784661219888,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-b","req":{"method":"GET","url":"/uploads/demo-target-shooter.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65104},"msg":"incoming request"}
+{"level":30,"time":1784661219889,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-9","res":{"statusCode":304},"responseTime":3.6969280000012077,"msg":"request completed"}
+{"level":30,"time":1784661219891,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-a","res":{"statusCode":304},"responseTime":3.952477999999246,"msg":"request completed"}
+{"level":30,"time":1784661219894,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-b","res":{"statusCode":304},"responseTime":5.010321000001568,"msg":"request completed"}
+{"level":30,"time":1784661219895,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-c","req":{"method":"GET","url":"/uploads/demo-catch-the-square.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65109},"msg":"incoming request"}
+{"level":30,"time":1784661219896,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-d","req":{"method":"GET","url":"/uploads/04988819-70c7-48b4-8a27-73b4560e0801.gif","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65111},"msg":"incoming request"}
+{"level":30,"time":1784661219897,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-c","res":{"statusCode":304},"responseTime":1.7814370000014605,"msg":"request completed"}
+{"level":30,"time":1784661219898,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-d","res":{"statusCode":304},"responseTime":1.727632000001904,"msg":"request completed"}
+{"level":30,"time":1784661237796,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-e","req":{"method":"GET","url":"/health","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65124},"msg":"incoming request"}
+{"level":30,"time":1784661237797,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-e","res":{"statusCode":200},"responseTime":0.4076630000054138,"msg":"request completed"}
+{"level":30,"time":1784661237822,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-f","req":{"method":"GET","url":"/health/email","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65126},"msg":"incoming request"}
+{"level":30,"time":1784661240861,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-f","res":{"statusCode":503},"responseTime":3038.1418120000017,"msg":"request completed"}
+{"level":30,"time":1784661251083,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-g","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65132},"msg":"incoming request"}
+{"level":30,"time":1784661251114,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-g","res":{"statusCode":204},"responseTime":29.90853000000061,"msg":"request completed"}
+{"level":30,"time":1784661251428,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-h","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65135},"msg":"incoming request"}
+{"level":30,"time":1784661251443,"pid":98390,"hostname":"totos-MacBook-Pro.local","reqId":"req-h","res":{"statusCode":404},"responseTime":14.173588000005111,"msg":"request completed"}
+Migrations à jour.
+
+  dist/sdk.js  1.6kb
+
+⚡ Done in 15ms
+
+  dist/widget.js  1.8kb
+
+⚡ Done in 6ms
+Migrations à jour.
+
+  dist/sdk.js  1.6kb
+
+⚡ Done in 9ms
+
+  dist/widget.js  1.8kb
+
+⚡ Done in 5ms
+demo games on http://localhost:4600
+  · http://localhost:4600/catch-the-square  [arcade]
+  · http://localhost:4600/click-tycoon  [idle-clicker]
+  · http://localhost:4600/lane-racer  [racing]
+  · http://localhost:4600/memory-match  [puzzle]
+  · http://localhost:4600/reaction-test  [sports]
+  · http://localhost:4600/simon-says  [puzzle]
+  · http://localhost:4600/snake  [arcade]
+  · http://localhost:4600/target-shooter  [shooter]
+  · http://localhost:4600/tic-tac-toe  [strategy]
+  · http://localhost:4600/whack-a-mole  [action]
+{"level":30,"time":1784661284835,"pid":98996,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1784661284836,"pid":98996,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://192.168.1.224:3000"}
+{"level":30,"time":1784661284836,"pid":98996,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://192.168.2.1:3000"}
+{"level":30,"time":1784661304402,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1","req":{"method":"GET","url":"/health","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65173},"msg":"incoming request"}
+{"level":30,"time":1784661304408,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1","res":{"statusCode":200},"responseTime":5.16467399999965,"msg":"request completed"}
+{"level":30,"time":1784661304434,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2","req":{"method":"GET","url":"/health/email","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65175},"msg":"incoming request"}
+{"level":30,"time":1784661307474,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2","res":{"statusCode":503},"responseTime":3039.023925999998,"msg":"request completed"}
+{"level":30,"time":1784661310901,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65179},"msg":"incoming request"}
+{"level":30,"time":1784661310904,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65181},"msg":"incoming request"}
+{"level":30,"time":1784661310905,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65182},"msg":"incoming request"}
+{"level":30,"time":1784661310925,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-6","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65187},"msg":"incoming request"}
+{"level":30,"time":1784661310939,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3","res":{"statusCode":204},"responseTime":37.38273200000185,"msg":"request completed"}
+{"level":30,"time":1784661310945,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4","res":{"statusCode":204},"responseTime":40.29298099999869,"msg":"request completed"}
+{"level":30,"time":1784661310953,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5","res":{"statusCode":204},"responseTime":47.38074899999992,"msg":"request completed"}
+{"level":30,"time":1784661311037,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-6","res":{"statusCode":204},"responseTime":111.2419710000031,"msg":"request completed"}
+{"level":30,"time":1784661311424,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-7","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661311440,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-7","res":{"statusCode":404},"responseTime":15.229953999998543,"msg":"request completed"}
+{"level":30,"time":1784661370879,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-8","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65187},"msg":"incoming request"}
+{"level":30,"time":1784661370907,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-8","res":{"statusCode":204},"responseTime":27.524831999995513,"msg":"request completed"}
+{"level":30,"time":1784661370927,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-9","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661370941,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-9","res":{"statusCode":404},"responseTime":14.287674999999581,"msg":"request completed"}
+{"level":30,"time":1784661371389,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-a","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65205},"msg":"incoming request"}
+{"level":30,"time":1784661371409,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-a","res":{"statusCode":204},"responseTime":20.095317999992403,"msg":"request completed"}
+{"level":30,"time":1784661371486,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-b","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65205},"msg":"incoming request"}
+{"level":30,"time":1784661371504,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-b","res":{"statusCode":204},"responseTime":17.33314399998926,"msg":"request completed"}
+{"level":30,"time":1784661371585,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-c","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65205},"msg":"incoming request"}
+{"level":30,"time":1784661371602,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-c","res":{"statusCode":204},"responseTime":16.72830000000249,"msg":"request completed"}
+{"level":30,"time":1784661371676,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-d","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65205},"msg":"incoming request"}
+{"level":30,"time":1784661371699,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-d","res":{"statusCode":204},"responseTime":22.999887000012677,"msg":"request completed"}
+{"level":30,"time":1784661394819,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-e","req":{"method":"GET","url":"/","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65222},"msg":"incoming request"}
+{"level":30,"time":1784661394867,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-e","res":{"statusCode":200},"responseTime":48.10628399999405,"msg":"request completed"}
+{"level":30,"time":1784661394953,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-f","req":{"method":"GET","url":"/api/me","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65222},"msg":"incoming request"}
+{"level":30,"time":1784661394954,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-f","res":{"statusCode":401},"responseTime":0.6957659999898169,"msg":"request completed"}
+{"level":30,"time":1784661394960,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-g","req":{"method":"GET","url":"/uploads/demo-reaction-test.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65223},"msg":"incoming request"}
+{"level":30,"time":1784661394974,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-g","res":{"statusCode":304},"responseTime":14.24716700000863,"msg":"request completed"}
+{"level":30,"time":1784661394975,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-h","req":{"method":"GET","url":"/uploads/demo-target-shooter.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65222},"msg":"incoming request"}
+{"level":30,"time":1784661394975,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-i","req":{"method":"GET","url":"/uploads/demo-snake.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65227},"msg":"incoming request"}
+{"level":30,"time":1784661394977,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-h","res":{"statusCode":304},"responseTime":1.754017000013846,"msg":"request completed"}
+{"level":30,"time":1784661394977,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-i","res":{"statusCode":304},"responseTime":1.9597429999994347,"msg":"request completed"}
+{"level":30,"time":1784661394978,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-j","req":{"method":"GET","url":"/uploads/demo-click-tycoon.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65228},"msg":"incoming request"}
+{"level":30,"time":1784661394979,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-j","res":{"statusCode":304},"responseTime":1.009645999991335,"msg":"request completed"}
+{"level":30,"time":1784661394979,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-k","req":{"method":"GET","url":"/uploads/demo-simon-says.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65229},"msg":"incoming request"}
+{"level":30,"time":1784661394980,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-k","res":{"statusCode":304},"responseTime":0.7438359999941895,"msg":"request completed"}
+{"level":30,"time":1784661394980,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-l","req":{"method":"GET","url":"/uploads/04988819-70c7-48b4-8a27-73b4560e0801.gif","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65230},"msg":"incoming request"}
+{"level":30,"time":1784661394981,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-l","res":{"statusCode":304},"responseTime":0.897993000005954,"msg":"request completed"}
+{"level":30,"time":1784661394987,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-m","req":{"method":"GET","url":"/uploads/demo-lane-racer.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65223},"msg":"incoming request"}
+{"level":30,"time":1784661394988,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-n","req":{"method":"GET","url":"/uploads/demo-memory-match.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65222},"msg":"incoming request"}
+{"level":30,"time":1784661394989,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-m","res":{"statusCode":304},"responseTime":1.3324670000001788,"msg":"request completed"}
+{"level":30,"time":1784661394989,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-o","req":{"method":"GET","url":"/uploads/demo-tic-tac-toe.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65227},"msg":"incoming request"}
+{"level":30,"time":1784661394990,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-p","req":{"method":"GET","url":"/uploads/63acf96e-f449-419d-a388-b8cba3a2cac0.gif","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65228},"msg":"incoming request"}
+{"level":30,"time":1784661394990,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-n","res":{"statusCode":304},"responseTime":2.1674779999884777,"msg":"request completed"}
+{"level":30,"time":1784661394992,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-o","res":{"statusCode":304},"responseTime":2.5549229999887757,"msg":"request completed"}
+{"level":30,"time":1784661394999,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-p","res":{"statusCode":304},"responseTime":9.182610999996541,"msg":"request completed"}
+{"level":30,"time":1784661395000,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-q","req":{"method":"GET","url":"/uploads/demo-catch-the-square.svg","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":65222},"msg":"incoming request"}
+{"level":30,"time":1784661395001,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-q","res":{"statusCode":304},"responseTime":0.7281680000014603,"msg":"request completed"}
+{"level":30,"time":1784661431029,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-r","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661431060,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-r","res":{"statusCode":404},"responseTime":31.305408999993233,"msg":"request completed"}
+{"level":30,"time":1784661431178,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-s","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65205},"msg":"incoming request"}
+{"level":30,"time":1784661431182,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-s","res":{"statusCode":204},"responseTime":4.3414019999909215,"msg":"request completed"}
+{"level":30,"time":1784661490894,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-t","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65311},"msg":"incoming request"}
+{"level":30,"time":1784661490895,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-u","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65314},"msg":"incoming request"}
+{"level":30,"time":1784661490896,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-v","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65316},"msg":"incoming request"}
+{"level":30,"time":1784661490897,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-w","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65317},"msg":"incoming request"}
+{"level":30,"time":1784661490937,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-t","res":{"statusCode":204},"responseTime":43.040294000005815,"msg":"request completed"}
+{"level":30,"time":1784661490944,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-u","res":{"statusCode":204},"responseTime":48.29371600001468,"msg":"request completed"}
+{"level":30,"time":1784661490947,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-v","res":{"statusCode":204},"responseTime":50.519037999998545,"msg":"request completed"}
+{"level":30,"time":1784661491012,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-w","res":{"statusCode":204},"responseTime":114.25493999998434,"msg":"request completed"}
+{"level":30,"time":1784661491134,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-x","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661491152,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-x","res":{"statusCode":404},"responseTime":17.617849000002025,"msg":"request completed"}
+{"level":30,"time":1784661550895,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-y","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65317},"msg":"incoming request"}
+{"level":30,"time":1784661550949,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-y","res":{"statusCode":204},"responseTime":53.689408000034746,"msg":"request completed"}
+{"level":30,"time":1784661551020,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-z","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661551056,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-z","res":{"statusCode":404},"responseTime":35.734333999978844,"msg":"request completed"}
+{"level":30,"time":1784661551279,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-10","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65361},"msg":"incoming request"}
+{"level":30,"time":1784661551305,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-10","res":{"statusCode":204},"responseTime":25.857470999995712,"msg":"request completed"}
+{"level":30,"time":1784661551386,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-11","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65361},"msg":"incoming request"}
+{"level":30,"time":1784661551387,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-12","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65364},"msg":"incoming request"}
+{"level":30,"time":1784661551408,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-11","res":{"statusCode":204},"responseTime":21.13641999999527,"msg":"request completed"}
+{"level":30,"time":1784661551431,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-13","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65361},"msg":"incoming request"}
+{"level":30,"time":1784661551450,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-12","res":{"statusCode":204},"responseTime":62.722083000000566,"msg":"request completed"}
+{"level":30,"time":1784661551472,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-13","res":{"statusCode":204},"responseTime":41.5225999999675,"msg":"request completed"}
+{"level":30,"time":1784661551692,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-14","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65361},"msg":"incoming request"}
+{"level":30,"time":1784661551711,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-14","res":{"statusCode":204},"responseTime":18.966893000004347,"msg":"request completed"}
+{"level":30,"time":1784661611030,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-15","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661611059,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-15","res":{"statusCode":404},"responseTime":28.851625000010245,"msg":"request completed"}
+{"level":30,"time":1784661611135,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-16","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65361},"msg":"incoming request"}
+{"level":30,"time":1784661611138,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-16","res":{"statusCode":204},"responseTime":2.8509330000379123,"msg":"request completed"}
+{"level":30,"time":1784661670892,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-17","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65494},"msg":"incoming request"}
+{"level":30,"time":1784661670893,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-18","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65496},"msg":"incoming request"}
+{"level":30,"time":1784661670900,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-19","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65500},"msg":"incoming request"}
+{"level":30,"time":1784661670901,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1a","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65502},"msg":"incoming request"}
+{"level":30,"time":1784661670929,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-17","res":{"statusCode":204},"responseTime":36.53579699998954,"msg":"request completed"}
+{"level":30,"time":1784661670930,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-18","res":{"statusCode":204},"responseTime":36.87100699997973,"msg":"request completed"}
+{"level":30,"time":1784661670937,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1a","res":{"statusCode":204},"responseTime":36.70816300000297,"msg":"request completed"}
+{"level":30,"time":1784661670960,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-19","res":{"statusCode":204},"responseTime":60.638793999969494,"msg":"request completed"}
+{"level":30,"time":1784661671036,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1b","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661671052,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1b","res":{"statusCode":404},"responseTime":15.775125999993179,"msg":"request completed"}
+{"level":30,"time":1784661730890,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1c","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65500},"msg":"incoming request"}
+{"level":30,"time":1784661730914,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1c","res":{"statusCode":204},"responseTime":23.734542999998666,"msg":"request completed"}
+{"level":30,"time":1784661730979,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1d","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661730994,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1d","res":{"statusCode":404},"responseTime":15.33536800002912,"msg":"request completed"}
+{"level":30,"time":1784661731137,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1e","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65514},"msg":"incoming request"}
+{"level":30,"time":1784661731158,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1e","res":{"statusCode":204},"responseTime":21.147300999960862,"msg":"request completed"}
+{"level":30,"time":1784661731187,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1f","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65514},"msg":"incoming request"}
+{"level":30,"time":1784661731193,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1g","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65517},"msg":"incoming request"}
+{"level":30,"time":1784661731203,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1f","res":{"statusCode":204},"responseTime":16.22729499998968,"msg":"request completed"}
+{"level":30,"time":1784661731233,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1g","res":{"statusCode":204},"responseTime":40.4410209999769,"msg":"request completed"}
+{"level":30,"time":1784661731387,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1h","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65517},"msg":"incoming request"}
+{"level":30,"time":1784661731414,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1h","res":{"statusCode":204},"responseTime":26.669091000047047,"msg":"request completed"}
+{"level":30,"time":1784661731438,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1i","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65517},"msg":"incoming request"}
+{"level":30,"time":1784661731457,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1i","res":{"statusCode":204},"responseTime":19.14901600003941,"msg":"request completed"}
+{"level":30,"time":1784661790931,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1j","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661790963,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1j","res":{"statusCode":404},"responseTime":31.21384099998977,"msg":"request completed"}
+{"level":30,"time":1784661790985,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1k","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65517},"msg":"incoming request"}
+{"level":30,"time":1784661790988,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1k","res":{"statusCode":204},"responseTime":2.4513850000221282,"msg":"request completed"}
+{"level":30,"time":1784661850905,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1l","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49287},"msg":"incoming request"}
+{"level":30,"time":1784661850908,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1m","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49288},"msg":"incoming request"}
+{"level":30,"time":1784661850909,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1n","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49290},"msg":"incoming request"}
+{"level":30,"time":1784661850938,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1l","res":{"statusCode":204},"responseTime":32.15815300005488,"msg":"request completed"}
+{"level":30,"time":1784661850940,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1m","res":{"statusCode":204},"responseTime":32.004198999959044,"msg":"request completed"}
+{"level":30,"time":1784661850944,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1n","res":{"statusCode":204},"responseTime":34.97992999991402,"msg":"request completed"}
+{"level":30,"time":1784661850951,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1o","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49290},"msg":"incoming request"}
+{"level":30,"time":1784661850996,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1o","res":{"statusCode":204},"responseTime":44.56103899993468,"msg":"request completed"}
+{"level":30,"time":1784661851043,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1p","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661851054,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1p","res":{"statusCode":404},"responseTime":10.486929000006057,"msg":"request completed"}
+{"level":30,"time":1784661910900,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1q","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49290},"msg":"incoming request"}
+{"level":30,"time":1784661910924,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1q","res":{"statusCode":204},"responseTime":22.868724000058137,"msg":"request completed"}
+{"level":30,"time":1784661910997,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1r","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661911009,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1r","res":{"statusCode":404},"responseTime":11.576763999997638,"msg":"request completed"}
+{"level":30,"time":1784661911041,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1s","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49481},"msg":"incoming request"}
+{"level":30,"time":1784661911087,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1t","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49484},"msg":"incoming request"}
+{"level":30,"time":1784661911090,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1u","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49486},"msg":"incoming request"}
+{"level":30,"time":1784661911092,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1v","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49489},"msg":"incoming request"}
+{"level":30,"time":1784661911104,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1s","res":{"statusCode":204},"responseTime":63.5842549999943,"msg":"request completed"}
+{"level":30,"time":1784661911140,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1t","res":{"statusCode":204},"responseTime":53.13296199997421,"msg":"request completed"}
+{"level":30,"time":1784661911141,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1w","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49481},"msg":"incoming request"}
+{"level":30,"time":1784661911154,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1u","res":{"statusCode":204},"responseTime":63.60016999999061,"msg":"request completed"}
+{"level":30,"time":1784661911155,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1v","res":{"statusCode":204},"responseTime":62.53390599996783,"msg":"request completed"}
+{"level":30,"time":1784661911165,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1w","res":{"statusCode":204},"responseTime":23.718186000012793,"msg":"request completed"}
+{"level":30,"time":1784661970994,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1x","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784661971037,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1y","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49481},"msg":"incoming request"}
+{"level":30,"time":1784661971053,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1x","res":{"statusCode":404},"responseTime":57.868161000078544,"msg":"request completed"}
+{"level":30,"time":1784661971075,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1y","res":{"statusCode":204},"responseTime":36.667591999983415,"msg":"request completed"}
+{"level":30,"time":1784662030907,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1z","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50069},"msg":"incoming request"}
+{"level":30,"time":1784662030910,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-20","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50070},"msg":"incoming request"}
+{"level":30,"time":1784662030910,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-21","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50071},"msg":"incoming request"}
+{"level":30,"time":1784662030916,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-22","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50073},"msg":"incoming request"}
+{"level":30,"time":1784662030936,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-1z","res":{"statusCode":204},"responseTime":28.437858999939635,"msg":"request completed"}
+{"level":30,"time":1784662030939,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-21","res":{"statusCode":204},"responseTime":27.961837999988347,"msg":"request completed"}
+{"level":30,"time":1784662030942,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-20","res":{"statusCode":204},"responseTime":31.80199399997946,"msg":"request completed"}
+{"level":30,"time":1784662030968,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-22","res":{"statusCode":204},"responseTime":51.82768500002567,"msg":"request completed"}
+{"level":30,"time":1784662031041,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-23","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":65191},"msg":"incoming request"}
+{"level":30,"time":1784662031052,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-23","res":{"statusCode":404},"responseTime":11.103286000085063,"msg":"request completed"}
+{"level":30,"time":1784662090909,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-24","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50495},"msg":"incoming request"}
+{"level":30,"time":1784662090940,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-24","res":{"statusCode":204},"responseTime":29.77946700004395,"msg":"request completed"}
+{"level":30,"time":1784662091101,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-25","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50498},"msg":"incoming request"}
+{"level":30,"time":1784662091117,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-25","res":{"statusCode":404},"responseTime":16.232835999922827,"msg":"request completed"}
+{"level":30,"time":1784662091204,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-26","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50500},"msg":"incoming request"}
+{"level":30,"time":1784662091210,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-27","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50502},"msg":"incoming request"}
+{"level":30,"time":1784662091215,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-28","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50504},"msg":"incoming request"}
+{"level":30,"time":1784662091258,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-29","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50509},"msg":"incoming request"}
+{"level":30,"time":1784662091265,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-26","res":{"statusCode":204},"responseTime":59.79800399998203,"msg":"request completed"}
+{"level":30,"time":1784662091299,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-27","res":{"statusCode":204},"responseTime":89.2013090000255,"msg":"request completed"}
+{"level":30,"time":1784662091304,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-28","res":{"statusCode":204},"responseTime":89.03866800002288,"msg":"request completed"}
+{"level":30,"time":1784662091331,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-29","res":{"statusCode":204},"responseTime":73.02264800004195,"msg":"request completed"}
+{"level":30,"time":1784662091402,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2a","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50509},"msg":"incoming request"}
+{"level":30,"time":1784662091428,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2a","res":{"statusCode":204},"responseTime":25.736246000044048,"msg":"request completed"}
+{"level":30,"time":1784662150942,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2b","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50498},"msg":"incoming request"}
+{"level":30,"time":1784662150948,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2c","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50509},"msg":"incoming request"}
+{"level":30,"time":1784662150973,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2c","res":{"statusCode":204},"responseTime":24.97645200008992,"msg":"request completed"}
+{"level":30,"time":1784662150986,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2b","res":{"statusCode":404},"responseTime":44.306291999993846,"msg":"request completed"}
+{"level":30,"time":1784662210926,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2d","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51201},"msg":"incoming request"}
+{"level":30,"time":1784662210927,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2e","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51203},"msg":"incoming request"}
+{"level":30,"time":1784662210927,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2f","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51205},"msg":"incoming request"}
+{"level":30,"time":1784662210928,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2g","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51206},"msg":"incoming request"}
+{"level":30,"time":1784662210960,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2f","res":{"statusCode":204},"responseTime":33.02922900009435,"msg":"request completed"}
+{"level":30,"time":1784662210961,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2d","res":{"statusCode":204},"responseTime":34.467877999995835,"msg":"request completed"}
+{"level":30,"time":1784662210965,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2e","res":{"statusCode":204},"responseTime":38.5012300000526,"msg":"request completed"}
+{"level":30,"time":1784662210983,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2g","res":{"statusCode":204},"responseTime":55.0449479999952,"msg":"request completed"}
+{"level":30,"time":1784662210997,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2h","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50498},"msg":"incoming request"}
+{"level":30,"time":1784662211011,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2h","res":{"statusCode":404},"responseTime":13.345932999975048,"msg":"request completed"}
+{"level":30,"time":1784662270896,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2i","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51206},"msg":"incoming request"}
+{"level":30,"time":1784662270916,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2i","res":{"statusCode":204},"responseTime":19.663592999917455,"msg":"request completed"}
+{"level":30,"time":1784662270948,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2j","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51553},"msg":"incoming request"}
+{"level":30,"time":1784662270948,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2k","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51554},"msg":"incoming request"}
+{"level":30,"time":1784662270949,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2l","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51556},"msg":"incoming request"}
+{"level":30,"time":1784662270960,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2m","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50498},"msg":"incoming request"}
+{"level":30,"time":1784662270961,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2n","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51560},"msg":"incoming request"}
+{"level":30,"time":1784662270965,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2o","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51562},"msg":"incoming request"}
+{"level":30,"time":1784662270981,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2m","res":{"statusCode":404},"responseTime":20.351019000052474,"msg":"request completed"}
+{"level":30,"time":1784662271016,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2k","res":{"statusCode":204},"responseTime":67.29887100006454,"msg":"request completed"}
+{"level":30,"time":1784662271017,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2j","res":{"statusCode":204},"responseTime":69.1208120000083,"msg":"request completed"}
+{"level":30,"time":1784662271024,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2n","res":{"statusCode":204},"responseTime":62.187375999987125,"msg":"request completed"}
+{"level":30,"time":1784662271027,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2o","res":{"statusCode":204},"responseTime":61.94673700002022,"msg":"request completed"}
+{"level":30,"time":1784662271196,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2l","res":{"statusCode":204},"responseTime":246.8646529999096,"msg":"request completed"}
+{"level":30,"time":1784662331167,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2p","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50498},"msg":"incoming request"}
+{"level":30,"time":1784662331213,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2p","res":{"statusCode":404},"responseTime":44.870670999982394,"msg":"request completed"}
+{"level":30,"time":1784662331231,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2q","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":51556},"msg":"incoming request"}
+{"level":30,"time":1784662331239,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2q","res":{"statusCode":204},"responseTime":7.991287000011653,"msg":"request completed"}
+{"level":30,"time":1784662390917,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2r","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52066},"msg":"incoming request"}
+{"level":30,"time":1784662390920,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2s","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52070},"msg":"incoming request"}
+{"level":30,"time":1784662390922,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2t","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52071},"msg":"incoming request"}
+{"level":30,"time":1784662390923,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2u","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52072},"msg":"incoming request"}
+{"level":30,"time":1784662390954,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2r","res":{"statusCode":204},"responseTime":36.1107259998098,"msg":"request completed"}
+{"level":30,"time":1784662390955,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2u","res":{"statusCode":204},"responseTime":31.80246299994178,"msg":"request completed"}
+{"level":30,"time":1784662390957,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2t","res":{"statusCode":204},"responseTime":34.31881600013003,"msg":"request completed"}
+{"level":30,"time":1784662391018,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2s","res":{"statusCode":204},"responseTime":97.50280599994585,"msg":"request completed"}
+{"level":30,"time":1784662391056,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2v","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":50498},"msg":"incoming request"}
+{"level":30,"time":1784662391094,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2v","res":{"statusCode":404},"responseTime":37.453912999946624,"msg":"request completed"}
+{"level":30,"time":1784662450911,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2w","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52070},"msg":"incoming request"}
+{"level":30,"time":1784662450934,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2w","res":{"statusCode":204},"responseTime":22.867240000050515,"msg":"request completed"}
+{"level":30,"time":1784662450955,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2x","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662450973,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2x","res":{"statusCode":404},"responseTime":18.556847999803722,"msg":"request completed"}
+{"level":30,"time":1784662451034,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2y","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52357},"msg":"incoming request"}
+{"level":30,"time":1784662451036,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2z","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52360},"msg":"incoming request"}
+{"level":30,"time":1784662451046,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-30","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52361},"msg":"incoming request"}
+{"level":30,"time":1784662451056,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-31","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52363},"msg":"incoming request"}
+{"level":30,"time":1784662451061,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-32","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52365},"msg":"incoming request"}
+{"level":30,"time":1784662451123,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2y","res":{"statusCode":204},"responseTime":88.51945200003684,"msg":"request completed"}
+{"level":30,"time":1784662451124,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-32","res":{"statusCode":204},"responseTime":62.50465700007044,"msg":"request completed"}
+{"level":30,"time":1784662451124,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-2z","res":{"statusCode":204},"responseTime":87.80768899992108,"msg":"request completed"}
+{"level":30,"time":1784662451124,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-30","res":{"statusCode":204},"responseTime":77.91711499984376,"msg":"request completed"}
+{"level":30,"time":1784662451124,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-31","res":{"statusCode":204},"responseTime":68.60844399989583,"msg":"request completed"}
+{"level":30,"time":1784662510909,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-33","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52363},"msg":"incoming request"}
+{"level":30,"time":1784662510936,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-33","res":{"statusCode":204},"responseTime":27.014890999998897,"msg":"request completed"}
+{"level":30,"time":1784662510959,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-34","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662510971,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-34","res":{"statusCode":404},"responseTime":11.700282999780029,"msg":"request completed"}
+{"level":30,"time":1784662570907,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-35","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52944},"msg":"incoming request"}
+{"level":30,"time":1784662570909,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-36","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52947},"msg":"incoming request"}
+{"level":30,"time":1784662570910,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-37","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52948},"msg":"incoming request"}
+{"level":30,"time":1784662570911,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-38","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52950},"msg":"incoming request"}
+{"level":30,"time":1784662570934,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-35","res":{"statusCode":204},"responseTime":25.94824400008656,"msg":"request completed"}
+{"level":30,"time":1784662570935,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-36","res":{"statusCode":204},"responseTime":26.010796000016853,"msg":"request completed"}
+{"level":30,"time":1784662570936,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-37","res":{"statusCode":204},"responseTime":26.334747000131756,"msg":"request completed"}
+{"level":30,"time":1784662570960,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-39","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662570965,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-38","res":{"statusCode":204},"responseTime":53.84537700004876,"msg":"request completed"}
+{"level":30,"time":1784662570972,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-39","res":{"statusCode":404},"responseTime":12.218013999983668,"msg":"request completed"}
+{"level":30,"time":1784662630904,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3a","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52950},"msg":"incoming request"}
+{"level":30,"time":1784662630914,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3b","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662630929,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3a","res":{"statusCode":204},"responseTime":24.305174000095576,"msg":"request completed"}
+{"level":30,"time":1784662630941,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3b","res":{"statusCode":404},"responseTime":27.553458999842405,"msg":"request completed"}
+{"level":30,"time":1784662630954,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3c","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53226},"msg":"incoming request"}
+{"level":30,"time":1784662630957,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3d","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53228},"msg":"incoming request"}
+{"level":30,"time":1784662630958,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3e","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53230},"msg":"incoming request"}
+{"level":30,"time":1784662630961,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3f","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53232},"msg":"incoming request"}
+{"level":30,"time":1784662630968,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3g","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53235},"msg":"incoming request"}
+{"level":30,"time":1784662630990,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3d","res":{"statusCode":204},"responseTime":33.25545500009321,"msg":"request completed"}
+{"level":30,"time":1784662630993,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3c","res":{"statusCode":204},"responseTime":37.99922899994999,"msg":"request completed"}
+{"level":30,"time":1784662631022,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3f","res":{"statusCode":204},"responseTime":61.005611000116915,"msg":"request completed"}
+{"level":30,"time":1784662631028,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3e","res":{"statusCode":204},"responseTime":70.01652000006288,"msg":"request completed"}
+{"level":30,"time":1784662631030,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3g","res":{"statusCode":204},"responseTime":62.49697400000878,"msg":"request completed"}
+{"level":30,"time":1784662690972,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3h","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662691029,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3h","res":{"statusCode":404},"responseTime":57.0862859999761,"msg":"request completed"}
+{"level":30,"time":1784662691287,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3i","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53235},"msg":"incoming request"}
+{"level":30,"time":1784662691294,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3i","res":{"statusCode":204},"responseTime":7.502009999938309,"msg":"request completed"}
+{"level":30,"time":1784662750924,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3j","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53796},"msg":"incoming request"}
+{"level":30,"time":1784662750925,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3k","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53798},"msg":"incoming request"}
+{"level":30,"time":1784662750926,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3l","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53799},"msg":"incoming request"}
+{"level":30,"time":1784662750928,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3m","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53804},"msg":"incoming request"}
+{"level":30,"time":1784662750947,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3m","res":{"statusCode":204},"responseTime":18.561056999955326,"msg":"request completed"}
+{"level":30,"time":1784662750949,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3k","res":{"statusCode":204},"responseTime":23.428914999822155,"msg":"request completed"}
+{"level":30,"time":1784662750950,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3l","res":{"statusCode":204},"responseTime":24.176274999976158,"msg":"request completed"}
+{"level":30,"time":1784662750968,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3j","res":{"statusCode":204},"responseTime":43.60601599980146,"msg":"request completed"}
+{"level":30,"time":1784662750980,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3n","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662750990,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3n","res":{"statusCode":404},"responseTime":10.13688199990429,"msg":"request completed"}
+{"level":30,"time":1784662810925,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3o","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":53796},"msg":"incoming request"}
+{"level":30,"time":1784662810947,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3o","res":{"statusCode":204},"responseTime":21.302881999872625,"msg":"request completed"}
+{"level":30,"time":1784662810966,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3p","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662810980,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3p","res":{"statusCode":404},"responseTime":14.271340999985114,"msg":"request completed"}
+{"level":30,"time":1784662811174,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3q","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54067},"msg":"incoming request"}
+{"level":30,"time":1784662811176,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3r","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54069},"msg":"incoming request"}
+{"level":30,"time":1784662811204,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3q","res":{"statusCode":204},"responseTime":29.88180399988778,"msg":"request completed"}
+{"level":30,"time":1784662811237,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3r","res":{"statusCode":204},"responseTime":61.10247700009495,"msg":"request completed"}
+{"level":30,"time":1784662811320,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3s","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54069},"msg":"incoming request"}
+{"level":30,"time":1784662811345,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3s","res":{"statusCode":204},"responseTime":25.094662999967113,"msg":"request completed"}
+{"level":30,"time":1784662811361,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3t","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54069},"msg":"incoming request"}
+{"level":30,"time":1784662811368,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3u","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54067},"msg":"incoming request"}
+{"level":30,"time":1784662811390,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3t","res":{"statusCode":204},"responseTime":28.53964599990286,"msg":"request completed"}
+{"level":30,"time":1784662811397,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3u","res":{"statusCode":204},"responseTime":29.112580999964848,"msg":"request completed"}
+{"level":30,"time":1784662870921,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3v","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662870952,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3v","res":{"statusCode":404},"responseTime":30.646590000018477,"msg":"request completed"}
+{"level":30,"time":1784662870974,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3w","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54067},"msg":"incoming request"}
+{"level":30,"time":1784662870977,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3w","res":{"statusCode":204},"responseTime":2.928876999998465,"msg":"request completed"}
+{"level":30,"time":1784662930919,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3x","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54611},"msg":"incoming request"}
+{"level":30,"time":1784662930920,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3y","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54614},"msg":"incoming request"}
+{"level":30,"time":1784662930942,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3x","res":{"statusCode":204},"responseTime":22.98223500000313,"msg":"request completed"}
+{"level":30,"time":1784662930961,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3y","res":{"statusCode":204},"responseTime":41.05703599983826,"msg":"request completed"}
+{"level":30,"time":1784662931223,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3z","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662931250,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-3z","res":{"statusCode":404},"responseTime":27.231700000120327,"msg":"request completed"}
+{"level":30,"time":1784662931419,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-40","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54614},"msg":"incoming request"}
+{"level":30,"time":1784662931444,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-40","res":{"statusCode":204},"responseTime":25.15926199988462,"msg":"request completed"}
+{"level":30,"time":1784662932043,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-41","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54614},"msg":"incoming request"}
+{"level":30,"time":1784662932052,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-41","res":{"statusCode":204},"responseTime":8.807465000078082,"msg":"request completed"}
+{"level":30,"time":1784662990975,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-42","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54614},"msg":"incoming request"}
+{"level":30,"time":1784662990999,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-42","res":{"statusCode":204},"responseTime":23.899775999831036,"msg":"request completed"}
+{"level":30,"time":1784662991280,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-43","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784662991301,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-43","res":{"statusCode":404},"responseTime":19.980576999951154,"msg":"request completed"}
+{"level":30,"time":1784662991387,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-44","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54873},"msg":"incoming request"}
+{"level":30,"time":1784662991423,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-44","res":{"statusCode":204},"responseTime":35.64647899987176,"msg":"request completed"}
+{"level":30,"time":1784662991631,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-45","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54873},"msg":"incoming request"}
+{"level":30,"time":1784662991654,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-45","res":{"statusCode":204},"responseTime":23.279045999981463,"msg":"request completed"}
+{"level":30,"time":1784662991679,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-46","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54873},"msg":"incoming request"}
+{"level":30,"time":1784662991712,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-46","res":{"statusCode":204},"responseTime":32.74016800010577,"msg":"request completed"}
+{"level":30,"time":1784662991726,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-47","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54873},"msg":"incoming request"}
+{"level":30,"time":1784662991747,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-47","res":{"statusCode":204},"responseTime":20.12740600015968,"msg":"request completed"}
+{"level":30,"time":1784662992176,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-48","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54873},"msg":"incoming request"}
+{"level":30,"time":1784662992197,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-48","res":{"statusCode":204},"responseTime":20.464349000016227,"msg":"request completed"}
+{"level":30,"time":1784663051124,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-49","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663051126,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4a","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":54873},"msg":"incoming request"}
+{"level":30,"time":1784663051154,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4a","res":{"statusCode":204},"responseTime":27.653810000047088,"msg":"request completed"}
+{"level":30,"time":1784663051162,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-49","res":{"statusCode":404},"responseTime":37.56486100004986,"msg":"request completed"}
+{"level":30,"time":1784663110943,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4b","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55452},"msg":"incoming request"}
+{"level":30,"time":1784663110944,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4c","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55453},"msg":"incoming request"}
+{"level":30,"time":1784663110945,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4d","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55454},"msg":"incoming request"}
+{"level":30,"time":1784663110968,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4b","res":{"statusCode":204},"responseTime":25.14615899999626,"msg":"request completed"}
+{"level":30,"time":1784663110968,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4d","res":{"statusCode":204},"responseTime":23.00616000010632,"msg":"request completed"}
+{"level":30,"time":1784663110969,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4c","res":{"statusCode":204},"responseTime":25.22743000020273,"msg":"request completed"}
+{"level":30,"time":1784663110984,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4e","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55453},"msg":"incoming request"}
+{"level":30,"time":1784663111002,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4e","res":{"statusCode":204},"responseTime":17.43703699996695,"msg":"request completed"}
+{"level":30,"time":1784663111281,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4f","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663111293,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4f","res":{"statusCode":404},"responseTime":12.717600000090897,"msg":"request completed"}
+{"level":30,"time":1784663170949,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4g","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55453},"msg":"incoming request"}
+{"level":30,"time":1784663171080,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4g","res":{"statusCode":204},"responseTime":128.8058449998498,"msg":"request completed"}
+{"level":30,"time":1784663172291,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4h","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56258},"msg":"incoming request"}
+{"level":30,"time":1784663172293,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4i","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56261},"msg":"incoming request"}
+{"level":30,"time":1784663172295,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4j","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56262},"msg":"incoming request"}
+{"level":30,"time":1784663172311,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4k","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56267},"msg":"incoming request"}
+{"level":30,"time":1784663172312,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4l","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56269},"msg":"incoming request"}
+{"level":30,"time":1784663172350,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4h","res":{"statusCode":204},"responseTime":59.28212400013581,"msg":"request completed"}
+{"level":30,"time":1784663172361,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4k","res":{"statusCode":204},"responseTime":49.74561099987477,"msg":"request completed"}
+{"level":30,"time":1784663172376,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4j","res":{"statusCode":204},"responseTime":81.2135840000119,"msg":"request completed"}
+{"level":30,"time":1784663172389,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4i","res":{"statusCode":204},"responseTime":95.22889199992642,"msg":"request completed"}
+{"level":30,"time":1784663172395,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4m","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663172398,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4l","res":{"statusCode":204},"responseTime":85.94882100005634,"msg":"request completed"}
+{"level":30,"time":1784663172422,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4m","res":{"statusCode":404},"responseTime":26.703983000013977,"msg":"request completed"}
+{"level":30,"time":1784663231383,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4n","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663231448,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4n","res":{"statusCode":404},"responseTime":61.82501300005242,"msg":"request completed"}
+{"level":30,"time":1784663231488,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4o","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56269},"msg":"incoming request"}
+{"level":30,"time":1784663231495,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4o","res":{"statusCode":204},"responseTime":6.669203999917954,"msg":"request completed"}
+{"level":30,"time":1784663290961,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4p","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56842},"msg":"incoming request"}
+{"level":30,"time":1784663290964,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4q","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56844},"msg":"incoming request"}
+{"level":30,"time":1784663290965,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4r","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56846},"msg":"incoming request"}
+{"level":30,"time":1784663290965,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4s","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56847},"msg":"incoming request"}
+{"level":30,"time":1784663290999,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4p","res":{"statusCode":204},"responseTime":36.363885999890044,"msg":"request completed"}
+{"level":30,"time":1784663291008,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4q","res":{"statusCode":204},"responseTime":43.79137200000696,"msg":"request completed"}
+{"level":30,"time":1784663291008,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4r","res":{"statusCode":204},"responseTime":43.50844700005837,"msg":"request completed"}
+{"level":30,"time":1784663291031,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4s","res":{"statusCode":204},"responseTime":65.6614230000414,"msg":"request completed"}
+{"level":30,"time":1784663291078,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4t","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663291090,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4t","res":{"statusCode":404},"responseTime":12.014226000057533,"msg":"request completed"}
+{"level":30,"time":1784663350992,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4u","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":56847},"msg":"incoming request"}
+{"level":30,"time":1784663351028,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4u","res":{"statusCode":204},"responseTime":35.298068000003695,"msg":"request completed"}
+{"level":30,"time":1784663351140,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4v","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663351152,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4v","res":{"statusCode":404},"responseTime":11.53124099993147,"msg":"request completed"}
+{"level":30,"time":1784663351260,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4w","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57106},"msg":"incoming request"}
+{"level":30,"time":1784663351260,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4x","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57108},"msg":"incoming request"}
+{"level":30,"time":1784663351288,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4w","res":{"statusCode":204},"responseTime":28.464956999989226,"msg":"request completed"}
+{"level":30,"time":1784663351294,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4y","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57106},"msg":"incoming request"}
+{"level":30,"time":1784663351315,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4x","res":{"statusCode":204},"responseTime":54.30970799992792,"msg":"request completed"}
+{"level":30,"time":1784663351323,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4y","res":{"statusCode":204},"responseTime":29.49738200008869,"msg":"request completed"}
+{"level":30,"time":1784663351389,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4z","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57106},"msg":"incoming request"}
+{"level":30,"time":1784663351409,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-4z","res":{"statusCode":204},"responseTime":19.87220299988985,"msg":"request completed"}
+{"level":30,"time":1784663351442,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-50","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57106},"msg":"incoming request"}
+{"level":30,"time":1784663351468,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-50","res":{"statusCode":204},"responseTime":25.151960999937728,"msg":"request completed"}
+{"level":30,"time":1784663410989,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-51","req":{"method":"GET","url":"/api/games/60538e29-8a42-405f-be93-1730758efdfb","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663411018,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-51","res":{"statusCode":404},"responseTime":28.256344999652356,"msg":"request completed"}
+{"level":30,"time":1784663411083,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-52","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57106},"msg":"incoming request"}
+{"level":30,"time":1784663411087,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-52","res":{"statusCode":204},"responseTime":4.3656890001147985,"msg":"request completed"}
+{"level":30,"time":1784663456225,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-53","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663456361,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-53","res":{"statusCode":204},"responseTime":128.69965499965474,"msg":"request completed"}
+{"level":30,"time":1784663457365,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-54","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663457660,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-54","res":{"statusCode":204},"responseTime":286.495133000426,"msg":"request completed"}
+{"level":30,"time":1784663457774,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-55","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":52354},"msg":"incoming request"}
+{"level":30,"time":1784663457876,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-56","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57567},"msg":"incoming request"}
+{"level":30,"time":1784663457998,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-55","res":{"statusCode":204},"responseTime":222.30754599999636,"msg":"request completed"}
+{"level":30,"time":1784663458416,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-56","res":{"statusCode":204},"responseTime":539.8696059999056,"msg":"request completed"}
+{"level":30,"time":1784663458641,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-57","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57567},"msg":"incoming request"}
+{"level":30,"time":1784663458648,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-57","res":{"statusCode":204},"responseTime":6.999818000011146,"msg":"request completed"}
+{"level":30,"time":1784663458950,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-58","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57567},"msg":"incoming request"}
+{"level":30,"time":1784663459135,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-58","res":{"statusCode":204},"responseTime":181.37662600027397,"msg":"request completed"}
+{"level":30,"time":1784663470980,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-59","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57604},"msg":"incoming request"}
+{"level":30,"time":1784663470989,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5a","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57606},"msg":"incoming request"}
+{"level":30,"time":1784663470990,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5b","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57607},"msg":"incoming request"}
+{"level":30,"time":1784663470999,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5c","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57609},"msg":"incoming request"}
+{"level":30,"time":1784663471033,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5b","res":{"statusCode":204},"responseTime":43.17553499992937,"msg":"request completed"}
+{"level":30,"time":1784663471033,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-59","res":{"statusCode":204},"responseTime":52.44873100006953,"msg":"request completed"}
+{"level":30,"time":1784663471035,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5a","res":{"statusCode":204},"responseTime":46.40310799982399,"msg":"request completed"}
+{"level":30,"time":1784663471081,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5c","res":{"statusCode":204},"responseTime":82.11495200032368,"msg":"request completed"}
+{"level":30,"time":1784663530955,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5d","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":57609},"msg":"incoming request"}
+{"level":30,"time":1784663531005,"pid":98996,"hostname":"totos-MacBook-Pro.local","reqId":"req-5d","res":{"statusCode":204},"responseTime":50.01272699981928,"msg":"request completed"}
+9:52:43 PM [tsx] Previous process hasn't exited yet. Force killing...
+Migrations à jour.
+
+  dist/sdk.js  1.6kb
+
+⚡ Done in 17ms
+
+  dist/widget.js  1.8kb
+
+⚡ Done in 5ms
+demo games on http://localhost:4600
+  · http://localhost:4600/catch-the-square  [arcade]
+  · http://localhost:4600/click-tycoon  [idle-clicker]
+  · http://localhost:4600/lane-racer  [racing]
+  · http://localhost:4600/memory-match  [puzzle]
+  · http://localhost:4600/reaction-test  [sports]
+  · http://localhost:4600/simon-says  [puzzle]
+  · http://localhost:4600/snake  [arcade]
+  · http://localhost:4600/target-shooter  [shooter]
+  · http://localhost:4600/tic-tac-toe  [strategy]
+  · http://localhost:4600/whack-a-mole  [action]
+{"level":30,"time":1784663791339,"pid":1456,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1784663791340,"pid":1456,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://192.168.1.224:3000"}
+{"level":30,"time":1784663791340,"pid":1456,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://192.168.2.1:3000"}
+{"level":30,"time":1784663817398,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-1","req":{"method":"GET","url":"/","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49624},"msg":"incoming request"}
+{"level":30,"time":1784663817455,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-1","res":{"statusCode":200},"responseTime":54.09589699999924,"msg":"request completed"}
+{"level":30,"time":1784663817558,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-2","req":{"method":"GET","url":"/api/me","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49624},"msg":"incoming request"}
+{"level":30,"time":1784663817592,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-2","res":{"statusCode":200},"responseTime":33.28021799999988,"msg":"request completed"}
+{"level":30,"time":1784663817755,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-3","req":{"method":"GET","url":"/uploads/demo-snake.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49624},"msg":"incoming request"}
+{"level":30,"time":1784663817758,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-4","req":{"method":"GET","url":"/uploads/demo-reaction-test.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49626},"msg":"incoming request"}
+{"level":30,"time":1784663817761,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-3","res":{"statusCode":304},"responseTime":4.995610999998462,"msg":"request completed"}
+{"level":30,"time":1784663817762,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-4","res":{"statusCode":304},"responseTime":3.699516999997286,"msg":"request completed"}
+{"level":30,"time":1784663817763,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-5","req":{"method":"GET","url":"/uploads/demo-click-tycoon.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49632},"msg":"incoming request"}
+{"level":30,"time":1784663817767,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-5","res":{"statusCode":304},"responseTime":1.3452849999994214,"msg":"request completed"}
+{"level":30,"time":1784663817767,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-6","req":{"method":"GET","url":"/uploads/demo-tic-tac-toe.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49626},"msg":"incoming request"}
+{"level":30,"time":1784663817770,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-7","req":{"method":"GET","url":"/uploads/demo-simon-says.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49633},"msg":"incoming request"}
+{"level":30,"time":1784663817771,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-6","res":{"statusCode":304},"responseTime":2.387770000001183,"msg":"request completed"}
+{"level":30,"time":1784663817773,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-7","res":{"statusCode":304},"responseTime":3.2451599999985774,"msg":"request completed"}
+{"level":30,"time":1784663817775,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-8","req":{"method":"GET","url":"/uploads/demo-lane-racer.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49624},"msg":"incoming request"}
+{"level":30,"time":1784663817777,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-9","req":{"method":"GET","url":"/uploads/04988819-70c7-48b4-8a27-73b4560e0801.gif","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49636},"msg":"incoming request"}
+{"level":30,"time":1784663817779,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-a","req":{"method":"GET","url":"/uploads/63acf96e-f449-419d-a388-b8cba3a2cac0.gif","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49632},"msg":"incoming request"}
+{"level":30,"time":1784663817779,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-8","res":{"statusCode":304},"responseTime":4.434772000000521,"msg":"request completed"}
+{"level":30,"time":1784663817780,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-9","res":{"statusCode":304},"responseTime":3.3252449999999953,"msg":"request completed"}
+{"level":30,"time":1784663817782,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-b","req":{"method":"GET","url":"/uploads/demo-target-shooter.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49633},"msg":"incoming request"}
+{"level":30,"time":1784663817783,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-c","req":{"method":"GET","url":"/uploads/demo-catch-the-square.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49626},"msg":"incoming request"}
+{"level":30,"time":1784663817784,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-d","req":{"method":"GET","url":"/uploads/demo-memory-match.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":49637},"msg":"incoming request"}
+{"level":30,"time":1784663817786,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-a","res":{"statusCode":304},"responseTime":7.242403000000195,"msg":"request completed"}
+{"level":30,"time":1784663817787,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-b","res":{"statusCode":304},"responseTime":4.308095000000321,"msg":"request completed"}
+{"level":30,"time":1784663817789,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-c","res":{"statusCode":304},"responseTime":4.977820000000065,"msg":"request completed"}
+{"level":30,"time":1784663817789,"pid":1456,"hostname":"totos-MacBook-Pro.local","reqId":"req-d","res":{"statusCode":304},"responseTime":5.233147999999346,"msg":"request completed"}
+Migrations à jour.
+
+  dist/sdk.js  1.6kb
+
+⚡ Done in 16ms
+
+  dist/widget.js  1.8kb
+
+⚡ Done in 6ms
+demo games on http://localhost:4600
+  · http://localhost:4600/demo/catch-the-square  [arcade]
+  · http://localhost:4600/demo/click-tycoon  [idle-clicker]
+  · http://localhost:4600/demo/lane-racer  [racing]
+  · http://localhost:4600/demo/memory-match  [puzzle]
+  · http://localhost:4600/demo/reaction-test  [sports]
+  · http://localhost:4600/demo/simon-says  [puzzle]
+  · http://localhost:4600/demo/snake  [arcade]
+  · http://localhost:4600/demo/target-shooter  [shooter]
+  · http://localhost:4600/demo/tic-tac-toe  [strategy]
+  · http://localhost:4600/demo/whack-a-mole  [action]
+{"level":30,"time":1784673502288,"pid":6776,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1784673502289,"pid":6776,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://192.168.1.224:3000"}
+{"level":30,"time":1784673502289,"pid":6776,"hostname":"totos-MacBook-Pro.local","msg":"Server listening at http://192.168.2.1:3000"}
+{"level":30,"time":1784673516609,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1","req":{"method":"GET","url":"/","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673516676,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1","res":{"statusCode":200},"responseTime":64.6718490000003,"msg":"request completed"}
+{"level":30,"time":1784673516757,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-2","req":{"method":"GET","url":"/api/me","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673516802,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-2","res":{"statusCode":200},"responseTime":43.840768000000025,"msg":"request completed"}
+{"level":30,"time":1784673516890,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-3","req":{"method":"GET","url":"/uploads/demo-snake.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673516898,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-4","req":{"method":"GET","url":"/uploads/demo-click-tycoon.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55092},"msg":"incoming request"}
+{"level":30,"time":1784673516915,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-3","res":{"statusCode":304},"responseTime":22.229934999999386,"msg":"request completed"}
+{"level":30,"time":1784673516917,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-4","res":{"statusCode":304},"responseTime":18.67981399999917,"msg":"request completed"}
+{"level":30,"time":1784673516920,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-5","req":{"method":"GET","url":"/uploads/demo-reaction-test.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55097},"msg":"incoming request"}
+{"level":30,"time":1784673516922,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-5","res":{"statusCode":304},"responseTime":1.5587070000001404,"msg":"request completed"}
+{"level":30,"time":1784673516922,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-6","req":{"method":"GET","url":"/uploads/demo-tic-tac-toe.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55092},"msg":"incoming request"}
+{"level":30,"time":1784673516924,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-7","req":{"method":"GET","url":"/uploads/demo-simon-says.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55098},"msg":"incoming request"}
+{"level":30,"time":1784673516925,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-8","req":{"method":"GET","url":"/uploads/demo-lane-racer.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673516926,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-6","res":{"statusCode":304},"responseTime":3.8569119999992836,"msg":"request completed"}
+{"level":30,"time":1784673516927,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-7","res":{"statusCode":304},"responseTime":2.7958289999987755,"msg":"request completed"}
+{"level":30,"time":1784673516928,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-9","req":{"method":"GET","url":"/uploads/04988819-70c7-48b4-8a27-73b4560e0801.gif","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673516930,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-8","res":{"statusCode":304},"responseTime":4.007988999999725,"msg":"request completed"}
+{"level":30,"time":1784673516931,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-9","res":{"statusCode":304},"responseTime":2.403397000000041,"msg":"request completed"}
+{"level":30,"time":1784673516931,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-a","req":{"method":"GET","url":"/uploads/63acf96e-f449-419d-a388-b8cba3a2cac0.gif","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55092},"msg":"incoming request"}
+{"level":30,"time":1784673516931,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-b","req":{"method":"GET","url":"/uploads/demo-memory-match.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55102},"msg":"incoming request"}
+{"level":30,"time":1784673516933,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-a","res":{"statusCode":304},"responseTime":1.7062019999993936,"msg":"request completed"}
+{"level":30,"time":1784673516934,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-b","res":{"statusCode":304},"responseTime":1.9044570000005479,"msg":"request completed"}
+{"level":30,"time":1784673516934,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-c","req":{"method":"GET","url":"/uploads/demo-target-shooter.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673516934,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-d","req":{"method":"GET","url":"/uploads/demo-catch-the-square.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673516936,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-c","res":{"statusCode":304},"responseTime":2.0139209999997547,"msg":"request completed"}
+{"level":30,"time":1784673516937,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-d","res":{"statusCode":304},"responseTime":2.176024000000325,"msg":"request completed"}
+{"level":30,"time":1784673532170,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-e","req":{"method":"GET","url":"/g/73ecdf8f-f2b8-4ef5-ae56-bf57d4ef603d/snake","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673532344,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-e","res":{"statusCode":200},"responseTime":173.16135700000086,"msg":"request completed"}
+{"level":30,"time":1784673532413,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-f","req":{"method":"GET","url":"/uploads/demo-snake.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673532415,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-f","res":{"statusCode":304},"responseTime":2.0439229999974486,"msg":"request completed"}
+{"level":30,"time":1784673532422,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-g","req":{"method":"GET","url":"/api/me","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673532430,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-h","req":{"method":"GET","url":"/api/admin/games/73ecdf8f-f2b8-4ef5-ae56-bf57d4ef603d","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55102},"msg":"incoming request"}
+{"level":30,"time":1784673532449,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-g","res":{"statusCode":200},"responseTime":23.243728999997984,"msg":"request completed"}
+{"level":30,"time":1784673532579,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-h","res":{"statusCode":200},"responseTime":148.91109700000015,"msg":"request completed"}
+{"level":30,"time":1784673533683,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-i","req":{"method":"GET","url":"/go/73ecdf8f-f2b8-4ef5-ae56-bf57d4ef603d","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55102},"msg":"incoming request"}
+{"level":30,"time":1784673533688,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-i","res":{"statusCode":302},"responseTime":4.168386000001192,"msg":"request completed"}
+{"level":30,"time":1784673533767,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-j","req":{"method":"GET","url":"/sdk.js","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55102},"msg":"incoming request"}
+{"level":30,"time":1784673533768,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-k","req":{"method":"GET","url":"/widget.js","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673533769,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-l","req":{"method":"GET","url":"/games/73ecdf8f-f2b8-4ef5-ae56-bf57d4ef603d/badge.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673533771,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-j","res":{"statusCode":200},"responseTime":3.480628000001161,"msg":"request completed"}
+{"level":30,"time":1784673533772,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-k","res":{"statusCode":200},"responseTime":3.2660700000014913,"msg":"request completed"}
+{"level":30,"time":1784673533776,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-l","res":{"statusCode":200},"responseTime":6.701789999999164,"msg":"request completed"}
+{"level":30,"time":1784673533793,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-m","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55110},"msg":"incoming request"}
+{"level":30,"time":1784673533834,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-m","res":{"statusCode":204},"responseTime":40.90577399999893,"msg":"request completed"}
+{"level":30,"time":1784673534446,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-n","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55110},"msg":"incoming request"}
+{"level":30,"time":1784673534461,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-n","res":{"statusCode":204},"responseTime":14.644654000003356,"msg":"request completed"}
+{"level":30,"time":1784673536622,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-o","req":{"method":"GET","url":"/health","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55112},"msg":"incoming request"}
+{"level":30,"time":1784673536622,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-o","res":{"statusCode":200},"responseTime":0.34915300000284333,"msg":"request completed"}
+{"level":30,"time":1784673536647,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-p","req":{"method":"GET","url":"/health/email","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55114},"msg":"incoming request"}
+{"level":30,"time":1784673536745,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-q","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673536896,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-q","res":{"statusCode":204},"responseTime":151.27317599999515,"msg":"request completed"}
+{"level":30,"time":1784673536981,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-p","res":{"statusCode":200},"responseTime":333.39128399999754,"msg":"request completed"}
+{"level":30,"time":1784673539448,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-r","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55110},"msg":"incoming request"}
+{"level":30,"time":1784673539463,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-r","res":{"statusCode":204},"responseTime":15.669838000001619,"msg":"request completed"}
+{"level":30,"time":1784673539573,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-s","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673539601,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-s","res":{"statusCode":204},"responseTime":27.471817999998166,"msg":"request completed"}
+{"level":30,"time":1784673541262,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-t","req":{"method":"GET","url":"/go/73ecdf8f-f2b8-4ef5-ae56-bf57d4ef603d","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673541266,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-t","res":{"statusCode":302},"responseTime":3.8390440000002855,"msg":"request completed"}
+{"level":30,"time":1784673541362,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-u","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55110},"msg":"incoming request"}
+{"level":30,"time":1784673541382,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-u","res":{"statusCode":204},"responseTime":20.475883999999496,"msg":"request completed"}
+{"level":30,"time":1784673541626,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-v","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55110},"msg":"incoming request"}
+{"level":30,"time":1784673541641,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-v","res":{"statusCode":204},"responseTime":15.814198000000033,"msg":"request completed"}
+{"level":30,"time":1784673545501,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-w","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673545536,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-w","res":{"statusCode":204},"responseTime":35.28237499999523,"msg":"request completed"}
+{"level":30,"time":1784673547931,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-x","req":{"method":"GET","url":"/go/73ecdf8f-f2b8-4ef5-ae56-bf57d4ef603d","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673547934,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-x","res":{"statusCode":302},"responseTime":3.1065470000030473,"msg":"request completed"}
+{"level":30,"time":1784673548021,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-y","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55110},"msg":"incoming request"}
+{"level":30,"time":1784673548047,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-y","res":{"statusCode":204},"responseTime":25.482678000000305,"msg":"request completed"}
+{"level":30,"time":1784673548555,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-z","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55110},"msg":"incoming request"}
+{"level":30,"time":1784673548583,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-z","res":{"statusCode":204},"responseTime":27.628633000000264,"msg":"request completed"}
+{"level":30,"time":1784673551782,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-10","req":{"method":"POST","url":"/api/ingest","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673551826,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-10","res":{"statusCode":204},"responseTime":43.97406200000114,"msg":"request completed"}
+{"level":30,"time":1784673557921,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-11","req":{"method":"GET","url":"/dashboard","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673557924,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-11","res":{"statusCode":200},"responseTime":2.914264999999432,"msg":"request completed"}
+{"level":30,"time":1784673557992,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-12","req":{"method":"GET","url":"/api/me","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673557997,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-12","res":{"statusCode":200},"responseTime":4.4493619999993825,"msg":"request completed"}
+{"level":30,"time":1784673557997,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-13","req":{"method":"GET","url":"/api/me","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673558001,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-13","res":{"statusCode":200},"responseTime":3.60441699999501,"msg":"request completed"}
+{"level":30,"time":1784673558047,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-14","req":{"method":"GET","url":"/api/games","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673558060,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-14","res":{"statusCode":200},"responseTime":13.127176000001782,"msg":"request completed"}
+{"level":30,"time":1784673558066,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-15","req":{"method":"GET","url":"/api/jury/status","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673558075,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-15","res":{"statusCode":200},"responseTime":9.030197000000044,"msg":"request completed"}
+{"level":30,"time":1784673558085,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-16","req":{"method":"GET","url":"/uploads/63acf96e-f449-419d-a388-b8cba3a2cac0.gif","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673558086,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-17","req":{"method":"GET","url":"/uploads/demo-catch-the-square.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673558090,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-16","res":{"statusCode":304},"responseTime":4.285908999998355,"msg":"request completed"}
+{"level":30,"time":1784673558090,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-18","req":{"method":"GET","url":"/uploads/demo-simon-says.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55102},"msg":"incoming request"}
+{"level":30,"time":1784673558090,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-19","req":{"method":"GET","url":"/uploads/demo-lane-racer.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55092},"msg":"incoming request"}
+{"level":30,"time":1784673558091,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1a","req":{"method":"GET","url":"/uploads/demo-target-shooter.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55098},"msg":"incoming request"}
+{"level":30,"time":1784673558092,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-17","res":{"statusCode":304},"responseTime":5.351826000005531,"msg":"request completed"}
+{"level":30,"time":1784673558094,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-18","res":{"statusCode":304},"responseTime":3.502367000000959,"msg":"request completed"}
+{"level":30,"time":1784673558095,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-19","res":{"statusCode":304},"responseTime":4.471110999998928,"msg":"request completed"}
+{"level":30,"time":1784673558098,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1b","req":{"method":"GET","url":"/uploads/demo-tic-tac-toe.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55097},"msg":"incoming request"}
+{"level":30,"time":1784673558099,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1c","req":{"method":"GET","url":"/uploads/04988819-70c7-48b4-8a27-73b4560e0801.gif","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673558100,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1a","res":{"statusCode":304},"responseTime":8.923446000000695,"msg":"request completed"}
+{"level":30,"time":1784673558101,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1b","res":{"statusCode":304},"responseTime":2.3357059999980265,"msg":"request completed"}
+{"level":30,"time":1784673558101,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1d","req":{"method":"GET","url":"/uploads/demo-memory-match.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673558101,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1e","req":{"method":"GET","url":"/uploads/demo-click-tycoon.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55102},"msg":"incoming request"}
+{"level":30,"time":1784673558102,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1f","req":{"method":"GET","url":"/uploads/demo-reaction-test.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55092},"msg":"incoming request"}
+{"level":30,"time":1784673558102,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1c","res":{"statusCode":304},"responseTime":3.028979000002437,"msg":"request completed"}
+{"level":30,"time":1784673558104,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1d","res":{"statusCode":304},"responseTime":2.039108999997552,"msg":"request completed"}
+{"level":30,"time":1784673558104,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1e","res":{"statusCode":304},"responseTime":3.1666869999971823,"msg":"request completed"}
+{"level":30,"time":1784673558105,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1g","req":{"method":"GET","url":"/uploads/demo-snake.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55098},"msg":"incoming request"}
+{"level":30,"time":1784673558106,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1f","res":{"statusCode":304},"responseTime":4.788991999994323,"msg":"request completed"}
+{"level":30,"time":1784673558107,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1g","res":{"statusCode":304},"responseTime":2.1524310000022524,"msg":"request completed"}
+{"level":30,"time":1784673558790,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1h","req":{"method":"GET","url":"/signout","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55098},"msg":"incoming request"}
+{"level":30,"time":1784673558794,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1h","res":{"statusCode":302},"responseTime":4.283510000001115,"msg":"request completed"}
+{"level":30,"time":1784673558805,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1i","req":{"method":"GET","url":"/","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55098},"msg":"incoming request"}
+{"level":30,"time":1784673558837,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1i","res":{"statusCode":200},"responseTime":31.078371999996307,"msg":"request completed"}
+{"level":30,"time":1784673558903,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1j","req":{"method":"GET","url":"/api/me","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55098},"msg":"incoming request"}
+{"level":30,"time":1784673558904,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1j","res":{"statusCode":401},"responseTime":1.0520759999999427,"msg":"request completed"}
+{"level":30,"time":1784673558906,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1k","req":{"method":"GET","url":"/uploads/demo-snake.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55092},"msg":"incoming request"}
+{"level":30,"time":1784673558907,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1l","req":{"method":"GET","url":"/uploads/demo-reaction-test.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55102},"msg":"incoming request"}
+{"level":30,"time":1784673558908,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1k","res":{"statusCode":304},"responseTime":1.3848819999984698,"msg":"request completed"}
+{"level":30,"time":1784673558908,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1m","req":{"method":"GET","url":"/uploads/demo-click-tycoon.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673558908,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1n","req":{"method":"GET","url":"/uploads/demo-simon-says.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673558909,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1o","req":{"method":"GET","url":"/uploads/04988819-70c7-48b4-8a27-73b4560e0801.gif","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55097},"msg":"incoming request"}
+{"level":30,"time":1784673558909,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1l","res":{"statusCode":304},"responseTime":2.3950459999978193,"msg":"request completed"}
+{"level":30,"time":1784673558910,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1m","res":{"statusCode":304},"responseTime":1.4266780000034487,"msg":"request completed"}
+{"level":30,"time":1784673558910,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1n","res":{"statusCode":304},"responseTime":1.5154169999950682,"msg":"request completed"}
+{"level":30,"time":1784673558910,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1o","res":{"statusCode":304},"responseTime":1.6023429999986547,"msg":"request completed"}
+{"level":30,"time":1784673558911,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1p","req":{"method":"GET","url":"/uploads/demo-memory-match.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55098},"msg":"incoming request"}
+{"level":30,"time":1784673558911,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1p","res":{"statusCode":304},"responseTime":0.4233760000061011,"msg":"request completed"}
+{"level":30,"time":1784673558924,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1q","req":{"method":"GET","url":"/uploads/demo-tic-tac-toe.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55092},"msg":"incoming request"}
+{"level":30,"time":1784673558925,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1q","res":{"statusCode":304},"responseTime":0.843220000002475,"msg":"request completed"}
+{"level":30,"time":1784673558925,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1r","req":{"method":"GET","url":"/uploads/demo-lane-racer.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55102},"msg":"incoming request"}
+{"level":30,"time":1784673558926,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1s","req":{"method":"GET","url":"/uploads/63acf96e-f449-419d-a388-b8cba3a2cac0.gif","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55101},"msg":"incoming request"}
+{"level":30,"time":1784673558927,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1r","res":{"statusCode":304},"responseTime":1.2649559999990743,"msg":"request completed"}
+{"level":30,"time":1784673558927,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1t","req":{"method":"GET","url":"/uploads/demo-target-shooter.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55090},"msg":"incoming request"}
+{"level":30,"time":1784673558927,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1s","res":{"statusCode":304},"responseTime":1.4718310000025667,"msg":"request completed"}
+{"level":30,"time":1784673558928,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1u","req":{"method":"GET","url":"/uploads/demo-catch-the-square.svg","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55097},"msg":"incoming request"}
+{"level":30,"time":1784673558929,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1t","res":{"statusCode":304},"responseTime":1.6340980000022682,"msg":"request completed"}
+{"level":30,"time":1784673558929,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1u","res":{"statusCode":304},"responseTime":1.4413920000006328,"msg":"request completed"}
+{"level":30,"time":1784673559800,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1v","req":{"method":"GET","url":"/methodology","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55097},"msg":"incoming request"}
+{"level":30,"time":1784673559801,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1v","res":{"statusCode":200},"responseTime":0.588090999997803,"msg":"request completed"}
+{"level":30,"time":1784673559873,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1w","req":{"method":"GET","url":"/api/me","host":"localhost:3000","remoteAddress":"127.0.0.1","remotePort":55097},"msg":"incoming request"}
+{"level":30,"time":1784673559874,"pid":6776,"hostname":"totos-MacBook-Pro.local","reqId":"req-1w","res":{"statusCode":401},"responseTime":0.26419000000169035,"msg":"request completed"}

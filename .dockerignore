@@ -1,0 +1,22 @@
+# Réinstallés/rebuild dans l'image
+node_modules
+**/node_modules
+**/dist
+packages/sdk/dist
+apps/demo-game/games.json
+
+# Secrets & état local — jamais dans l'image
+.env
+.env.*
+!.env.example
+data
+backups
+logs
+*.log
+
+# Divers
+.git
+.idea
+.claude
+*.md
+compose.*.yaml

@@ -25,9 +25,12 @@ echo "Laisse ce terminal ouvert. Ctrl+C pour fermer les tunnels."
 echo
 
 # -N : pas de shell distant, juste les tunnels. exec : Ctrl+C ferme proprement.
+# SMTP (1587) bindé sur 0.0.0.0 : sinon un CONTENEUR (stack homol) ne peut pas
+# l'atteindre via host.docker.internal (le loopback du Mac lui est invisible).
+# Webmail/Kuma restent en loopback : ils ne sont ouverts que depuis le navigateur.
 exec ssh -N \
   -o ServerAliveInterval=30 \
   -L 8443:localhost:8443 \
-  -L 1587:localhost:587 \
+  -L 0.0.0.0:1587:localhost:587 \
   -L 3001:localhost:3001 \
   "$VPS"

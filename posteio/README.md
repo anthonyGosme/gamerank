@@ -1,5 +1,15 @@
 # posteio/ — outils dev pour le serveur mail
 
+
+en cas de probleme de login admin
+  avec navigateur
+ mauvais 302 -> aller à https://localhost:8443/admin/login  
+  mauvais 302 -> aller à https://localhost:8443/admin/
+debannir :
+ scp posteio/unblock.sh root@87.106.6.144:/root/
+  ssh root@87.106.6.144 'bash /root/unblock.sh'
+
+
 Le serveur mail (Poste.io) tourne sur le VPS. Rien n'est exposé publiquement
 à part le port 25 : le **webmail/admin** et le **port d'envoi 587** ne sont
 joignables qu'en `localhost` du serveur. On y accède depuis le Mac via des

@@ -51,6 +51,17 @@ export async function verifyMailTransport(): Promise<{ ok: boolean; error?: stri
   }
 }
 
+// Envoi d'un email de test (commande `./run.sh dev email-test`). Emprunte le
+// même transport/config que la prod → valide bout-en-bout la chaîne SMTP.
+export async function sendTestEmail(to: string): Promise<void> {
+  await transport.sendMail({
+    from: config.mailFrom,
+    to,
+    subject: 'WebGameRank — test email',
+    text: `Email de test WebGameRank via ${config.smtpHost}:${config.smtpPort} (secure=${config.smtpSecure}).\nSi tu lis ceci, l'envoi fonctionne.`,
+  });
+}
+
 export async function sendMagicLink(email: string, url: string): Promise<void> {
   // En dev on trace toujours le lien AVANT l'envoi : fallback si le tunnel SMTP
   // est coupé, on peut quand même se connecter.

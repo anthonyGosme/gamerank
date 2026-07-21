@@ -10,6 +10,10 @@ const path = require('node:path');
 
 const port = Number(process.env.PORT || 4600);
 const api = process.env.GAMERANK_API || 'http://localhost:3000';
+// Base path public : derrière Caddy le demo est monté sous /demo. Le serveur
+// accepte les requêtes AVEC ou SANS ce préfixe, et émet TOUS ses liens avec.
+// Mettre DEMO_BASE_PATH='' pour servir à la racine.
+const basePath = (process.env.DEMO_BASE_PATH ?? '/demo').replace(/\/+$/, '');
 const gamesDir = path.join(__dirname, 'games');
 const configPath = path.join(__dirname, 'games.json');
 
@@ -68,7 +72,7 @@ function snippetFor(slug, config) {
 }
 
 function publicUrl(slug) {
-  return `http://localhost:${port}/${slug}`;
+  return `http://localhost:${port}${basePath}/${slug}`;
 }
 
 function escapeHtml(value) {
@@ -98,7 +102,7 @@ const SHELL = (title, body, bg) => `<!doctype html>
   code { background:#271650; padding:.1rem .35rem; border-radius:.3rem; font-size:.85em; }
 </style>
 </head><body>
-<a class="back" href="/">← All demo games</a>
+<a class="back" href="${basePath}/">← All demo games</a>
 ${body}
 </body></html>`;
 
@@ -106,12 +110,18 @@ http
   .createServer((req, res) => {
     const games = loadGames();
     const config = syncConfig(games);
-    const slug = decodeURIComponent(req.url.split('?')[0]).replace(/^\/|\.html$/g, '');
+    // Retire le préfixe /demo s'il est présent (Caddy peut le transmettre ou non),
+    // puis extrait le slug.
+    let reqPath = decodeURIComponent(req.url.split('?')[0]);
+    if (basePath && (reqPath === basePath || reqPath.startsWith(`${basePath}/`))) {
+      reqPath = reqPath.slice(basePath.length) || '/';
+    }
+    const slug = reqPath.replace(/^\/+/, '').replace(/\/+$/, '').replace(/\.html$/, '');
 
     if (!slug) {
       const list = games
         .map(
-          (game) => `<li><a href="/${game.slug}">${escapeHtml(game.title)}</a>
+          (game) => `<li><a href="${basePath}/${game.slug}">${escapeHtml(game.title)}</a>
             <span style="color:var(--muted)">— ${escapeHtml(game.category)}${
               config[game.slug] && config[game.slug].key ? '' : ' · not connected'
             }</span></li>`,

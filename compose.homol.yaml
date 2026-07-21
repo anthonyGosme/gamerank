@@ -1,0 +1,88 @@
+# Stack de validation HOMOL — dockerisée, EN LOCAL sur le Mac.
+# Base Postgres + ClickHouse ISOLÉES de dev (volumes dédiés *-homol).
+# Exposée sur 127.0.0.1:18000 → le Caddy local reverse-proxy https://webgamerank.hml.
+# Piloté par ./run.sh homol {build,start,stop,status,logs,migrate,seed,db-*}.
+name: webgamerank-homol
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gamerank
+      POSTGRES_PASSWORD: ${HOMOL_PG_PASSWORD:-gamerank_homol}
+      POSTGRES_DB: gamerank
+    volumes:
+      - pgdata-homol:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gamerank"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8-alpine
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_USER: gamerank
+      CLICKHOUSE_PASSWORD: ${HOMOL_CH_PASSWORD:-gamerank_homol}
+      CLICKHOUSE_DB: gamerank
+    volumes:
+      - chdata-homol:/var/lib/clickhouse
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: webgamerank-api:homol
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # URL publique (derrière le Caddy local) → cookies Secure, liens magic, etc.
+      APP_URL: https://webgamerank.hml
+      DATABASE_URL: postgres://gamerank:${HOMOL_PG_PASSWORD:-gamerank_homol}@postgres:5432/gamerank
+      CLICKHOUSE_URL: http://clickhouse:8123
+      CLICKHOUSE_USER: gamerank
+      CLICKHOUSE_PASSWORD: ${HOMOL_CH_PASSWORD:-gamerank_homol}
+      CLICKHOUSE_DB: gamerank
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-anthonygosme@gmail.com}
+      UPLOADS_DIR: /app/apps/api/uploads
+      # Email : via le tunnel SSH ouvert sur le Mac hôte (host.docker.internal → 1587).
+      # SMTP_PASS est interpolé depuis le .env racine (jamais écrit en dur ici).
+      SMTP_HOST: host.docker.internal
+      SMTP_PORT: "1587"
+      SMTP_USER: no-reply@webgamerank.com
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_TLS_INSECURE: "true"
+      MAIL_FROM: "WebGameRank <no-reply@webgamerank.com>"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:18001:3000"   # LOCAL only — le Caddy local reverse-proxy dessus
+    volumes:
+      - uploads-homol:/app/apps/api/uploads
+
+  # Mock des « sites externes » : sert les pages jouables des jeux de démo.
+  # Les jeux seedés pointent sur http://localhost:4600/<slug> → exposé sur l'hôte.
+  demo-game:
+    build:
+      context: ./apps/demo-game
+    image: webgamerank-demo:homol
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4600:4600"    # le navigateur (Mac) atteint localhost:4600
+
+volumes:
+  pgdata-homol:
+  chdata-homol:
+  uploads-homol:
