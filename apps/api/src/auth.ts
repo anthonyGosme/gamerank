@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from 'node:crypto';
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyBaseLogger, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { pool } from './db.js';
 import { config } from './config.js';
 import { sendMagicLink } from './mailer.js';
@@ -45,7 +45,12 @@ export function safeRedirect(value: unknown): string | null {
 
 // Crée (avec throttle) et envoie un magic link. Silencieux si email invalide
 // ou déjà demandé récemment — pas d'énumération d'adresses.
-async function issueMagicLink(email: unknown, next: unknown, ip: string): Promise<boolean> {
+async function issueMagicLink(
+  email: unknown,
+  next: unknown,
+  ip: string,
+  log: FastifyBaseLogger,
+): Promise<boolean> {
   const normalized = typeof email === 'string' ? email.trim().toLowerCase() : '';
   if (!normalized || !EMAIL_RE.test(normalized) || normalized.length > 254) return false;
   const { rows: recent } = await pool.query(
@@ -60,7 +65,14 @@ async function issueMagicLink(email: unknown, next: unknown, ip: string): Promis
        VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5)`,
       [normalized, hash(token), ip, config.magicLinkTtlMinutes, safeRedirect(next)],
     );
-    await sendMagicLink(normalized, `${config.appUrl}/api/auth/verify?token=${token}`);
+    // L'envoi ne doit jamais faire échouer la requête (sinon 500 + énumération
+    // d'emails, et en dev le tunnel SMTP peut être coupé). On log et on continue :
+    // le token est déjà créé, le lien reste valable (tracé en dev).
+    try {
+      await sendMagicLink(normalized, `${config.appUrl}/api/auth/verify?token=${token}`);
+    } catch (err) {
+      log.error({ err, email: normalized }, 'magic link send failed');
+    }
   }
   return true;
 }
@@ -78,7 +90,7 @@ export function registerAuthRoutes(app: FastifyInstance): void {
   // Version JSON (fetch) — répond toujours 204 : pas d'énumération d'emails.
   app.post('/api/auth/magic-link', async (request, reply) => {
     const { email, next } = (request.body ?? {}) as { email?: string; next?: string };
-    const ok = await issueMagicLink(email, next, request.ip);
+    const ok = await issueMagicLink(email, next, request.ip, request.log);
     return reply.code(ok ? 204 : 400).send(ok ? undefined : { error: 'invalid email' });
   });
 
@@ -86,7 +98,7 @@ export function registerAuthRoutes(app: FastifyInstance): void {
   // vraie soumission permet au navigateur d'enregistrer l'email pour l'autofill.
   app.post('/login', async (request, reply) => {
     const { email, next } = (request.body ?? {}) as { email?: string; next?: string };
-    await issueMagicLink(email, next, request.ip);
+    await issueMagicLink(email, next, request.ip, request.log);
     return reply.type('text/html').send(sentPage);
   });
 

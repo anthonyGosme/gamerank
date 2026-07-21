@@ -1,0 +1,24 @@
+# Uptime Kuma — supervision WebGameRank (app + serveur mail Poste.io).
+# À copier sur le VPS dans /monitoring/ puis : docker compose up -d
+#
+# network_mode: host → Kuma partage la pile réseau de l'hôte. Il peut donc
+# sonder TOUS les services locaux, y compris ceux publiés sur 127.0.0.1
+# (webmail Poste.io 8443, futur /health de l'app…) via `localhost:<port>`.
+# Contrepartie : le mapping `ports:` est ignoré en host mode → on force Kuma à
+# n'écouter QUE sur le loopback (UPTIME_KUMA_HOST=127.0.0.1), sinon son dashboard
+# serait exposé publiquement. Accès au dashboard : tunnel SSH sur 3001.
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - UPTIME_KUMA_HOST=127.0.0.1   # écoute loopback uniquement (pas exposé)
+      - UPTIME_KUMA_PORT=3001
+    volumes:
+      - /monitoring/data:/app/data            # config + historique — À SAUVEGARDER
+      # Socket Docker en lecture seule : active les moniteurs « Docker Container »
+      # (santé du conteneur Poste.io, de l'app…) sans exposer de commande.
+      - /var/run/docker.sock:/var/run/docker.sock:ro

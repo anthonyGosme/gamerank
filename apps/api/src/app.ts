@@ -14,6 +14,7 @@ import { registerVoteRoutes } from './votes.js';
 import { registerJuryRoutes } from './jury.js';
 import { registerPublicRoutes } from './public.js';
 import { registerAdminRoutes } from './admin.js';
+import { registerHealthRoutes } from './health.js';
 import { loginPage, dashboardPage, newGamePage, gamePage, adminPage, juryPage } from './pages.js';
 
 export async function buildApp(options: { logger?: boolean } = {}): Promise<FastifyInstance> {
@@ -53,6 +54,7 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   registerJuryRoutes(app);
   registerPublicRoutes(app); // sert aussi la home publique « / »
   registerAdminRoutes(app);
+  registerHealthRoutes(app); // /health, /health/ready, /health/email
 
   app.get('/login', async (_request, reply) => reply.type('text/html').send(loginPage));
 
@@ -70,7 +72,6 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   authed('/games/:id', gamePage);
   authed('/admin', adminPage);
   authed('/jury', juryPage);
-  app.get('/health', async () => ({ ok: true }));
 
   // Fichiers buildés par packages/sdk (npm run build:sdk).
   for (const file of ['sdk.js', 'widget.js']) {
