@@ -42,8 +42,14 @@ export const config = {
     activeDayMs: Number(process.env.ACTIVE_DAY_MS ?? 60_000),
     cohortDays: Number(process.env.COHORT_DAYS ?? 7),
     medianWindowDays: 30,
-    // P (jury des pairs, épic 3 à venir) : 2 points sur 7 par défaut.
+    // P (jury des pairs, épic 3) : barème sur 7 (5 élections + 2 consensus).
+    // Valeur par défaut avant tout jugement : 2/7.
     peerDefaultRatio: Number(process.env.PEER_DEFAULT_RATIO ?? 2 / 7),
+    // Jury : nombre de jeux à juger, d'élus, temps min par jeu, présentations.
+    juryGamesToJudge: Number(process.env.JURY_GAMES_TO_JUDGE ?? 5),
+    juryElections: Number(process.env.JURY_ELECTIONS ?? 2),
+    juryMinPlayMs: Number(process.env.JURY_MIN_PLAY_MS ?? 20_000),
+    juryPresentationsToRank: Number(process.env.JURY_PRESENTATIONS_TO_RANK ?? 5),
     // Dégressivité par préfixe IP (CDC §4.1), 5 niveaux du plus large au plus
     // fin : sévère sur l'IP exacte, quasi neutre sur le bloc opérateur.
     // v6 : le /64 est l'équivalent du /32 v4 (un foyer = un /64 entier,

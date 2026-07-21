@@ -46,24 +46,20 @@ function createGameRequest(cookie: string, url: string) {
   });
 }
 
-test('un même compte ne peut pas déclarer deux fois la même URL', async () => {
-  const developer = await createDeveloper();
-  const cookie = await sessionFor(developer.id);
-  const url = `https://${uniqueId('dup')}.test.local/`;
-
-  assert.equal((await createGameRequest(cookie, url)).statusCode, 201);
-  const duplicate = await createGameRequest(cookie, url);
-  assert.equal(duplicate.statusCode, 409);
-  assert.match(duplicate.json().error, /already registered/);
-});
-
-test('deux comptes différents peuvent déclarer la même URL', async () => {
-  const url = `https://${uniqueId('shared')}.test.local/`;
+test('une URL déjà enregistrée est refusée, même à un autre compte', async () => {
+  const url = `https://${uniqueId('unique')}.test.local/`;
   const first = await createDeveloper();
   const second = await createDeveloper();
 
+  // Premier arrivé : accepté.
   assert.equal((await createGameRequest(await sessionFor(first.id), url)).statusCode, 201);
-  assert.equal((await createGameRequest(await sessionFor(second.id), url)).statusCode, 201);
+  // Même compte : refusé.
+  const sameDev = await createGameRequest(await sessionFor(first.id), url);
+  assert.equal(sameDev.statusCode, 409);
+  assert.match(sameDev.json().error, /already registered/);
+  // Autre compte : refusé aussi (une URL = un seul jeu).
+  const otherDev = await createGameRequest(await sessionFor(second.id), url);
+  assert.equal(otherDev.statusCode, 409);
 });
 
 test('le propriétaire peut supprimer son jeu, pas les autres', async () => {

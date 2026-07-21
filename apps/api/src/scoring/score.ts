@@ -187,6 +187,56 @@ async function collectMetrics(gameIds: string[]): Promise<Map<string, GameMetric
   return metrics;
 }
 
+// Score du jury des pairs P (0-100), barème sur 7 (CDC §7.4) :
+//   points = min(5, élections reçues) + points de consensus du propriétaire (0-2)
+//   consensus : parmi les 2 jeux que le propriétaire a élus (en tant que juré),
+//   combien sont des « choix de consensus » (élus par ≥ 50 % de leurs jurés).
+// Un jeu sans aucune activité de jury garde le défaut (renvoyé absent de la map).
+async function collectPeerScores(): Promise<Map<string, number>> {
+  const s = config.scoring;
+  // Élections et présentations par jeu.
+  const { rows: perGame } = await pool.query(
+    `SELECT game_id AS "gameId",
+            count(*) FILTER (WHERE elected)::int AS elections,
+            count(*)::int AS presentations
+       FROM jury_reviews WHERE completed_at IS NOT NULL
+      GROUP BY game_id`,
+  );
+  const elections = new Map<string, number>();
+  const consensusPick = new Set<string>();
+  for (const row of perGame as Array<{ gameId: string; elections: number; presentations: number }>) {
+    elections.set(row.gameId, row.elections);
+    if (row.presentations > 0 && row.elections / row.presentations >= 0.5) consensusPick.add(row.gameId);
+  }
+
+  // Points de consensus par juré : ses jeux élus qui sont des choix de consensus.
+  const { rows: electedRows } = await pool.query(
+    `SELECT juror_id AS "jurorId", game_id AS "gameId"
+       FROM jury_reviews WHERE elected AND completed_at IS NOT NULL`,
+  );
+  const consensusByJuror = new Map<string, number>();
+  for (const row of electedRows as Array<{ jurorId: string; gameId: string }>) {
+    if (consensusPick.has(row.gameId)) {
+      consensusByJuror.set(row.jurorId, (consensusByJuror.get(row.jurorId) ?? 0) + 1);
+    }
+  }
+
+  // Propriétaire de chaque jeu, pour lui attribuer ses points de consensus.
+  const { rows: ownerRows } = await pool.query(
+    `SELECT id, developer_id AS "developerId" FROM games`,
+  );
+  const result = new Map<string, number>();
+  for (const row of ownerRows as Array<{ id: string; developerId: string }>) {
+    const receivedElections = elections.get(row.id);
+    const consensus = Math.min(2, consensusByJuror.get(row.developerId) ?? 0);
+    // Aucune donnée de jury (ni reçue ni donnée) → on laisse le défaut.
+    if (receivedElections == null && consensus === 0) continue;
+    const points = Math.min(5, receivedElections ?? 0) + consensus;
+    result.set(row.id, (points / 7) * 100);
+  }
+  return result;
+}
+
 export interface ScoreRunSummary {
   runId: string;
   durationMs: number;
@@ -207,6 +257,7 @@ export async function runScoring(): Promise<ScoreRunSummary> {
     );
     const gameIds = (gameRows as Array<{ id: string }>).map((row) => row.id);
     const metrics = await collectMetrics(gameIds);
+    const peer = await collectPeerScores();
 
     // Priors empiriques globaux (moyenne des jeux mesurés, CDC §7.3).
     const observed = [...metrics.values()];
@@ -269,7 +320,7 @@ export async function runScoring(): Promise<ScoreRunSummary> {
 
       const g = s.weights.g.v * gv + s.weights.g.t * gt + s.weights.g.x * gx;
       const q = s.weights.q.r * qr + s.weights.q.s * qs + s.weights.q.v * qv + s.weights.q.e * qe;
-      const p = s.peerDefaultRatio * 100; // épic 3 : sera remplacé par le vrai score jury
+      const p = peer.get(id) ?? s.peerDefaultRatio * 100; // score jury (épic 3) ou défaut
       const score = s.weights.final.g * g + s.weights.final.q * q + s.weights.final.p * p;
 
       const scoreA =

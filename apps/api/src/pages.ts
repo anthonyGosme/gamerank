@@ -64,15 +64,36 @@ export const dashboardPage = layout('Dashboard', `
     <span><span id="who" class="muted"></span>
       <a href="/signout" style="margin-left:.6rem;font-size:.9rem">Sign out</a></span>
   </div>
+  <div id="onboarding"></div>
   <p><a href="/games/new">+ Add a game</a></p>
   <div id="games"><p class="muted">Loading…</p></div>
   <script>
     const STATUS = ${STATUS_LABELS};
+    async function loadOnboarding(games) {
+      const zone = document.getElementById('onboarding');
+      const hasGame = games.length > 0;
+      const verified = games.some((g) => g.status !== 'awaiting_snippet');
+      const jury = await (await fetch('/api/jury/status')).json();
+      const juryDone = !!jury.completedAt;
+      if (hasGame && verified && juryDone) { zone.innerHTML = ''; return; }
+      const step = (done, label, href) =>
+        '<span style="display:inline-flex;align-items:center;gap:.4rem;margin-right:1.2rem">'
+        + (done ? '✅' : '⬜')
+        + (href && !done ? '<a href="' + href + '">' + label + '</a>' : '<span' + (done ? ' class="muted"' : '') + '>' + label + '</span>')
+        + '</span>';
+      zone.innerHTML = '<div class="notice" style="background:#3a2470;border:1px solid var(--line)">'
+        + '<strong>Finish setting up</strong><div style="margin-top:.5rem">'
+        + step(hasGame, '1. Declare your game', '/games/new')
+        + step(verified, '2. Verify the SDK snippet', hasGame ? '/games/' + games[0].id : null)
+        + step(juryDone, '3. Review ' + jury.gamesToJudge + ' games', '/jury')
+        + '</div></div>';
+    }
     async function load() {
       const me = await fetch('/api/me');
       if (!me.ok) { location.href = '/login'; return; }
       document.getElementById('who').textContent = (await me.json()).email;
       const games = await (await fetch('/api/games')).json();
+      await loadOnboarding(games);
       const zone = document.getElementById('games');
       zone.innerHTML = '';
       if (games.length === 0) {
@@ -380,5 +401,120 @@ export const gamePage = layout('Game', `
       if (res.ok) renderEventsStatus(await res.json());
     }
     load();
+  </script>
+`);
+
+export const juryPage = layout('Review games', `
+  <p><a href="/dashboard">← My games</a></p>
+  <h1>Review games</h1>
+  <p class="lead">Play each game, then pick the <strong id="k">2</strong> you liked best.
+     This is how new games get discovered — and it's how yours gets reviewed too.</p>
+  <div id="zone"><p class="muted">Loading…</p></div>
+  <style>
+    .jrow { display:flex; gap:1rem; align-items:center; background:var(--panel);
+      border:1px solid var(--line); border-radius:.7rem; padding:.8rem; margin-bottom:.8rem; }
+    .jrow img { width:5.5rem; height:5.5rem; object-fit:cover; border-radius:.5rem; flex:none; background:#2f2c45; }
+    .jrow .grow { flex:1; min-width:0; }
+    .jrow .state { font-size:.85rem; }
+    .jrow.playable { border-color:var(--accent); }
+    .pick { display:flex; align-items:center; gap:.4rem; }
+  </style>
+  <script>
+    let minPlayMs = 20000, elections = 2, games = [];
+    const playStart = {};       // gameId -> timestamp du clic Play
+    const played = {};          // gameId -> ms cumulés (côté serveur aussi)
+    const picked = new Set();
+
+    async function loadAssignment() {
+      const res = await fetch('/api/jury/assignment');
+      if (res.status === 409) {
+        document.getElementById('zone').innerHTML =
+          '<p class="notice">Not enough games to review yet. Check back once more developers have joined.</p>';
+        return;
+      }
+      const data = await res.json();
+      minPlayMs = data.minPlayMs; elections = data.elections; games = data.games;
+      document.getElementById('k').textContent = elections;
+      for (const g of games) played[g.gameId] = g.playedMs || 0;
+      render();
+      setInterval(tick, 1000);
+    }
+
+    function tick() {
+      for (const g of games) {
+        if (playStart[g.gameId]) {
+          const elapsed = played[g.gameId] + (Date.now() - playStart[g.gameId]);
+          if (elapsed >= minPlayMs && !g._done) { g._done = true; reportPlayed(g.gameId, elapsed); render(); }
+        }
+      }
+    }
+    async function reportPlayed(gameId, ms) {
+      await fetch('/api/jury/played', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ gameId, playedMs: ms }) });
+    }
+
+    function playedMs(g) {
+      return played[g.gameId] + (playStart[g.gameId] ? Date.now() - playStart[g.gameId] : 0);
+    }
+    function isPlayed(g) { return playedMs(g) >= minPlayMs; }
+
+    function render() {
+      const zone = document.getElementById('zone');
+      zone.innerHTML = '';
+      for (const g of games) {
+        const done = isPlayed(g);
+        const row = document.createElement('div');
+        row.className = 'jrow' + (done ? ' playable' : '');
+        const img = document.createElement('img');
+        if (g.thumbnailUrl) img.src = g.thumbnailUrl;
+        const info = document.createElement('div'); info.className = 'grow';
+        const name = document.createElement('strong'); name.textContent = g.name;
+        const desc = document.createElement('div'); desc.className = 'muted'; desc.style.fontSize = '.85rem';
+        desc.textContent = g.shortDescription || '';
+        info.append(name, desc);
+        const right = document.createElement('div');
+        if (!done) {
+          const play = document.createElement('button');
+          play.textContent = playStart[g.gameId] ? 'Playing…' : 'Play';
+          play.onclick = () => { playStart[g.gameId] = Date.now(); window.open(g.url, '_blank', 'noopener'); render(); };
+          right.append(play);
+          const s = document.createElement('div'); s.className = 'muted state';
+          s.textContent = playStart[g.gameId] ? Math.max(0, Math.ceil((minPlayMs - playedMs(g))/1000)) + 's left' : '';
+          right.append(s);
+        } else {
+          const label = document.createElement('label'); label.className = 'pick';
+          const cb = document.createElement('input'); cb.type = 'checkbox'; cb.style.width='auto'; cb.style.margin='0';
+          cb.checked = picked.has(g.gameId);
+          cb.onchange = () => {
+            if (cb.checked) { if (picked.size >= elections) { cb.checked = false; return; } picked.add(g.gameId); }
+            else picked.delete(g.gameId);
+            document.getElementById('submit').disabled = picked.size !== elections;
+          };
+          label.append(cb, document.createTextNode('Best'));
+          right.append(label);
+        }
+        row.append(img, info, right);
+        zone.append(row);
+      }
+      const submit = document.createElement('button');
+      submit.id = 'submit'; submit.textContent = 'Submit my ' + elections + ' picks';
+      submit.disabled = picked.size !== elections;
+      submit.onclick = submitPicks;
+      zone.append(submit);
+    }
+
+    async function submitPicks() {
+      const res = await fetch('/api/jury/submit', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ elected: [...picked] }) });
+      if (res.ok) {
+        document.getElementById('zone').innerHTML =
+          '<p class="notice">Thanks! Your review is in, and your own game is now awaiting the jury. '
+          + '<a href="/dashboard">Back to my games</a>.</p>';
+      } else {
+        const e = await res.json();
+        alert(e.error || 'Could not submit');
+      }
+    }
+    loadAssignment();
   </script>
 `);

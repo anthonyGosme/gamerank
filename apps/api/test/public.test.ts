@@ -91,7 +91,7 @@ test('fiche publique : SEO (canonical, og) et score', async () => {
   assert.match(response.body, new RegExp(`canonical" href="/g/${ranked.id}/${slug}`));
   assert.match(response.body, /og:title/);
   assert.match(response.body, />71</); // score arrondi affiché
-  assert.match(response.body, /rank #1/);
+  assert.match(response.body, /#1 global/); // rang global affiché
 
   // L'id seul (sans slug) fonctionne aussi.
   const noSlug = await app.inject({ method: 'GET', url: `/g/${ranked.id}` });

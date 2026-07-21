@@ -11,9 +11,10 @@ import { currentDeveloper, registerAuthRoutes } from './auth.js';
 import { registerGameRoutes, uploadsDir } from './games.js';
 import { registerIngestRoutes } from './ingest.js';
 import { registerVoteRoutes } from './votes.js';
+import { registerJuryRoutes } from './jury.js';
 import { registerPublicRoutes } from './public.js';
 import { registerAdminRoutes } from './admin.js';
-import { loginPage, dashboardPage, newGamePage, gamePage, adminPage } from './pages.js';
+import { loginPage, dashboardPage, newGamePage, gamePage, adminPage, juryPage } from './pages.js';
 
 export async function buildApp(options: { logger?: boolean } = {}): Promise<FastifyInstance> {
   const app = Fastify({ logger: options.logger ?? true, trustProxy: true });
@@ -49,6 +50,7 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   registerGameRoutes(app);
   registerIngestRoutes(app);
   registerVoteRoutes(app);
+  registerJuryRoutes(app);
   registerPublicRoutes(app); // sert aussi la home publique « / »
   registerAdminRoutes(app);
 
@@ -67,6 +69,7 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   authed('/games/new', newGamePage);
   authed('/games/:id', gamePage);
   authed('/admin', adminPage);
+  authed('/jury', juryPage);
   app.get('/health', async () => ({ ok: true }));
 
   // Fichiers buildés par packages/sdk (npm run build:sdk).

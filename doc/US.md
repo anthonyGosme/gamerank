@@ -55,9 +55,9 @@ vignette) afin qu'il entre dans le classement.
   (une seule, liste fermée) et vignette sont tous obligatoires ;
 * la vignette est téléversée (PNG/JPEG/WebP/GIF, taille max configurable)
   et hébergée par GameRank — pas d'URL d'image externe ;
-* **[v2]** l'URL du jeu est unique **par compte** : un même développeur ne
-  peut pas la déclarer deux fois, mais deux comptes peuvent déclarer le
-  même site (assumé) ;
+* l'URL du jeu est **unique globalement** : une URL = un seul jeu, premier
+  arrivé premier servi (interdit les fiches en double et la « revendication »
+  du jeu d'un autre) ;
 * une **clé SDK** est générée, liée au jeu et au domaine déclaré ;
 * le jeu est créé en statut `en attente du jury` : il n'apparaît pas encore
   dans le classement (voir US-3.x) ;
@@ -78,7 +78,7 @@ d'installer le SDK en une balise.
   la réception d'événements SDK ; **NDD internet** → le backend télécharge
   la page et vérifie la présence de la balise (sdk.js + clé).
 
-### US-2.3 Statut de publication
+### US-2.3 Statut de publication — ✅ fait
 En tant que développeur, je veux voir le statut de mon jeu
 (`en attente du jury` → `en évaluation` → `classé`) afin de savoir où j'en
 suis.
@@ -100,7 +100,7 @@ du classement un site que je ne maintiens plus.
 * la suppression retire le jeu, ses votes et sa vignette ; les événements
   ClickHouse expirent d'eux-mêmes (TTL).
 
-### US-2.4 Parcours de première connexion
+### US-2.4 Parcours de première connexion — ✅ fait
 En tant que développeur nouvellement inscrit, je veux être guidé pas à pas
 afin de terminer mon inscription sans me perdre.
 
@@ -114,7 +114,7 @@ afin de terminer mon inscription sans me perdre.
 
 ## Épic 3 — Jury des pairs (devoir d'inscription)
 
-### US-3.1 Recevoir ma liste de jury
+### US-3.1 Recevoir ma liste de jury — ✅ fait
 En tant que juré, je veux recevoir la liste des 5 derniers jeux inscrits
 afin de les évaluer.
 
@@ -125,19 +125,18 @@ afin de les évaluer.
 * la liste est figée à l'inscription (elle ne change pas si d'autres jeux
   arrivent pendant mon évaluation).
 
-### US-3.2 Jouer aux jeux à juger (liaison de session)
+### US-3.2 Jouer aux jeux à juger — ✅ fait (option B : chronomètre)
 En tant que juré, je veux lancer chaque jeu depuis ma page de jury afin que
 mon temps de jeu y soit reconnu.
 
-* chaque lien ouvre le site du jeu avec un **token de jury** en paramètre
-  d'URL (`?gr_jury=<token>`, usage unique, lié à mon compte et au jeu) ;
-* le SDK détecte le token et marque la session comme session de jury ;
-* ma page de jury affiche la progression en temps quasi réel :
-  `2 min 40 / 4 min` par jeu ;
-* le temps compté suit les règles du SDK (§2 : visibilité, activité,
-  cohérence) ; temps minimal par jeu configurable (3-5 min).
+* **[décision]** vérification par **chronomètre côté page de jury** (option
+  B), pas par token SDK cross-origin : cliquer « Play » ouvre le jeu et
+  démarre un minuteur ; l'élection se débloque après le temps minimal
+  (`JURY_MIN_PLAY_MS`, 20 s par défaut) ;
+* le temps est reporté au serveur (`/api/jury/played`) ;
+* durcissement possible en v2 vers la liaison SDK (`?gr_jury=…`).
 
-### US-3.3 Élire les 2 meilleurs
+### US-3.3 Élire les 2 meilleurs — ✅ fait
 En tant que juré, je veux élire les 2 meilleurs des 5 jeux afin de terminer
 mon inscription.
 
@@ -147,15 +146,17 @@ mon inscription.
 * à la validation : mes 2 élections et 5 présentations sont enregistrées
   avec mon poids de juré courant (§7.4), et mon jeu passe en `en évaluation`.
 
-### US-3.4 Calcul du poids de juré (Système)
-En tant que système, je veux pondérer chaque juré afin que les faux comptes
-ne pèsent rien.
+### US-3.4 Score P et poids de juré (Système) — ✅ MVP (poids 1,0)
+En tant que système, je veux calculer P et pondérer les jurés.
 
-* poids initial 1,0 ; ajusté par : accord avec le consensus, signaux réseau
-  du compte (§4 : IP/ASN d'inscription), confiance comportementale du
-  propre jeu du juré (§7.4) ;
-* marquage pour revue admin : jury d'un même jeu inscrit en rafale ou sur
-  le même sous-réseau (§4.4).
+* **P sur 7** (CDC §7.4) implémenté : `min(5, élections reçues) + consensus
+  (0-2)` / 7 × 100 ; consensus = les jeux élus par le propriétaire qui sont
+  aussi des choix de consensus (élus par ≥ 50 % de leurs jurés) ;
+* pas de Wilson pour P (échantillon fixe de 5) ; un jeu sans activité jury
+  garde le défaut 2/7 ;
+* **[MVP]** poids de juré = 1,0 pour tous ; les pondérations anti-abus
+  (réseau §4, confiance du propre jeu) et le marquage rafale/sous-réseau
+  sont reportés en v2.
 
 ---
 

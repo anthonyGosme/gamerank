@@ -137,7 +137,13 @@ async function main(): Promise<void> {
   const developerId = await upsertDeveloper(manifest.developerEmail);
   const gamesConfig: Record<string, { key: string; gameId: string }> = {};
 
-  for (const game of manifest.games) {
+  // Répartition des statuts pour une démo réaliste (épic 3) : la première
+  // moitié « ranked » (peuplent le classement), le reste « awaiting_jury »
+  // (le pool que les nouveaux inscrits jugeront).
+  const rankedCount = Math.ceil(manifest.games.length / 2);
+
+  for (const [index, game] of manifest.games.entries()) {
+    const status = index < rankedCount ? 'ranked' : 'awaiting_jury';
     const url = `${manifest.baseUrl}/${game.slug}`;
     const sdkKey = `gr_demo_${game.slug}`;
     const thumbName = `demo-${game.slug}.svg`;
@@ -147,18 +153,18 @@ async function main(): Promise<void> {
       `INSERT INTO games (developer_id, name, url, domain, description, short_description,
               category, thumbnail_url, sdk_key, is_local, badge_color,
               integration_verified_at, status)
-       VALUES ($1, $2, $3, 'localhost', $4, $5, $6, $7, $8, true, $9, now(), 'awaiting_peer_review')
-       ON CONFLICT (developer_id, url) DO UPDATE SET
+       VALUES ($1, $2, $3, 'localhost', $4, $5, $6, $7, $8, true, $9, now(), $10)
+       ON CONFLICT (url) DO UPDATE SET
          name = EXCLUDED.name, description = EXCLUDED.description,
          short_description = EXCLUDED.short_description, category = EXCLUDED.category,
          thumbnail_url = EXCLUDED.thumbnail_url, badge_color = EXCLUDED.badge_color,
-         integration_verified_at = now()
+         integration_verified_at = now(), status = EXCLUDED.status
        RETURNING id`,
       [
         // badge_color reste sombre (visible sur toute page) ; la couleur de
         // page du jeu (game.color) sert au fond du jeu, pas au badge.
         developerId, game.title, url, game.description, game.short, game.category,
-        `/uploads/${thumbName}`, sdkKey, '#1d1039',
+        `/uploads/${thumbName}`, sdkKey, '#1d1039', status,
       ],
     );
     const gameId: string = rows[0].id;

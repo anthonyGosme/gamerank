@@ -149,7 +149,9 @@ export function registerGameRoutes(app: FastifyInstance): void {
       return reply.code(201).send(rows[0]);
     } catch (err: unknown) {
       if ((err as { code?: string }).code === '23505') {
-        return reply.code(409).send({ error: 'you already registered a game at this URL' });
+        return reply
+          .code(409)
+          .send({ error: 'this game URL is already registered on WebGameRank' });
       }
       throw err;
     }
