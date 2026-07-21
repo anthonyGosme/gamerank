@@ -43,30 +43,51 @@ export function safeRedirect(value: unknown): string | null {
   return value.slice(0, 200);
 }
 
+// Crée (avec throttle) et envoie un magic link. Silencieux si email invalide
+// ou déjà demandé récemment — pas d'énumération d'adresses.
+async function issueMagicLink(email: unknown, next: unknown, ip: string): Promise<boolean> {
+  const normalized = typeof email === 'string' ? email.trim().toLowerCase() : '';
+  if (!normalized || !EMAIL_RE.test(normalized) || normalized.length > 254) return false;
+  const { rows: recent } = await pool.query(
+    `SELECT 1 FROM magic_link_tokens
+      WHERE email = $1 AND created_at > now() - make_interval(secs => $2)`,
+    [normalized, config.magicLinkThrottleSeconds],
+  );
+  if (recent.length === 0) {
+    const token = newToken();
+    await pool.query(
+      `INSERT INTO magic_link_tokens (email, token_hash, request_ip, expires_at, redirect_to)
+       VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5)`,
+      [normalized, hash(token), ip, config.magicLinkTtlMinutes, safeRedirect(next)],
+    );
+    await sendMagicLink(normalized, `${config.appUrl}/api/auth/verify?token=${token}`);
+  }
+  return true;
+}
+
+const sentPage = `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Check your email — WebGameRank</title>
+<style>body{font-family:system-ui,sans-serif;background:#2e1a5c;color:#f3f0fb;display:flex;
+min-height:100vh;align-items:center;justify-content:center;margin:0}
+.card{background:#3a2470;border:1px solid #4d3488;border-radius:.8rem;padding:2rem;max-width:26rem;text-align:center}
+a{color:#f59e0b}</style></head><body><div class="card">
+<h1>Check your email</h1><p>If that address is valid, a login link is on its way. It expires in 15 minutes.</p>
+<p><a href="/">← Back to WebGameRank</a></p></div></body></html>`;
+
 export function registerAuthRoutes(app: FastifyInstance): void {
-  // Demande de magic link. Répond toujours 204 : pas d'énumération d'emails.
+  // Version JSON (fetch) — répond toujours 204 : pas d'énumération d'emails.
   app.post('/api/auth/magic-link', async (request, reply) => {
     const { email, next } = (request.body ?? {}) as { email?: string; next?: string };
-    const normalized = email?.trim().toLowerCase();
-    if (!normalized || !EMAIL_RE.test(normalized) || normalized.length > 254) {
-      return reply.code(400).send({ error: 'invalid email' });
-    }
+    const ok = await issueMagicLink(email, next, request.ip);
+    return reply.code(ok ? 204 : 400).send(ok ? undefined : { error: 'invalid email' });
+  });
 
-    const { rows: recent } = await pool.query(
-      `SELECT 1 FROM magic_link_tokens
-        WHERE email = $1 AND created_at > now() - make_interval(secs => $2)`,
-      [normalized, config.magicLinkThrottleSeconds],
-    );
-    if (recent.length === 0) {
-      const token = newToken();
-      await pool.query(
-        `INSERT INTO magic_link_tokens (email, token_hash, request_ip, expires_at, redirect_to)
-         VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5)`,
-        [normalized, hash(token), request.ip, config.magicLinkTtlMinutes, safeRedirect(next)],
-      );
-      await sendMagicLink(normalized, `${config.appUrl}/api/auth/verify?token=${token}`);
-    }
-    return reply.code(204).send();
+  // Version formulaire classique (application/x-www-form-urlencoded) : une
+  // vraie soumission permet au navigateur d'enregistrer l'email pour l'autofill.
+  app.post('/login', async (request, reply) => {
+    const { email, next } = (request.body ?? {}) as { email?: string; next?: string };
+    await issueMagicLink(email, next, request.ip);
+    return reply.type('text/html').send(sentPage);
   });
 
   // Vérifie le lien : usage unique, crée le compte à la première connexion.

@@ -79,7 +79,9 @@ export function registerAdminRoutes(app: FastifyInstance): void {
     const { id } = request.params as { id: string };
     if (!/^[0-9a-f-]{36}$/.test(id)) return reply.code(404).send(NOT_FOUND);
     const { rows } = await pool.query(
-      `SELECT g.status, g.play_clicks AS "playClicks", d.email AS "developerEmail",
+      `SELECT g.status, g.play_clicks AS "playClicks", g.current_score AS "currentScore",
+              g.current_rank AS "currentRank", g.created_at AS "createdAt",
+              g.last_event_at AS "lastEventAt", d.email AS "developerEmail",
               count(v.*) FILTER (WHERE v.value = 1)::int AS "votesUp",
               count(v.*) FILTER (WHERE v.value = -1)::int AS "votesDown"
          FROM games g
@@ -90,7 +92,17 @@ export function registerAdminRoutes(app: FastifyInstance): void {
       [id],
     );
     if (rows.length === 0) return reply.code(404).send(NOT_FOUND);
-    return rows[0];
+
+    // Dernier calcul de score réussi : sous-scores G/Q/P + métriques brutes.
+    const { rows: scoreRows } = await pool.query(
+      `SELECT gs.g, gs.q, gs.p, gs.score, gs.score_a AS "scoreA", gs.rank, gs.metrics
+         FROM game_scores gs JOIN score_runs r ON r.id = gs.run_id
+        WHERE gs.game_id = $1 AND r.status = 'ok'
+        ORDER BY r.started_at DESC LIMIT 1`,
+      [id],
+    );
+
+    return { ...rows[0], score: scoreRows[0] ?? null };
   });
 
   // Masquer un jeu du site public (réversible) — US-8.2.

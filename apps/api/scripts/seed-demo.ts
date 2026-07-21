@@ -33,26 +33,23 @@ interface SeedGame {
   votesDown: number;
 }
 
-// Déterministe (pas de Math.random dans les IP/ids) pour un seed reproductible.
+// IP déterministe (pas de Math.random) pour un seed reproductible.
 function ip(seed: number): string {
-  return `77.${seed % 240}.${(seed * 7) % 240}.${(seed * 13) % 240 + 1}`;
+  return `77.${seed % 240}.${(seed * 7) % 240}.${((seed * 13) % 240) + 1}`;
 }
 
-function escapeXml(value: string): string {
-  return value.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
-}
-
-// Vignette 16/9 générée : dégradé de la couleur du jeu, gros emoji, titre.
+// Vignette 16/9 générée : la couleur du jeu, une lueur claire en diagonale,
+// et un gros emoji centré (le titre est déjà affiché par la carte).
 function thumbnailSvg(game: SeedGame): string {
+  const gid = `g-${game.slug}`; // id unique par vignette (évite les collisions)
   return `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="${game.color}"/>
-    <stop offset="1" stop-color="#000" stop-opacity="0.45"/>
-  </linearGradient></defs>
-  <rect width="320" height="180" fill="url(#g)"/>
-  <text x="26" y="96" font-size="58">${game.emoji}</text>
-  <text x="104" y="88" font-family="system-ui,sans-serif" font-size="22" font-weight="800" fill="#fff">${escapeXml(game.title)}</text>
-  <text x="104" y="112" font-family="system-ui,sans-serif" font-size="12" fill="#fff" opacity="0.8">${escapeXml(game.category)}</text>
+  <defs><radialGradient id="${gid}" cx="0.3" cy="0.25" r="0.9">
+    <stop offset="0" stop-color="#fff" stop-opacity="0.22"/>
+    <stop offset="1" stop-color="#000" stop-opacity="0.25"/>
+  </radialGradient></defs>
+  <rect width="320" height="180" fill="${game.color}"/>
+  <rect width="320" height="180" fill="url(#${gid})"/>
+  <text x="160" y="118" text-anchor="middle" font-size="86">${game.emoji}</text>
 </svg>`;
 }
 

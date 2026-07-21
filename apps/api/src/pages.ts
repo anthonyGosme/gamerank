@@ -29,32 +29,32 @@ const STATUS_LABELS = `{
 
 export const loginPage = layout('Login', `
   <h1>Login</h1>
-  <div id="zone">
-    <form id="form">
-      <input type="email" id="email" name="email" autocomplete="email" inputmode="email"
-             spellcheck="false" placeholder="you@example.com" required autofocus>
-      <button type="submit">Send me a login link</button>
-    </form>
-  </div>
+  <p class="muted">Passwordless — we email you a one-time login link.</p>
+  <div id="err"></div>
+  <form method="post" action="/login" autocomplete="on">
+    <input type="hidden" name="next" id="next">
+    <input type="email" id="email" name="email" autocomplete="username" inputmode="email"
+           spellcheck="false" placeholder="you@example.com" required autofocus>
+    <button type="submit">Send me a login link</button>
+  </form>
   <script>
-    if (new URLSearchParams(location.search).get('error')) {
-      document.getElementById('zone').insertAdjacentHTML('beforebegin',
-        '<p class="notice error">Invalid or expired link. Request a new one.</p>');
+    const params = new URLSearchParams(location.search);
+    document.getElementById('next').value = params.get('next') || '';
+    if (params.get('error')) {
+      document.getElementById('err').innerHTML =
+        '<p class="notice error">Invalid or expired link. Request a new one.</p>';
     }
-    document.getElementById('form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      // On mémorise la page demandée pour y revenir après connexion.
-      const next = new URLSearchParams(location.search).get('next');
-      const res = await fetch('/api/auth/magic-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, next }),
-      });
-      document.getElementById('zone').innerHTML = res.ok
-        ? '<p class="notice">If this address is valid, a login link is on its way. It expires in 15 minutes.</p>'
-        : '<p class="notice error">Invalid email address.</p>';
+    // Mémorise le dernier email localement (indépendant de tout gestionnaire)
+    // et le pré-remplit : plus besoin de le retaper sur ce navigateur.
+    const field = document.getElementById('email');
+    try {
+      const saved = localStorage.getItem('gr_last_email');
+      if (saved && !field.value) field.value = saved;
+    } catch (e) {}
+    document.querySelector('form').addEventListener('submit', function () {
+      try { localStorage.setItem('gr_last_email', field.value.trim()); } catch (e) {}
     });
+    if (field.value) field.select();
   </script>
 `);
 

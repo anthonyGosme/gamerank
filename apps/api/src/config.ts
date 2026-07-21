@@ -23,7 +23,7 @@ export const config = {
     .filter(Boolean),
   isProduction: process.env.NODE_ENV === 'production',
 
-  maxGamesPerDeveloper: Number(process.env.MAX_GAMES_PER_DEVELOPER ?? 5),
+  maxGamesPerDeveloper: Number(process.env.MAX_GAMES_PER_DEVELOPER ?? 15),
   uploadsDir: process.env.UPLOADS_DIR ?? 'uploads',
   voteMinActiveMs: Number(process.env.VOTE_MIN_ACTIVE_MS ?? 10_000),
   voteChangeCooldownHours: Number(process.env.VOTE_CHANGE_COOLDOWN_HOURS ?? 24),

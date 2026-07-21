@@ -146,10 +146,9 @@ export function registerPublicRoutes(app: FastifyInstance): void {
              <a class="more" href="/${key}">See all →</a></h2>
            <div class="grid">${games
              .map((game, index) =>
-               card(game, {
-                 rank: LISTS[key].ranked ? index + 1 : undefined,
-                 compact: LISTS[key].compact,
-               }),
+               // Sur la home, toutes les cartes sont compactes (visuel homogène) ;
+               // les descriptions/catégories restent sur les pages dédiées.
+               card(game, { rank: LISTS[key].ranked ? index + 1 : undefined, compact: true }),
              )
              .join('')}</div>`;
 
@@ -286,6 +285,19 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       [id],
     );
     const subScores = scoreRows[0] as { g: number; q: number } | undefined;
+
+    // Rang dans la catégorie (le rang global est déjà sur le jeu).
+    let categoryRank: number | null = null;
+    if (game.currentScore != null) {
+      const { rows: catRows } = await pool.query(
+        `SELECT count(*)::int + 1 AS rank FROM games
+          WHERE category = $1 AND status NOT IN ('hidden', 'awaiting_snippet')
+            AND current_score > $2`,
+        [game.category, game.currentScore],
+      );
+      categoryRank = catRows[0].rank;
+    }
+
     // Fiche encore accessible avant vérification (le badge que le dev vient
     // d'installer pointe dessus) mais désindexée et signalée comme non listée.
     const unlisted = game.status === 'awaiting_snippet';
@@ -312,8 +324,15 @@ export function registerPublicRoutes(app: FastifyInstance): void {
           : ''
       }
       <div class="panel">
-        <p style="margin:0"><a class="chip" href="/c/${escapeHtml(game.category)}">${CATEGORY_EMOJI[game.category] ?? '🎮'} ${escapeHtml(categoryLabel(game.category))}</a>
-          ${game.currentRank != null ? `<span class="muted" style="margin-left:.5rem">rank #${game.currentRank}</span>` : ''}</p>
+        <p style="margin:0">
+          ${
+            categoryRank != null
+              ? `<a class="chip" href="/c/${escapeHtml(game.category)}" style="font-weight:700">${CATEGORY_EMOJI[game.category] ?? '🎮'} #${categoryRank} in ${escapeHtml(categoryLabel(game.category))}</a>
+                 <span class="muted" style="margin-left:.5rem">#${game.currentRank} global</span>`
+              : `<a class="chip" href="/c/${escapeHtml(game.category)}">${CATEGORY_EMOJI[game.category] ?? '🎮'} ${escapeHtml(categoryLabel(game.category))}</a>
+                 <span class="muted" style="margin-left:.5rem">unranked</span>`
+          }
+        </p>
         <h1 style="margin:.5rem 0">${escapeHtml(game.name)}</h1>
         <p class="muted" style="margin:0 0 1rem">${escapeHtml(game.shortDescription)}</p>
         <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
@@ -332,16 +351,39 @@ export function registerPublicRoutes(app: FastifyInstance): void {
           .then(function (info) {
             if (!info) return;
             var votes = info.votesUp + info.votesDown;
+            var round = function (n, d) { return n == null ? '—' : (+n).toFixed(d || 0); };
+            var s = info.score, m = s && s.metrics, c = m && m.corrected;
+            // « observé (n=échantillon) → corrigé », ou « prior » si pas de donnée.
+            var shrunk = function (observed, sample, corrected, unit) {
+              if (!sample) return 'no data → prior ' + round(corrected, 1) + unit;
+              return round(observed, 1) + unit + ' (n=' + sample + ') → ' + round(corrected, 1) + unit;
+            };
+            var scoreRows = s
+              ? '<table style="margin-top:.8rem">' +
+                  '<tr><th>Axis</th><th>0–100</th><th>Raw metric</th></tr>' +
+                  '<tr><td><strong>Score</strong> (rank #' + s.rank + ')</td><td><strong>' + round(s.score, 1) + '</strong></td><td class="muted">v1 score A: ' + round(s.scoreA, 1) + '</td></tr>' +
+                  '<tr><td>Popularity (G)</td><td>' + round(s.g, 1) + '</td><td class="muted">' + round(m.weightedVisitors, 1) + ' weighted visitors · ' + round(m.activeMs / 3600000, 1) + ' active h</td></tr>' +
+                  '<tr><td>Quality (Q)</td><td>' + round(s.q, 1) + '</td><td class="muted">—</td></tr>' +
+                  '<tr><td>· Fidelity (cohort)</td><td>' + round(c.fidelity * 100, 1) + '%</td><td class="muted">' + shrunk((m.fidelity || 0) * 100, m.fidelitySample, c.fidelity * 100, '%') + '</td></tr>' +
+                  '<tr><td>· Median session</td><td>' + round(c.median / 60000, 1) + ' min</td><td class="muted">' + (m.sessionSample ? round(m.medianSessionMs / 60000, 1) + ' min (n=' + m.sessionSample + ' sessions)' : 'no session yet → prior') + '</td></tr>' +
+                  '<tr><td>· Approval (Wilson)</td><td>' + round(c.approval * 100, 1) + '%</td><td class="muted">' + (votes ? info.votesUp + '/' + votes + ' votes (Wilson lower bound)' : 'no vote → prior') + '</td></tr>' +
+                  '<tr><td>· Engagement</td><td>' + round(c.engagement * 100, 1) + '%</td><td class="muted">' + shrunk(0, m.loads, c.engagement * 100, '%') + ' · ' + round(m.loads, 0) + ' loads</td></tr>' +
+                  '<tr><td>Peer (P)</td><td>' + round(s.p, 1) + '</td><td class="muted">default (no jury yet)</td></tr>' +
+                '</table>' +
+                '<p class="muted" style="font-size:.82rem">« prior » = neutral fallback shown when there is not enough data to measure (shrinkage).</p>'
+              : '<p class="muted">No score computed yet.</p>';
             var el = document.getElementById('admin-panel');
             el.innerHTML =
               '<div class="panel" style="margin-top:1.2rem;border-color:var(--accent)">' +
               '<h2 style="margin-top:0">Admin</h2>' +
               '<p>Developer: <strong></strong></p>' +
-              '<p>Status: <code></code> · Play clicks: <strong>' + info.playClicks + '</strong></p>' +
+              '<p>Status: <code></code> · Play clicks: <strong>' + info.playClicks + '</strong>' +
+              ' · Last event: <span class="muted">' + (info.lastEventAt ? new Date(info.lastEventAt).toLocaleString() : 'never') + '</span></p>' +
               '<p>Votes: <strong>' + info.votesUp + '</strong> up · <strong>' + info.votesDown +
               '</strong> down' + (votes ? ' (' + Math.round(info.votesUp / votes * 100) + '% positive)' : '') + '</p>' +
-              '<button id="adm-hide" class="ghost">Hide from site</button> ' +
-              '<button id="adm-del" style="background:#b91c1c;border-color:#b91c1c;color:#fff">Delete game</button>' +
+              scoreRows +
+              '<p style="margin-top:1rem"><button id="adm-hide" class="ghost">Hide from site</button> ' +
+              '<button id="adm-del" style="background:#b91c1c;border-color:#b91c1c;color:#fff">Delete game</button></p>' +
               '</div>';
             el.querySelector('strong').textContent = info.developerEmail;
             el.querySelector('code').textContent = info.status;

@@ -3,6 +3,7 @@ import path from 'node:path';
 import Fastify, { type FastifyInstance } from 'fastify';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
+import formbody from '@fastify/formbody';
 import multipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import { config } from './config.js';
@@ -19,6 +20,9 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
 
   await mkdir(uploadsDir, { recursive: true });
   await app.register(cookie);
+  // Formulaire de login classique (application/x-www-form-urlencoded) : une
+  // vraie soumission permet au navigateur d'enregistrer l'email → autofill.
+  await app.register(formbody);
   // L'ingestion est appelée cross-origin depuis les sites des jeux ; la
   // validation d'origine réelle se fait dans le handler (clé SDK + domaine).
   await app.register(cors, { origin: true });
