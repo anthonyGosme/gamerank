@@ -9,6 +9,7 @@ apps/demo-game/games.json
 .env
 .env.*
 !.env.example
+!.env.prod.example
 data
 backups
 logs

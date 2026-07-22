@@ -30,7 +30,7 @@ joignables qu'en `localhost` du serveur. On y accède depuis le Mac via des
 - Pour `sendMailwithtunnel.py` : `python3 -m pip install --user emails sshtunnel starlette`
 - Un `.env` **dans ce dossier** (gitignoré) avec :
   ```bash
-  EMAIL_USER=no-reply@webgamerank.com
+  EMAIL_USER=admin@webgamerank.com
   EMAIL_PASSWORD=<mot de passe de la boîte>
   ```
 
@@ -59,10 +59,10 @@ pointe le `.env` de l'app sur le tunnel :
 ```bash
 SMTP_HOST=localhost
 SMTP_PORT=1587
-SMTP_USER=no-reply@webgamerank.com
+SMTP_USER=admin@webgamerank.com
 SMTP_PASS=<mot de passe de la boîte>
 SMTP_TLS_INSECURE=true          # certif auto-signé
-MAIL_FROM="WebGameRank <no-reply@webgamerank.com>"
+MAIL_FROM="WebGameRank <admin@webgamerank.com>"
 ```
 
 > `hostname = localhost`, `port = 1587` : entrée locale du tunnel, qui ressort

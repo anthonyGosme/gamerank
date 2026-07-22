@@ -2,7 +2,7 @@
 # run.sh : point d'entrée unique de gestion pour WebGameRank.
 #
 # Grammaire : ./run.sh <env> <action> [args]
-# Envs      : dev (local + infra docker) · homol (docker, à venir) · prod (docker, à venir)
+# Envs      : dev (local + infra docker) · homol (docker local) · prod (docker VPS)
 # Global    : ./run.sh status
 #
 # Lancer ./run.sh sans argument pour la référence complète.
@@ -16,6 +16,8 @@ VPS="${GR_VPS:-root@87.106.6.144}"     # VPS Poste.io / Kuma (tunnels + prod)
 BACKUP_DIR="backups"
 HOMOL_COMPOSE="compose.homol.yaml"
 PROD_COMPOSE="compose.prod.yaml"
+PROD_ENV=".env.prod"
+PROD_REMOTE_DIR="${GR_PROD_DIR:-/opt/webgamerank}"
 
 DEV_API_PORT=3000                       # apps/api (tsx watch)
 DEV_DEMO_PORT=4600                      # apps/demo-game
@@ -48,7 +50,7 @@ Environnements :
   homol   stack dockerisée de validation EN LOCAL (compose.homol.yaml)
           base Postgres+ClickHouse isolées · API sur 127.0.0.1:18001
           accès https://webgamerank.hml via /etc/hosts + le Caddy local
-  prod    stack dockerisée déployée sur le VPS derrière Caddy (à venir)
+  prod    stack dockerisée déployée sur le VPS derrière Caddy
 
 Actions dev :
   start                 infra + migrations + build SDK + demo-game + api + tunnels
@@ -77,6 +79,15 @@ Actions homol (docker) :
   seed [--sample]       seed des jeux de démo dans le conteneur (idempotent)
   db-backup [label]     dump Postgres de la stack homol
 
+Actions prod (VPS distant) :
+  init                  crée .env.prod, génère les secrets techniques, chmod 600
+  deploy                build + transfert + backup + migrations + bootstrap + smoke tests
+  status                état distant des conteneurs et endpoints de santé
+  logs                  suit les logs distants de l'API
+  migrate               rejoue les migrations sur le VPS
+  seed [--sample]       seed manuel distant (le deploy ne seede que si base vide)
+  db-backup [label]     dump PostgreSQL distant dans /opt/webgamerank/backups
+
 Commandes globales :
   status                les trois environnements d'un coup d'œil
 
@@ -87,7 +98,9 @@ Notes :
     la ligne /etc/hosts (webgamerank.hml → 127.0.0.1).
   - homol email : via le tunnel SSH (host.docker.internal:1587) → garde les
     tunnels ouverts (./run.sh dev tunnels) pour que les magic links partent.
-  - prod : déploiement sur le VPS = étape suivante (compose.prod.yaml).
+  - prod exige .env.prod (voir .env.prod.example) et le réseau Docker du Caddy.
+  - le premier deploy sur base vide injecte volontairement les 10 jeux démo
+    afin d'amorcer le jury des premières inscriptions.
 EOF
   exit 2
 }
@@ -191,7 +204,7 @@ act_tunnels_stop() {
 }
 
 # ─── start / stop / restart (dev) ─────────────────────────────────────────────
-require_dev() { [[ "$ENV_KIND" == "local" ]] || die "action réservée à dev (homol/prod : à venir)"; }
+require_dev() { [[ "$ENV_KIND" == "local" ]] || die "action réservée à dev"; }
 
 act_start() {
   require_dev
@@ -463,9 +476,127 @@ act_docker_seed() {
   say "seed ($ENV_NAME) terminé"
 }
 
+# ─── Production distante ─────────────────────────────────────────────────────
+prod_ssh() { ssh -o BatchMode=yes -o ConnectTimeout=10 "$VPS" "$@"; }
+
+prod_env_set() {
+  local key="$1" value="$2" tmp
+  tmp="$(mktemp "${TMPDIR:-/tmp}/gamerank-env.XXXXXX")"
+  awk -v key="$key" -v value="$value" '
+    index($0, key "=") == 1 { print key "=" value; next }
+    { print }
+  ' "$PROD_ENV" > "$tmp"
+  mv "$tmp" "$PROD_ENV"
+}
+
+act_prod_init() {
+  if [[ -f "$PROD_ENV" ]]; then
+    chmod 600 "$PROD_ENV"
+    say "$PROD_ENV existe déjà — contenu conservé, permissions remises à 600"
+    return 0
+  fi
+  command -v openssl >/dev/null || die "openssl requis pour générer les secrets"
+  cp .env.prod.example "$PROD_ENV"
+  chmod 600 "$PROD_ENV"
+  prod_env_set PROD_PG_PASSWORD "$(openssl rand -hex 32)"
+  prod_env_set PROD_CH_PASSWORD "$(openssl rand -hex 32)"
+  prod_env_set TRIPWIRE_SALTS "wr2:$(openssl rand -hex 24)"
+  say "$PROD_ENV créé (permissions 600)"
+  warn "à compléter : ADMIN_EMAILS, SMTP_USER et SMTP_PASS"
+  say "puis lancer : ./run.sh prod deploy"
+}
+
+prod_preflight() {
+  [[ -f "$PROD_COMPOSE" ]] || die "$PROD_COMPOSE absent"
+  [[ -f "$PROD_ENV" ]] || die "$PROD_ENV manquant (cp .env.prod.example .env.prod puis renseigner)"
+  [[ -x scripts/prod-deploy-remote.sh ]] || die "scripts/prod-deploy-remote.sh doit être exécutable"
+  command -v docker >/dev/null || die "docker requis en local pour construire les images"
+  command -v ssh >/dev/null || die "ssh requis"
+  command -v scp >/dev/null || die "scp requis"
+  if grep -Eq 'CHANGE_ME|example\.com' "$PROD_ENV"; then
+    die "$PROD_ENV contient encore une valeur d'exemple"
+  fi
+  for key in PROD_PG_PASSWORD PROD_CH_PASSWORD ADMIN_EMAILS SMTP_USER SMTP_PASS TRIPWIRE_SALTS; do
+    grep -Eq "^[[:space:]]*${key}=.+" "$PROD_ENV" || die "$key manque dans $PROD_ENV"
+  done
+  prod_ssh "command -v docker >/dev/null && docker compose version >/dev/null" \
+    || die "Docker Compose ou accès SSH indisponible sur $VPS"
+}
+
+act_prod_deploy() {
+  prod_preflight
+  local tmp_dir image_tar
+  tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/gamerank-prod.XXXXXX")"
+  image_tar="$tmp_dir/images.tar"
+  trap 'rm -rf "$tmp_dir"' RETURN
+
+  say "build des images de production..."
+  docker build -t webgamerank-api:prod -f Dockerfile .
+  docker build -t webgamerank-demo:prod apps/demo-game
+  say "export des images..."
+  docker save -o "$image_tar" webgamerank-api:prod webgamerank-demo:prod
+
+  say "préparation de $VPS:$PROD_REMOTE_DIR..."
+  prod_ssh "mkdir -p '$PROD_REMOTE_DIR' '$PROD_REMOTE_DIR/backups' && chmod 700 '$PROD_REMOTE_DIR'"
+  scp -q "$PROD_COMPOSE" "$VPS:$PROD_REMOTE_DIR/compose.prod.yaml"
+  scp -q "$PROD_ENV" "$VPS:$PROD_REMOTE_DIR/.env.prod"
+  scp -q scripts/prod-deploy-remote.sh "$VPS:$PROD_REMOTE_DIR/prod-deploy-remote.sh"
+  scp -q "$image_tar" "$VPS:$PROD_REMOTE_DIR/images.tar"
+  prod_ssh "chmod 600 '$PROD_REMOTE_DIR/.env.prod' && chmod 700 '$PROD_REMOTE_DIR/prod-deploy-remote.sh'"
+
+  say "backup, migrations, démarrage et smoke tests sur le VPS..."
+  prod_ssh "GR_PROD_DIR='$PROD_REMOTE_DIR' '$PROD_REMOTE_DIR/prod-deploy-remote.sh'"
+
+  local public_health public_home
+  public_health="$(http_code "https://webgamerank.com/health" 10)"
+  public_home="$(http_code "https://webgamerank.com/" 10)"
+  if [[ "$public_health" != 200 || "$public_home" != 200 ]]; then
+    warn "stack saine sur le VPS, mais Caddy/DNS public incomplet : /health=$public_health, /=$public_home"
+    warn "voir doc/DEPLOY.md puis relancer : ./run.sh prod status"
+  else
+    say "production publique saine : https://webgamerank.com"
+  fi
+}
+
+act_prod_status() {
+  echo -e "${BOLD}prod (VPS $VPS)${RESET}"
+  if ! prod_ssh "test -f '$PROD_REMOTE_DIR/compose.prod.yaml' && test -f '$PROD_REMOTE_DIR/.env.prod'"; then
+    echo "  non déployé — ./run.sh prod deploy"
+    return 0
+  fi
+  prod_ssh "cd '$PROD_REMOTE_DIR' && docker compose --env-file .env.prod -p webgamerank-prod -f compose.prod.yaml ps"
+  echo "  public /health : HTTP $(http_code 'https://webgamerank.com/health' 10)"
+  echo "  public /       : HTTP $(http_code 'https://webgamerank.com/' 10)"
+}
+
+act_prod_logs() {
+  prod_ssh "cd '$PROD_REMOTE_DIR' && docker compose --env-file .env.prod -p webgamerank-prod -f compose.prod.yaml logs -f --tail=100 api"
+}
+
+act_prod_migrate() {
+  prod_ssh "cd '$PROD_REMOTE_DIR' && docker compose --env-file .env.prod -p webgamerank-prod -f compose.prod.yaml run --rm api node dist/migrate.js"
+  say "migrations prod à jour"
+}
+
+act_prod_seed() {
+  local sample=""
+  [[ "${1:-}" == "--sample" ]] && sample="-e SEED_SAMPLE=1"
+  prod_ssh "cd '$PROD_REMOTE_DIR' && docker compose --env-file .env.prod -p webgamerank-prod -f compose.prod.yaml exec -T -e DEMO_BASE_URL=https://webgamerank.com/demo $sample api npx tsx /app/apps/api/scripts/seed-demo.ts"
+  say "seed prod terminé"
+}
+
+act_prod_backup() {
+  local label="${1:-manual}" ts name
+  [[ "$label" =~ ^[a-zA-Z0-9._-]+$ ]] || die "label de backup invalide"
+  ts="$(timestamp)"; name="gamerank-prod-${ts}-${label}.sql.gz"
+  prod_ssh "cd '$PROD_REMOTE_DIR' && mkdir -p backups && docker compose --env-file .env.prod -p webgamerank-prod -f compose.prod.yaml exec -T postgres pg_dump -U gamerank -d gamerank | gzip > 'backups/$name'"
+  say "backup prod → $VPS:$PROD_REMOTE_DIR/backups/$name"
+}
+
 # ─── Global ───────────────────────────────────────────────────────────────────
 cmd_status_all() {
-  for e in dev homol prod; do resolve_env "$e"; act_status; echo ""; done
+  for e in dev homol; do resolve_env "$e"; act_status; echo ""; done
+  resolve_env prod; act_prod_status; echo ""
   echo -e "${BOLD}sauvegardes${RESET}"
   ls -t "$BACKUP_DIR"/*.sql.gz 2>/dev/null | head -5 | sed 's/^/  /' || echo "  aucune"
 }
@@ -477,6 +608,19 @@ case "$cmd" in
     resolve_env "$cmd"
     action="${2:-}"
     shift 2 2>/dev/null || shift $# 2>/dev/null || true
+    if [[ "$cmd" == "prod" ]]; then
+      case "$action" in
+        init)         act_prod_init ;;
+        deploy)       act_prod_deploy ;;
+        status)       act_prod_status ;;
+        logs)         act_prod_logs ;;
+        migrate)      act_prod_migrate ;;
+        seed)         act_prod_seed "${1:-}" ;;
+        db-backup)    act_prod_backup "${1:-}" ;;
+        *) die "action inconnue pour prod — init|deploy|status|logs|migrate|seed|db-backup" ;;
+      esac
+      exit 0
+    fi
     case "$action" in
       start)        if is_local; then act_start;   else act_docker_start;   fi ;;
       stop)         if is_local; then act_stop;    else act_docker_stop;    fi ;;

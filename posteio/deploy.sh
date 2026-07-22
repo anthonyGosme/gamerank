@@ -60,7 +60,7 @@ cat <<'NEXT'
       ssh -L 8443:localhost:8443 root@87.106.6.144
       → https://localhost:8443  (crée le compte admin au 1er accès)
       1. Add domain: webgamerank.com
-      2. Create mailbox: no-reply@webgamerank.com  (mot de passe fort)
+      2. Create mailbox: admin@webgamerank.com  (mot de passe fort)
       3. Copie la clé DKIM générée (Settings → DKIM)
 
  B. PANEL IONOS  — reverse DNS (PTR) :

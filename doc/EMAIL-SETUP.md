@@ -56,16 +56,16 @@ mail:
 
 ### b. Dans l'admin Poste.io
 1. Ajouter le domaine `webgamerank.com`.
-2. Créer la boîte `no-reply@webgamerank.com` (mot de passe fort).
+2. Créer la boîte `admin@webgamerank.com` (mot de passe fort).
 3. Récupérer la clé **DKIM** générée (pour le DNS).
 
 ### c. Variables `.env` de prod (l'app parle à Poste.io en 587 authentifié)
 ```bash
 SMTP_HOST=mail.webgamerank.com
 SMTP_PORT=587
-SMTP_USER=no-reply@webgamerank.com
+SMTP_USER=admin@webgamerank.com
 SMTP_PASS=<mot de passe de la boîte>
-MAIL_FROM="WebGameRank <no-reply@webgamerank.com>"
+MAIL_FROM="WebGameRank <admin@webgamerank.com>"
 APP_URL=https://webgamerank.com
 NODE_ENV=production
 ```
@@ -105,7 +105,7 @@ SMTP_HOST=smtp.resend.com
 SMTP_PORT=587
 SMTP_USER=resend
 SMTP_PASS=re_xxxxxxxx
-MAIL_FROM="WebGameRank <no-reply@webgamerank.com>"
+MAIL_FROM="WebGameRank <admin@webgamerank.com>"
 ```
 - Réception : Cloudflare Email Routing (catch-all → ta boîte perso), gratuit.
 - DNS : SPF/DKIM/DMARC fournis par Resend ; un seul TXT SPF combinant tout.

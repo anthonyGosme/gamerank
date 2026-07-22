@@ -1,0 +1,106 @@
+# Stack de production WebGameRank — déployée sur le VPS par ./run.sh prod deploy.
+# Les secrets viennent exclusivement de .env.prod (jamais commité).
+name: webgamerank-prod
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: gamerank
+      POSTGRES_PASSWORD: ${PROD_PG_PASSWORD:?PROD_PG_PASSWORD required}
+      POSTGRES_DB: gamerank
+    volumes:
+      - pgdata-prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gamerank -d gamerank"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8-alpine
+    restart: always
+    environment:
+      CLICKHOUSE_USER: gamerank
+      CLICKHOUSE_PASSWORD: ${PROD_CH_PASSWORD:?PROD_CH_PASSWORD required}
+      CLICKHOUSE_DB: gamerank
+    volumes:
+      - chdata-prod:/var/lib/clickhouse
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks: [internal]
+
+  api:
+    image: webgamerank-api:prod
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      APP_URL: https://webgamerank.com
+      DATABASE_URL: postgres://gamerank:${PROD_PG_PASSWORD}@postgres:5432/gamerank
+      CLICKHOUSE_URL: http://clickhouse:8123
+      CLICKHOUSE_USER: gamerank
+      CLICKHOUSE_PASSWORD: ${PROD_CH_PASSWORD}
+      CLICKHOUSE_DB: gamerank
+      ADMIN_EMAILS: ${ADMIN_EMAILS:?ADMIN_EMAILS required}
+      UPLOADS_DIR: /app/apps/api/uploads
+      DEMO_GAMES_CONFIG: /demo-config/games.json
+      SMTP_HOST: ${SMTP_HOST:-host.docker.internal}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:?SMTP_USER required}
+      SMTP_PASS: ${SMTP_PASS:?SMTP_PASS required}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_TLS_INSECURE: ${SMTP_TLS_INSECURE:-false}
+      MAIL_FROM: ${MAIL_FROM:-WebGameRank <admin@webgamerank.com>}
+      PIPELINE_INTERVAL_SECONDS: ${PIPELINE_INTERVAL_SECONDS:-300}
+      TRIPWIRE_SALTS: ${TRIPWIRE_SALTS:?TRIPWIRE_SALTS required}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:23000:3000"
+    volumes:
+      - uploads-prod:/app/apps/api/uploads
+      - demo-config-prod:/demo-config
+    networks:
+      internal:
+      proxy:
+        aliases: [gamerank-api]
+
+  # Les jeux de démonstration sont voulus en prod : ils amorcent le jury des
+  # premières inscriptions. Le seed reste conditionné à une base vide.
+  demo-game:
+    image: webgamerank-demo:prod
+    restart: always
+    environment:
+      GAMERANK_API: https://webgamerank.com
+      DEMO_BASE_PATH: /demo
+      DEMO_GAMES_CONFIG: /demo-config/games.json
+    ports:
+      - "127.0.0.1:23001:4600"
+    volumes:
+      - demo-config-prod:/demo-config:ro
+    networks:
+      proxy:
+        aliases: [gamerank-demo]
+
+networks:
+  internal:
+    internal: true
+  proxy:
+    external: true
+    name: ${PROD_PROXY_NETWORK:-edge}
+
+volumes:
+  pgdata-prod:
+  chdata-prod:
+  uploads-prod:
+  demo-config-prod:

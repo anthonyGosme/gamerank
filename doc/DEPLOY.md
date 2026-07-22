@@ -6,7 +6,7 @@ Trois environnements, pilotés par [`run.sh`](../run.sh) :
 |-----|-----|------|-------|
 | **dev** | process locaux + infra docker | Postgres/ClickHouse locaux | http://localhost:3000 |
 | **homol** | stack docker EN LOCAL | Postgres/ClickHouse **isolés** (`*-homol`) | https://webgamerank.hml (Caddy local) |
-| **prod** | stack docker sur le VPS | dédiée | https://webgamerank.com (Caddy du serveur) — *à venir* |
+| **prod** | stack docker sur le VPS | dédiée | https://webgamerank.com (Caddy du serveur) |
 
 ---
 
@@ -67,10 +67,91 @@ Puis ouvrir **https://webgamerank.hml**.
 
 ---
 
-## Prod — à venir
+## Prod — VPS
 
-Même principe qu'homol mais sur le VPS, derrière le Caddy du serveur
-(`front-caddy-1`) : `compose.prod.yaml`, base dédiée, `APP_URL=https://webgamerank.com`,
-SMTP en direct sur Poste.io (même VPS, sans tunnel), et un `./run.sh prod deploy`
-par transfert d'image (`docker save | ssh | docker load`). À construire à l'étape
-suivante.
+La production est pilotée depuis le dépôt local. Le déploiement construit les
+deux images, les transfère sans registre privé, sauvegarde PostgreSQL, joue les
+migrations, démarre l'API et exécute les smoke tests.
+
+### 1. Secrets
+
+```bash
+./run.sh prod init
+# compléter ADMIN_EMAILS, SMTP_USER et SMTP_PASS
+```
+
+`init` génère les mots de passe PostgreSQL/ClickHouse et le salt tripwire,
+applique les permissions `600` et ne remplace jamais un `.env.prod` existant.
+
+`.env.prod` est ignoré par Git. Il est copié dans `/opt/webgamerank/.env.prod`
+avec des permissions `600`. Les mots de passe PostgreSQL et ClickHouse ne
+doivent plus être changés directement après la création des volumes : utiliser
+une procédure de rotation dédiée.
+
+### 2. Réseau Caddy
+
+La stack rejoint par défaut le réseau Docker externe `edge`, qui est le réseau
+actuellement utilisé par `front-caddy-1`. Pour le revérifier sur le VPS :
+
+```bash
+ssh root@87.106.6.144 'docker network ls'
+```
+
+Si le réseau du conteneur Caddy porte un autre nom, renseigner
+`PROD_PROXY_NETWORK` dans `.env.prod`.
+
+Bloc à ajouter au Caddyfile de `webgamerank.com` :
+
+```caddy
+webgamerank.com {
+    handle_path /demo/* {
+        reverse_proxy gamerank-demo:4600
+    }
+    handle {
+        reverse_proxy gamerank-api:3000
+    }
+}
+```
+
+Le routage `/demo/*` est nécessaire au pool initial de jeux. L'API et les jeux
+restent aussi liés à `127.0.0.1:23000` et `127.0.0.1:23001` pour les sondes Kuma
+internes ; ils ne sont pas exposés publiquement sans Caddy.
+
+### 3. Premier déploiement et suivants
+
+```bash
+./run.sh prod deploy
+./run.sh prod status
+./run.sh prod logs
+```
+
+Au premier déploiement uniquement, si `games` est vide, les 10 jeux de
+démonstration sont injectés et leur configuration est partagée avec
+`demo-game`. Ils constituent le pool de jury nécessaire aux premières
+inscriptions. Une base contenant déjà au moins un jeu n'est jamais reseedée
+automatiquement.
+
+Chaque déploiement ultérieur :
+
+1. conserve les volumes PostgreSQL, ClickHouse, uploads et configuration démo ;
+2. crée un dump `backups/gamerank-prod-pre-deploy-*.sql.gz` ;
+3. applique les migrations avant le remplacement de l'API ;
+4. restaure automatiquement l'image applicative précédente si le démarrage ou
+   les smoke tests locaux échouent ;
+5. vérifie ensuite `/health` et `/` à travers l'URL publique.
+
+Les migrations doivent donc rester rétrocompatibles avec l'image précédente.
+Le rollback d'image ne défait volontairement pas une migration de données.
+
+### 4. Exploitation
+
+```bash
+./run.sh prod db-backup manuel
+./run.sh prod migrate
+./run.sh prod seed            # manuel et idempotent, pas nécessaire au deploy normal
+./run.sh prod logs
+```
+
+Les sauvegardes restent sur le VPS dans `/opt/webgamerank/backups`. Une copie
+hors VPS doit être automatisée avant de considérer la reprise après sinistre
+comme complète. Voir aussi [PROD-CHECKLIST.md](PROD-CHECKLIST.md).

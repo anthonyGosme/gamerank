@@ -47,7 +47,10 @@ export const config = {
   // Heartbeat SDK en backoff (5s→135s) : ~2-3/min en régime. 60/min (1/s) couvre
   // les pics légitimes d'UNE IP (reload + multi-onglets) sans plus.
   rateIngestMax: Number(process.env.RATE_INGEST_MAX ?? 60),
-  rateVoteMax: Number(process.env.RATE_VOTE_MAX ?? 30), // clics rares
+  // Un vote = 2 requêtes (token + vote). 6 = ~3 flux de vote/min par IP :
+  // au-dessus d'un joueur légitime (même avec un retry après « keep playing »),
+  // et serré côté « 1 IP ≈ 1 joueur ».
+  rateVoteMax: Number(process.env.RATE_VOTE_MAX ?? 6),
   // Tripwire : salts acceptés pour ctx = mix(token+salt). Le 1er = courant (celui
   // du SDK). Rotation : ajouter le nouveau en tête, garder l'ancien un temps.
   tripwireSalts: (process.env.TRIPWIRE_SALTS ?? 'wr1:k9x2mP7q')
