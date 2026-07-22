@@ -12,6 +12,7 @@ function init(): void {
   const container = script?.parentElement;
   if (!script || !container) return;
   const endpoint = new URL('/api/vote', script.src).toString();
+  const tokenEndpoint = new URL('/api/vote-token', script.src).toString();
 
   container.style.position = 'relative';
 
@@ -88,32 +89,39 @@ function init(): void {
   function vote(value: 1 | -1): void {
     const sdk = gamerank();
     if (!sdk) return;
-    try {
-      fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ key: sdk.key, visitorId: sdk.visitorId, value }),
+    // Le jeton one-shot n'est demandé QUE dans ce handler de clic réel (isTrusted) :
+    // un vote légitime = un vrai clic. Puis on envoie le vote avec ce jeton.
+    fetch(tokenEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ key: sdk.key }),
+    })
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error('token'))))
+      .then((data: { token?: string }) => {
+        if (!data || !data.token) throw new Error('token');
+        return fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ key: sdk.key, visitorId: sdk.visitorId, value, token: data.token }),
+        });
       })
-        .then(async (response) => {
-          if (response.ok) {
-            currentVote = value;
-            refreshBadge();
-            try {
-              localStorage.setItem(storageKey(), String(value));
-            } catch {
-              /* silencieux */
-            }
-            say('Thanks for your vote!');
-          } else {
-            // 403 (jouer d'abord), 429 (délai de changement) : message serveur.
-            const data = await response.json().catch(() => ({}));
-            say((data as { error?: string }).error || 'Vote not accepted');
+      .then(async (response) => {
+        if (response.ok) {
+          currentVote = value;
+          refreshBadge();
+          try {
+            localStorage.setItem(storageKey(), String(value));
+          } catch {
+            /* silencieux */
           }
-        })
-        .catch(() => {});
-    } catch {
-      /* silencieux */
-    }
+          say('Thanks for your vote!');
+        } else {
+          // 403 (jouer d'abord / jeton), 429 (délai de changement) : message serveur.
+          const data = await response.json().catch(() => ({}));
+          say((data as { error?: string }).error || 'Vote not accepted');
+        }
+      })
+      .catch(() => {});
   }
 }
 

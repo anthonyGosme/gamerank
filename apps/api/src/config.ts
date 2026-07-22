@@ -36,6 +36,8 @@ export const config = {
   uploadsDir: process.env.UPLOADS_DIR ?? 'uploads',
   voteMinActiveMs: Number(process.env.VOTE_MIN_ACTIVE_MS ?? 10_000),
   voteChangeCooldownHours: Number(process.env.VOTE_CHANGE_COOLDOWN_HOURS ?? 24),
+  // Anti-triche : durée de vie d'un jeton de vote one-shot (émis au clic réel).
+  voteTokenTtlSeconds: Number(process.env.VOTE_TOKEN_TTL_SECONDS ?? 120),
   maxThumbnailBytes: Number(process.env.MAX_THUMBNAIL_BYTES ?? 2 * 1024 * 1024),
 
   magicLinkTtlMinutes: 15,

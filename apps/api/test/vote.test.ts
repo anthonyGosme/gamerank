@@ -44,7 +44,33 @@ async function givePlaytime(visitorId: string, activeMs: number): Promise<void> 
   });
 }
 
-function vote(payload: unknown, origin?: string) {
+async function getToken(key: string, origin?: string): Promise<string | null> {
+  const res = await app.inject({
+    method: 'POST',
+    url: '/api/vote-token',
+    headers: { 'content-type': 'application/json', ...(origin ? { origin } : {}) },
+    payload: JSON.stringify({ key }),
+  });
+  return res.statusCode === 200 ? (res.json().token as string) : null;
+}
+
+// Reproduit le flux SDK : récupère un jeton one-shot (si possible) puis vote.
+async function vote(payload: Record<string, unknown>, origin?: string) {
+  let body: Record<string, unknown> = payload;
+  if (typeof payload.key === 'string' && payload.token === undefined) {
+    const token = await getToken(payload.key, origin);
+    if (token) body = { ...payload, token };
+  }
+  return app.inject({
+    method: 'POST',
+    url: '/api/vote',
+    headers: { 'content-type': 'application/json', ...(origin ? { origin } : {}) },
+    payload: JSON.stringify(body),
+  });
+}
+
+// Vote « brut » sans passer par le jeton (pour tester le gate token).
+function rawVote(payload: Record<string, unknown>, origin?: string) {
   return app.inject({
     method: 'POST',
     url: '/api/vote',
@@ -123,6 +149,49 @@ test('clé inconnue ou valeur invalide refusées', async () => {
   assert.equal(unknownKey.statusCode, 404);
   const badValue = await vote({ key: game.sdkKey, visitorId, value: 5 }, `https://${game.domain}`);
   assert.equal(badValue.statusCode, 400);
+});
+
+test('vote sans jeton → refusé (anti curl/Postman)', async () => {
+  const visitorId = uniqueId('voter');
+  await givePlaytime(visitorId, 90_000);
+  const res = await rawVote({ key: game.sdkKey, visitorId, value: 1 }, `https://${game.domain}`);
+  assert.equal(res.statusCode, 403);
+  assert.match(res.json().error, /token/);
+  assert.equal(await storedVote(visitorId), null);
+});
+
+test('jeton one-shot : réutilisé → refusé', async () => {
+  const v1 = uniqueId('voter');
+  const v2 = uniqueId('voter');
+  await givePlaytime(v1, 90_000);
+  await givePlaytime(v2, 90_000);
+  const token = await getToken(game.sdkKey, `https://${game.domain}`);
+  assert.ok(token);
+
+  const first = await rawVote({ key: game.sdkKey, visitorId: v1, value: 1, token }, `https://${game.domain}`);
+  assert.equal(first.statusCode, 200);
+  // Même jeton, 2ᵉ usage → refusé.
+  const reuse = await rawVote({ key: game.sdkKey, visitorId: v2, value: 1, token }, `https://${game.domain}`);
+  assert.equal(reuse.statusCode, 403);
+  assert.match(reuse.json().error, /token/);
+  assert.equal(await storedVote(v2), null);
+});
+
+test('jeton émis pour un autre jeu → refusé', async () => {
+  const dev2 = await createDeveloper();
+  const other = await createGame(dev2.id);
+  const otherToken = await getToken(other.sdkKey, `https://${other.domain}`);
+  assert.ok(otherToken);
+
+  const visitorId = uniqueId('voter');
+  await givePlaytime(visitorId, 90_000);
+  // Jeton d'`other` utilisé pour voter sur `game` → refusé (lié au game_id).
+  const res = await rawVote(
+    { key: game.sdkKey, visitorId, value: 1, token: otherToken },
+    `https://${game.domain}`,
+  );
+  assert.equal(res.statusCode, 403);
+  assert.match(res.json().error, /token/);
 });
 
 test('le badge SVG affiche NEW sans score, puis le score dès qu’il existe', async () => {

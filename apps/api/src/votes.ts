@@ -1,8 +1,13 @@
+import { createHash, randomBytes } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { pool } from './db.js';
 import { clickhouse } from './clickhouse.js';
 import { config } from './config.js';
 import { matchesDeclaredDomain } from './ingest.js';
+
+// Jeton de vote one-shot : stocké haché (un vol de la base ne donne pas de jetons
+// utilisables).
+const hashToken = (token: string): string => createHash('sha256').update(token).digest('hex');
 
 function escapeHtml(value: string): string {
   return value
@@ -96,9 +101,45 @@ export function registerVoteRoutes(app: FastifyInstance): void {
   // La fiche publique /g/:id est servie par public.ts (épic 5).
 
   // Vote 👍/👎 (US-4.3) : un par visiteur et par jeu, le dernier remplace.
+  // Émission d'un jeton one-shot. Le SDK ne l'appelle qu'au clic RÉEL sur le
+  // widget → un vote légitime = un clic. Casse curl/Postman (il faut 2 requêtes
+  // et un jeton frais par vote) et le replay.
+  app.post('/api/vote-token', async (request, reply) => {
+    const raw = request.body;
+    let body: { key?: unknown };
+    try {
+      body = typeof raw === 'string' ? JSON.parse(raw) : ((raw ?? {}) as typeof body);
+    } catch {
+      return reply.code(400).send({ error: 'invalid body' });
+    }
+    const key = typeof body.key === 'string' ? body.key : null;
+    if (!key) return reply.code(400).send({ error: 'invalid request' });
+
+    const { rows: games } = await pool.query(
+      `SELECT id, domain FROM games WHERE sdk_key = $1 AND status <> 'hidden'`,
+      [key],
+    );
+    if (games.length === 0) return reply.code(404).send({ error: 'unknown game' });
+    const game = games[0] as { id: string; domain: string };
+    if (!matchesDeclaredDomain(request, game.domain)) {
+      return reply.code(403).send({ error: 'origin not allowed' });
+    }
+
+    // Purge opportuniste des jetons expirés (table bornée, index sur expires_at).
+    await pool.query('DELETE FROM vote_tokens WHERE expires_at < now()');
+
+    const token = randomBytes(32).toString('base64url');
+    await pool.query(
+      `INSERT INTO vote_tokens (token_hash, game_id, request_ip, expires_at)
+       VALUES ($1, $2, $3, now() + make_interval(secs => $4))`,
+      [hashToken(token), game.id, request.ip, config.voteTokenTtlSeconds],
+    );
+    return { token };
+  });
+
   app.post('/api/vote', async (request, reply) => {
     const raw = request.body;
-    let body: { key?: unknown; visitorId?: unknown; value?: unknown };
+    let body: { key?: unknown; visitorId?: unknown; value?: unknown; token?: unknown };
     try {
       body = typeof raw === 'string' ? JSON.parse(raw) : ((raw ?? {}) as typeof body);
     } catch {
@@ -122,6 +163,19 @@ export function registerVoteRoutes(app: FastifyInstance): void {
 
     if (!matchesDeclaredDomain(request, game.domain)) {
       return reply.code(403).send({ error: 'origin not allowed' });
+    }
+
+    // Jeton one-shot exigé (anti-triche couche 1). Consommation atomique :
+    // usage unique, lié à CE jeu, non expiré. Échoue si absent/réutilisé/périmé.
+    const token = typeof body.token === 'string' ? body.token : null;
+    if (!token) return reply.code(403).send({ error: 'missing vote token' });
+    const consumed = await pool.query(
+      `UPDATE vote_tokens SET used_at = now()
+        WHERE token_hash = $1 AND game_id = $2 AND used_at IS NULL AND expires_at > now()`,
+      [hashToken(token), game.id],
+    );
+    if (consumed.rowCount === 0) {
+      return reply.code(403).send({ error: 'invalid or expired vote token' });
     }
 
     // Éligibilité : temps de jeu actif vérifié par le SDK (CDC §7.2).
