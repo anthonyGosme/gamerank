@@ -5,6 +5,7 @@ import { clickhouse } from './clickhouse.js';
 import { config } from './config.js';
 import { matchesDeclaredDomain } from './ingest.js';
 import { ipRateLimit } from './ratelimit.js';
+import { tripwireOk } from './tripwire.js';
 
 // Jeton de vote one-shot : stocké haché (un vol de la base ne donne pas de jetons
 // utilisables).
@@ -143,7 +144,7 @@ export function registerVoteRoutes(app: FastifyInstance): void {
 
   app.post('/api/vote', { preHandler: voteRate }, async (request, reply) => {
     const raw = request.body;
-    let body: { key?: unknown; visitorId?: unknown; value?: unknown; token?: unknown };
+    let body: { key?: unknown; visitorId?: unknown; value?: unknown; token?: unknown; ctx?: unknown };
     try {
       body = typeof raw === 'string' ? JSON.parse(raw) : ((raw ?? {}) as typeof body);
     } catch {
@@ -180,6 +181,15 @@ export function registerVoteRoutes(app: FastifyInstance): void {
     );
     if (consumed.rowCount === 0) {
       return reply.code(403).send({ error: 'invalid or expired vote token' });
+    }
+
+    // Tripwire SILENCIEUX : le vrai SDK envoie ctx = mix(token+salt). Absent ou
+    // faux → requête probablement bricolée → on flag le jeu (sans rien changer à
+    // la réponse). Branchable sur la dé-pondération au scoring plus tard.
+    if (!tripwireOk(token, body.ctx)) {
+      await pool.query('UPDATE games SET suspicious_votes = suspicious_votes + 1 WHERE id = $1', [
+        game.id,
+      ]);
     }
 
     // Éligibilité : temps de jeu actif vérifié par le SDK (CDC §7.2).

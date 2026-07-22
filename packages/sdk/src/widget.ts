@@ -5,6 +5,19 @@
 
 const SHOW_ARROWS_AFTER_MS = 5_000;
 
+// Tripwire : même algo que le serveur (apps/api/src/tripwire.ts). On envoie
+// ctx = mix(token+salt) ; le serveur vérifie en silence. Ce n'est pas de la
+// sécu (le salt est ici), juste un marqueur « vrai SDK ». FNV-1a 32 bits.
+const TRIPWIRE_SALT = 'wr1:k9x2mP7q';
+function mix(input: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16);
+}
+
 type GameRankGlobal = { key: string; visitorId: string; activeMs: () => number };
 
 function init(): void {
@@ -108,7 +121,13 @@ function init(): void {
         return fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ key: sdk.key, visitorId: sdk.visitorId, value, token: data.token }),
+          body: JSON.stringify({
+            key: sdk.key,
+            visitorId: sdk.visitorId,
+            value,
+            token: data.token,
+            ctx: mix(data.token + TRIPWIRE_SALT),
+          }),
         });
       })
       .then(async (response) => {

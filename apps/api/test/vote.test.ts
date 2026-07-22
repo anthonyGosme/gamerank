@@ -6,6 +6,7 @@ import { config } from '../src/config.js';
 import { clickhouse, ensureClickhouseSchema } from '../src/clickhouse.js';
 import { pool } from '../src/db.js';
 import { createDeveloper, createGame, uniqueId , cleanupCreated} from './helpers.js';
+import { mix } from '../src/tripwire.js';
 
 let app: FastifyInstance;
 let game: { id: string; sdkKey: string; domain: string };
@@ -65,7 +66,8 @@ async function vote(payload: Record<string, unknown>, origin?: string, ip: strin
   let body: Record<string, unknown> = payload;
   if (typeof payload.key === 'string' && payload.token === undefined) {
     const token = await getToken(payload.key, origin, ip);
-    if (token) body = { ...payload, token };
+    // ctx = tripwire du vrai SDK → vote « de confiance ».
+    if (token) body = { ...payload, token, ctx: mix(token + config.tripwireSalts[0]) };
   }
   return app.inject({
     method: 'POST',
@@ -236,6 +238,30 @@ test('rate-limit : trop de requêtes depuis une IP → 429', async () => {
       payload: JSON.stringify({ key: game.sdkKey }),
     });
   }
+});
+
+test('tripwire : vote sans ctx valide → accepté (200) mais flaggé en silence', async () => {
+  const visitorId = uniqueId('voter');
+  await givePlaytime(visitorId, 90_000);
+  const token = await getToken(game.sdkKey, `https://${game.domain}`);
+  const suspicious = async () =>
+    (await pool.query('SELECT suspicious_votes AS n FROM games WHERE id = $1', [game.id])).rows[0].n;
+  const before = await suspicious();
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/api/vote',
+    headers: {
+      'content-type': 'application/json',
+      origin: `https://${game.domain}`,
+      'x-forwarded-for': '203.0.113.10',
+    },
+    payload: JSON.stringify({ key: game.sdkKey, visitorId, value: 1, token, ctx: 'WRONG' }),
+  });
+
+  assert.equal(res.statusCode, 200); // réponse normale : le serveur ne dit rien
+  assert.equal(await storedVote(visitorId), 1); // le vote est bien enregistré
+  assert.equal(await suspicious(), before + 1); // mais flaggé en silence
 });
 
 test('le badge SVG affiche NEW sans score, puis le score dès qu’il existe', async () => {

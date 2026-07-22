@@ -80,6 +80,7 @@ export function registerAdminRoutes(app: FastifyInstance): void {
     if (!/^[0-9a-f-]{36}$/.test(id)) return reply.code(404).send(NOT_FOUND);
     const { rows } = await pool.query(
       `SELECT g.status, g.play_clicks AS "playClicks", g.current_score AS "currentScore",
+              g.suspicious_votes AS "suspiciousVotes",
               g.current_rank AS "currentRank", g.created_at AS "createdAt",
               g.last_event_at AS "lastEventAt", d.email AS "developerEmail",
               count(v.*) FILTER (WHERE v.value = 1)::int AS "votesUp",

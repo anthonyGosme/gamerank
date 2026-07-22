@@ -378,6 +378,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
               '<h2 style="margin-top:0">Admin</h2>' +
               '<p>Developer: <strong></strong></p>' +
               '<p>Status: <code></code> · Play clicks: <strong>' + info.playClicks + '</strong>' +
+              ' · Suspicious votes: <strong>' + (info.suspiciousVotes || 0) + '</strong>' +
               ' · Last event: <span class="muted">' + (info.lastEventAt ? new Date(info.lastEventAt).toLocaleString() : 'never') + '</span></p>' +
               '<p>Votes: <strong>' + info.votesUp + '</strong> up · <strong>' + info.votesDown +
               '</strong> down' + (votes ? ' (' + Math.round(info.votesUp / votes * 100) + '% positive)' : '') + '</p>' +

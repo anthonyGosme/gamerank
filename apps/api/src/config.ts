@@ -46,6 +46,12 @@ export const config = {
   rateWindowSeconds: Number(process.env.RATE_WINDOW_SECONDS ?? 60),
   rateIngestMax: Number(process.env.RATE_INGEST_MAX ?? 120), // heartbeats fréquents
   rateVoteMax: Number(process.env.RATE_VOTE_MAX ?? 30), // clics rares
+  // Tripwire : salts acceptés pour ctx = mix(token+salt). Le 1er = courant (celui
+  // du SDK). Rotation : ajouter le nouveau en tête, garder l'ancien un temps.
+  tripwireSalts: (process.env.TRIPWIRE_SALTS ?? 'wr1:k9x2mP7q')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
   maxThumbnailBytes: Number(process.env.MAX_THUMBNAIL_BYTES ?? 2 * 1024 * 1024),
 
   magicLinkTtlMinutes: 15,
