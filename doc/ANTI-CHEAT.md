@@ -51,11 +51,24 @@ Les 4 « tiers » d'attaquant qu'on veut faire monter :
 429), `ingest.test.ts` (origine, plafonds), `ratelimit.test.ts`, `tripwire.test.ts`,
 `score.test.ts` (Wilson, IP), `ip.test.ts` (partage inter-jeux).
 
-### Limites assumées (faux positifs)
-- **IP partagée** (foyer, CGNAT mobile, école, petit pays) : `VOTE_ONE_PER_IP`
-  et le rate-limit par IP peuvent gêner des utilisateurs légitimes → seuils
-  env-configurables, à surveiller en prod. La *pondération* (elle) ne bloque pas,
-  elle dé-pèse — moins de faux positifs.
+### Choix assumé : « 1 IP ≈ 1 joueur »
+`VOTE_ONE_PER_IP` et le rate-limit par IP traitent volontairement une IP comme
+**un joueur**. On **perd un peu de signal** sur les IP réellement partagées
+(foyer, CGNAT mobile, école), mais le **gain anti-triche est bien plus grand**,
+et c'est **peu risqué pour ce produit** : les jeux sont **de niche**, la
+concurrence **par jeu** est faible → il est **improbable** que beaucoup de vrais
+joueurs derrière la même IP jouent/votent au **même** mini-jeu quasi inconnu en
+même temps. Décision : **on garde les seuils serrés** (`VOTE_ONE_PER_IP=true`,
+`RATE_VOTE_MAX=30`). Tunables si un vrai faux positif apparaît en prod.
+
+Deux nuances techniques :
+- Le **rate-limit ingest** est **global par IP** (somme tous les jeux) : une
+  grosse IP carrier avec beaucoup d'utilisateurs sur des jeux *différents* peut
+  l'atteindre. Impact **sur le score ≈ nul** (la pondération IP cape déjà cette
+  IP) → c'est de la **protection serveur**, pas de l'anti-triche. `RATE_INGEST_MAX=120`
+  suffit.
+- La **pondération** (scoring), elle, ne **bloque** pas : elle **dé-pèse**. C'est
+  le filet sans faux positifs, complémentaire des blocages durs ci-dessus.
 - **Origine / tripwire / token** : ~0 valeur contre un attaquant qui lit le JS ou
   rejoue le vrai SDK. Ce sont des ralentisseurs / détecteurs du tier paresseux,
   pas de l'authentification.
