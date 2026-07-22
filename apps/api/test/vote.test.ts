@@ -54,8 +54,13 @@ async function getToken(key: string, origin?: string): Promise<string | null> {
   return res.statusCode === 200 ? (res.json().token as string) : null;
 }
 
+// IP unique par appel (chaque « visiteur » de test vote depuis une IP distincte,
+// sinon la règle « 1 vote par IP » bloquerait des tests indépendants).
+let ipSeq = 0;
+const nextIp = (): string => `198.51.100.${(ipSeq++ % 250) + 1}`;
+
 // Reproduit le flux SDK : récupère un jeton one-shot (si possible) puis vote.
-async function vote(payload: Record<string, unknown>, origin?: string) {
+async function vote(payload: Record<string, unknown>, origin?: string, ip: string = nextIp()) {
   let body: Record<string, unknown> = payload;
   if (typeof payload.key === 'string' && payload.token === undefined) {
     const token = await getToken(payload.key, origin);
@@ -64,17 +69,17 @@ async function vote(payload: Record<string, unknown>, origin?: string) {
   return app.inject({
     method: 'POST',
     url: '/api/vote',
-    headers: { 'content-type': 'application/json', ...(origin ? { origin } : {}) },
+    headers: { 'content-type': 'application/json', 'x-forwarded-for': ip, ...(origin ? { origin } : {}) },
     payload: JSON.stringify(body),
   });
 }
 
 // Vote « brut » sans passer par le jeton (pour tester le gate token).
-function rawVote(payload: Record<string, unknown>, origin?: string) {
+function rawVote(payload: Record<string, unknown>, origin?: string, ip: string = nextIp()) {
   return app.inject({
     method: 'POST',
     url: '/api/vote',
-    headers: { 'content-type': 'application/json', ...(origin ? { origin } : {}) },
+    headers: { 'content-type': 'application/json', 'x-forwarded-for': ip, ...(origin ? { origin } : {}) },
     payload: JSON.stringify(payload),
   });
 }
@@ -192,6 +197,22 @@ test('jeton émis pour un autre jeu → refusé', async () => {
   );
   assert.equal(res.statusCode, 403);
   assert.match(res.json().error, /token/);
+});
+
+test('2ᵉ vote depuis la même IP (localStorage vidé) → refusé', async () => {
+  const ip = '203.0.113.99';
+  const v1 = uniqueId('voter');
+  const v2 = uniqueId('voter');
+  await givePlaytime(v1, 90_000);
+  await givePlaytime(v2, 90_000);
+
+  const first = await vote({ key: game.sdkKey, visitorId: v1, value: 1 }, `https://${game.domain}`, ip);
+  assert.equal(first.statusCode, 200);
+  // Même IP, nouvelle identité (localStorage vidé) → refusé.
+  const second = await vote({ key: game.sdkKey, visitorId: v2, value: 1 }, `https://${game.domain}`, ip);
+  assert.equal(second.statusCode, 409);
+  assert.match(second.json().error, /network/);
+  assert.equal(await storedVote(v2), null);
 });
 
 test('le badge SVG affiche NEW sans score, puis le score dès qu’il existe', async () => {

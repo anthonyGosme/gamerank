@@ -199,6 +199,17 @@ export function registerVoteRoutes(app: FastifyInstance): void {
           .code(429)
           .send({ error: `you can change your vote in ${existing[0].hours_left}h` });
       }
+    } else if (config.voteOnePerIp) {
+      // Nouveau visitorId : refuse si une AUTRE identité de la même IP a déjà
+      // voté ce jeu (re-vote après reset du localStorage). ⚠️ IP partagée = 1 vote.
+      const { rows: sameNet } = await pool.query(
+        `SELECT 1 FROM votes
+          WHERE game_id = $1 AND host(ip) = host($2::inet) AND visitor_id <> $3 LIMIT 1`,
+        [game.id, request.ip, visitorId],
+      );
+      if (sameNet.length > 0) {
+        return reply.code(409).send({ error: 'a vote from your network is already counted' });
+      }
     }
 
     await pool.query(

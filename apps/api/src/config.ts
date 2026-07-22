@@ -38,6 +38,10 @@ export const config = {
   voteChangeCooldownHours: Number(process.env.VOTE_CHANGE_COOLDOWN_HOURS ?? 24),
   // Anti-triche : durée de vie d'un jeton de vote one-shot (émis au clic réel).
   voteTokenTtlSeconds: Number(process.env.VOTE_TOKEN_TTL_SECONDS ?? 120),
+  // Anti-triche : un seul vote par IP et par jeu (bloque le re-vote après reset
+  // du localStorage). ⚠️ IP partagée (foyer/CGNAT/école) = un seul vote pour
+  // tous. Désactivable si le taux de faux positifs devient gênant.
+  voteOnePerIp: process.env.VOTE_ONE_PER_IP !== 'false',
   maxThumbnailBytes: Number(process.env.MAX_THUMBNAIL_BYTES ?? 2 * 1024 * 1024),
 
   magicLinkTtlMinutes: 15,

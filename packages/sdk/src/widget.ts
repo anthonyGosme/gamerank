@@ -39,6 +39,7 @@ function init(): void {
     const zone = document.createElement('button');
     zone.type = 'button';
     zone.setAttribute('aria-label', label);
+    zone.title = 'One vote per game · you can change it once every 24h';
     zone.style.cssText =
       `position:absolute;top:0;${side}:0;width:25%;height:100%;border:0;margin:0;` +
       'background:transparent;cursor:pointer;pointer-events:none;';
@@ -89,6 +90,11 @@ function init(): void {
   function vote(value: 1 | -1): void {
     const sdk = gamerank();
     if (!sdk) return;
+    // Déjà voté ce sens : on ne renvoie rien (évite l'impression de spam/triche).
+    if (currentVote === value) {
+      say('You already voted · change once every 24h');
+      return;
+    }
     // Le jeton one-shot n'est demandé QUE dans ce handler de clic réel (isTrusted) :
     // un vote légitime = un vrai clic. Puis on envoie le vote avec ce jeton.
     fetch(tokenEndpoint, {
@@ -114,7 +120,7 @@ function init(): void {
           } catch {
             /* silencieux */
           }
-          say('Thanks for your vote!');
+          say('Vote saved · change once every 24h');
         } else {
           // 403 (jouer d'abord / jeton), 429 (délai de changement) : message serveur.
           const data = await response.json().catch(() => ({}));
