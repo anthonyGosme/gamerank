@@ -142,12 +142,20 @@ async function main(): Promise<void> {
   // (le pool que les nouveaux inscrits jugeront).
   const rankedCount = Math.ceil(manifest.games.length / 2);
 
+  // baseUrl surchargeable par env (par-env dans run.sh : localhost:4600/demo en
+  // dev, https://webgamerank.hml/demo en homol…). Défaut = valeur du seed.json.
+  const baseUrl = (process.env.DEMO_BASE_URL ?? manifest.baseUrl).replace(/\/+$/, '');
+
   for (const [index, game] of manifest.games.entries()) {
     const status = index < rankedCount ? 'ranked' : 'awaiting_jury';
-    const url = `${manifest.baseUrl}/${game.slug}`;
+    const url = `${baseUrl}/${game.slug}`;
     const sdkKey = `gr_demo_${game.slug}`;
     const thumbName = `demo-${game.slug}.svg`;
     await writeFile(path.join(uploadsDir, thumbName), thumbnailSvg(game));
+
+    // Idempotence quand baseUrl change : retire l'ancienne ligne démo de ce jeu
+    // (même sdk_key) si son URL diffère de la nouvelle, avant l'upsert.
+    await pool.query('DELETE FROM games WHERE sdk_key = $1 AND url <> $2', [sdkKey, url]);
 
     const { rows } = await pool.query(
       `INSERT INTO games (developer_id, name, url, domain, description, short_description,

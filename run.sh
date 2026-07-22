@@ -112,6 +112,10 @@ resolve_env() {
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 timestamp() { date '+%Y%m%d-%H%M%S'; }
 is_local() { [[ "$ENV_KIND" == "local" ]]; }
+# URL publique des jeux de démo pour cet env (le demo est monté sous /demo).
+demo_base_url() {
+  if is_local; then echo "http://localhost:$DEV_DEMO_PORT/demo"; else echo "$PUBLIC_URL/demo"; fi
+}
 
 # Infra docker partagée (docker-compose.yml à la racine : Postgres/ClickHouse/Mailpit)
 infra() {
@@ -203,7 +207,7 @@ act_start() {
   local ngames; ngames="$(pg psql -U gamerank -d gamerank -tAc 'SELECT count(*) FROM games' 2>/dev/null | tr -d '[:space:]')"
   if [[ "${ngames:-0}" == "0" ]]; then
     say "seed des 10 jeux de démo (base vide)..."
-    npm run --silent seed:demo >> logs/dev.log 2>&1 || warn "seed échoué (voir logs/dev.log)"
+    DEMO_BASE_URL="$(demo_base_url)" npm run --silent seed:demo >> logs/dev.log 2>&1 || warn "seed échoué (voir logs/dev.log)"
   else
     say "jeux en base : ${ngames} (pas de re-seed ; ./run.sh dev seed pour forcer)"
   fi
@@ -320,7 +324,8 @@ act_test() {
 act_migrate()   { npm run --silent migrate; say "migrations à jour"; }
 act_build_sdk() { npm run --silent build:sdk; say "SDK build (/sdk.js, /widget.js)"; }
 act_seed() {
-  if [[ "${1:-}" == "--sample" ]]; then SEED_SAMPLE=1 npm run --silent seed:demo; else npm run --silent seed:demo; fi
+  local base; base="$(demo_base_url)"
+  if [[ "${1:-}" == "--sample" ]]; then DEMO_BASE_URL="$base" SEED_SAMPLE=1 npm run --silent seed:demo; else DEMO_BASE_URL="$base" npm run --silent seed:demo; fi
   say "jeux de démo insérés"
 }
 
@@ -428,7 +433,7 @@ act_docker_start() {
   local n; n="$(dc_games_count)"
   if [[ "${n:-0}" == "0" ]]; then
     say "seed des 10 jeux de démo (base vide)..."
-    docker_compose exec -T api npx tsx /app/apps/api/scripts/seed-demo.ts || warn "seed échoué"
+    docker_compose exec -T -e DEMO_BASE_URL="$(demo_base_url)" api npx tsx /app/apps/api/scripts/seed-demo.ts || warn "seed échoué"
   else
     say "jeux en base : ${n} (pas de re-seed ; ./run.sh $ENV_NAME seed pour forcer)"
   fi
@@ -442,9 +447,9 @@ act_docker_logs()    { docker_compose logs -f --tail=100; }
 act_docker_migrate() { docker_compose run --rm api node dist/migrate.js; say "migrations à jour ($ENV_NAME)"; }
 act_docker_seed() {
   if [[ "${1:-}" == "--sample" ]]; then
-    docker_compose exec -T -e SEED_SAMPLE=1 api npx tsx /app/apps/api/scripts/seed-demo.ts
+    docker_compose exec -T -e DEMO_BASE_URL="$(demo_base_url)" -e SEED_SAMPLE=1 api npx tsx /app/apps/api/scripts/seed-demo.ts
   else
-    docker_compose exec -T api npx tsx /app/apps/api/scripts/seed-demo.ts
+    docker_compose exec -T -e DEMO_BASE_URL="$(demo_base_url)" api npx tsx /app/apps/api/scripts/seed-demo.ts
   fi
   say "seed ($ENV_NAME) terminé"
 }
