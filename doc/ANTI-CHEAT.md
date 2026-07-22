@@ -65,8 +65,9 @@ Deux nuances techniques :
 - Le **rate-limit ingest** est **global par IP** (somme tous les jeux) : une
   grosse IP carrier avec beaucoup d'utilisateurs sur des jeux *différents* peut
   l'atteindre. Impact **sur le score ≈ nul** (la pondération IP cape déjà cette
-  IP) → c'est de la **protection serveur**, pas de l'anti-triche. `RATE_INGEST_MAX=120`
-  suffit.
+  IP) → c'est de la **protection serveur**, pas de l'anti-triche. Le heartbeat SDK
+  est en backoff (5s→135s, ~2-3/min) : `RATE_INGEST_MAX=60` (1/s) couvre les pics
+  légitimes d'une IP (reload + multi-onglets) sans plus.
 - La **pondération** (scoring), elle, ne **bloque** pas : elle **dé-pèse**. C'est
   le filet sans faux positifs, complémentaire des blocages durs ci-dessus.
 - **Origine / tripwire / token** : ~0 valeur contre un attaquant qui lit le JS ou
@@ -117,6 +118,6 @@ Deux nuances techniques :
 | `VOTE_TOKEN_TTL_SECONDS` | 120 | durée de vie du jeton one-shot |
 | `VOTE_ONE_PER_IP` | `true` | 1 vote/IP/jeu (`false` = pondéré seulement) |
 | `RATE_WINDOW_SECONDS` | 60 | fenêtre du rate-limit |
-| `RATE_INGEST_MAX` | 120 | requêtes ingest/IP/fenêtre |
+| `RATE_INGEST_MAX` | 60 | requêtes ingest/IP/fenêtre (~1/s) |
 | `RATE_VOTE_MAX` | 30 | requêtes vote(+token)/IP/fenêtre |
 | `TRIPWIRE_SALTS` | `wr1:…` | salts acceptés (1er = courant ; rotation) |

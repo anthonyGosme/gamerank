@@ -44,7 +44,9 @@ export const config = {
   voteOnePerIp: process.env.VOTE_ONE_PER_IP !== 'false',
   // Rate-limit par IP (protection flood/DoS). Fenêtre + plafonds par famille.
   rateWindowSeconds: Number(process.env.RATE_WINDOW_SECONDS ?? 60),
-  rateIngestMax: Number(process.env.RATE_INGEST_MAX ?? 120), // heartbeats fréquents
+  // Heartbeat SDK en backoff (5s→135s) : ~2-3/min en régime. 60/min (1/s) couvre
+  // les pics légitimes d'UNE IP (reload + multi-onglets) sans plus.
+  rateIngestMax: Number(process.env.RATE_INGEST_MAX ?? 60),
   rateVoteMax: Number(process.env.RATE_VOTE_MAX ?? 30), // clics rares
   // Tripwire : salts acceptés pour ctx = mix(token+salt). Le 1er = courant (celui
   // du SDK). Rotation : ajouter le nouveau en tête, garder l'ancien un temps.
