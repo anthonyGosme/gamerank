@@ -42,6 +42,10 @@ export const config = {
   // du localStorage). ⚠️ IP partagée (foyer/CGNAT/école) = un seul vote pour
   // tous. Désactivable si le taux de faux positifs devient gênant.
   voteOnePerIp: process.env.VOTE_ONE_PER_IP !== 'false',
+  // Rate-limit par IP (protection flood/DoS). Fenêtre + plafonds par famille.
+  rateWindowSeconds: Number(process.env.RATE_WINDOW_SECONDS ?? 60),
+  rateIngestMax: Number(process.env.RATE_INGEST_MAX ?? 120), // heartbeats fréquents
+  rateVoteMax: Number(process.env.RATE_VOTE_MAX ?? 30), // clics rares
   maxThumbnailBytes: Number(process.env.MAX_THUMBNAIL_BYTES ?? 2 * 1024 * 1024),
 
   magicLinkTtlMinutes: 15,

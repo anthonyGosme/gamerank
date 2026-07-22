@@ -44,26 +44,27 @@ async function givePlaytime(visitorId: string, activeMs: number): Promise<void> 
   });
 }
 
-async function getToken(key: string, origin?: string): Promise<string | null> {
+// IP unique par appel (chaque « visiteur » de test = une IP distincte, sinon la
+// règle « 1 vote/IP » et le rate-limit par IP bloqueraient des tests indépendants).
+let ipSeq = 0;
+const nextIp = (): string => `198.51.100.${(ipSeq++ % 250) + 1}`;
+
+async function getToken(key: string, origin?: string, ip: string = nextIp()): Promise<string | null> {
   const res = await app.inject({
     method: 'POST',
     url: '/api/vote-token',
-    headers: { 'content-type': 'application/json', ...(origin ? { origin } : {}) },
+    headers: { 'content-type': 'application/json', 'x-forwarded-for': ip, ...(origin ? { origin } : {}) },
     payload: JSON.stringify({ key }),
   });
   return res.statusCode === 200 ? (res.json().token as string) : null;
 }
 
-// IP unique par appel (chaque « visiteur » de test vote depuis une IP distincte,
-// sinon la règle « 1 vote par IP » bloquerait des tests indépendants).
-let ipSeq = 0;
-const nextIp = (): string => `198.51.100.${(ipSeq++ % 250) + 1}`;
-
 // Reproduit le flux SDK : récupère un jeton one-shot (si possible) puis vote.
+// Le token ET le vote partent de la même IP (celle du « visiteur »).
 async function vote(payload: Record<string, unknown>, origin?: string, ip: string = nextIp()) {
   let body: Record<string, unknown> = payload;
   if (typeof payload.key === 'string' && payload.token === undefined) {
-    const token = await getToken(payload.key, origin);
+    const token = await getToken(payload.key, origin, ip);
     if (token) body = { ...payload, token };
   }
   return app.inject({

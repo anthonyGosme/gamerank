@@ -1,7 +1,9 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { pool } from './db.js';
 import { clickhouse } from './clickhouse.js';
+import { config } from './config.js';
 import { normalizeIp } from './scoring/math.js';
+import { ipRateLimit } from './ratelimit.js';
 
 const EVENT_TYPES = new Set(['load', 'session_start', 'heartbeat', 'session_end']);
 const MAX_EVENTS_PER_BATCH = 50;
@@ -39,7 +41,8 @@ export function matchesDeclaredDomain(request: FastifyRequest, domain: string): 
 
 // Réponse 204 systématique : un émetteur invalide n'apprend rien (US-4.4).
 export function registerIngestRoutes(app: FastifyInstance): void {
-  app.post('/api/ingest', async (request, reply) => {
+  const rateLimit = ipRateLimit(config.rateIngestMax, config.rateWindowSeconds * 1000);
+  app.post('/api/ingest', { preHandler: rateLimit }, async (request, reply) => {
     try {
       await handleBatch(request);
     } catch (err) {

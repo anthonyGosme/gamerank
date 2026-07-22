@@ -4,6 +4,7 @@ import { pool } from './db.js';
 import { clickhouse } from './clickhouse.js';
 import { config } from './config.js';
 import { matchesDeclaredDomain } from './ingest.js';
+import { ipRateLimit } from './ratelimit.js';
 
 // Jeton de vote one-shot : stocké haché (un vol de la base ne donne pas de jetons
 // utilisables).
@@ -104,7 +105,10 @@ export function registerVoteRoutes(app: FastifyInstance): void {
   // Émission d'un jeton one-shot. Le SDK ne l'appelle qu'au clic RÉEL sur le
   // widget → un vote légitime = un clic. Casse curl/Postman (il faut 2 requêtes
   // et un jeton frais par vote) et le replay.
-  app.post('/api/vote-token', async (request, reply) => {
+  // Rate-limit partagé token+vote (une IP qui vote fait 1 token + 1 vote).
+  const voteRate = ipRateLimit(config.rateVoteMax, config.rateWindowSeconds * 1000);
+
+  app.post('/api/vote-token', { preHandler: voteRate }, async (request, reply) => {
     const raw = request.body;
     let body: { key?: unknown };
     try {
@@ -137,7 +141,7 @@ export function registerVoteRoutes(app: FastifyInstance): void {
     return { token };
   });
 
-  app.post('/api/vote', async (request, reply) => {
+  app.post('/api/vote', { preHandler: voteRate }, async (request, reply) => {
     const raw = request.body;
     let body: { key?: unknown; visitorId?: unknown; value?: unknown; token?: unknown };
     try {
