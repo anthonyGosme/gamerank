@@ -157,13 +157,16 @@ async function main(): Promise<void> {
     // (même sdk_key) si son URL diffère de la nouvelle, avant l'upsert.
     await pool.query('DELETE FROM games WHERE sdk_key = $1 AND url <> $2', [sdkKey, url]);
 
+    // domain = hostname de l'URL (contrôle d'origine des events/votes) :
+    // localhost en dev, webgamerank.hml en homol… Plus de valeur codée en dur.
+    const domain = new URL(url).hostname;
     const { rows } = await pool.query(
       `INSERT INTO games (developer_id, name, url, domain, description, short_description,
               category, thumbnail_url, sdk_key, is_local, badge_color,
               integration_verified_at, status)
-       VALUES ($1, $2, $3, 'localhost', $4, $5, $6, $7, $8, true, $9, now(), $10)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true, $10, now(), $11)
        ON CONFLICT (url) DO UPDATE SET
-         name = EXCLUDED.name, description = EXCLUDED.description,
+         name = EXCLUDED.name, domain = EXCLUDED.domain, description = EXCLUDED.description,
          short_description = EXCLUDED.short_description, category = EXCLUDED.category,
          thumbnail_url = EXCLUDED.thumbnail_url, badge_color = EXCLUDED.badge_color,
          integration_verified_at = now(), status = EXCLUDED.status
@@ -171,7 +174,7 @@ async function main(): Promise<void> {
       [
         // badge_color reste sombre (visible sur toute page) ; la couleur de
         // page du jeu (game.color) sert au fond du jeu, pas au badge.
-        developerId, game.title, url, game.description, game.short, game.category,
+        developerId, game.title, url, domain, game.description, game.short, game.category,
         `/uploads/${thumbName}`, sdkKey, '#1d1039', status,
       ],
     );
@@ -185,7 +188,10 @@ async function main(): Promise<void> {
     );
   }
 
-  await writeFile(path.join(demoDir, 'games.json'), `${JSON.stringify(gamesConfig, null, 2)}\n`);
+  // En homol/prod, DEMO_GAMES_CONFIG pointe sur un volume partagé avec le
+  // conteneur demo-game (pour qu'il connaisse les clés/gameId seedés).
+  const gamesConfigPath = process.env.DEMO_GAMES_CONFIG ?? path.join(demoDir, 'games.json');
+  await writeFile(gamesConfigPath, `${JSON.stringify(gamesConfig, null, 2)}\n`);
   console.log('\nComputing scores…');
   const summary = await runPipeline();
   console.log(`Pipeline done in ${summary?.durationMs}ms (${summary?.gamesCount} games).`);

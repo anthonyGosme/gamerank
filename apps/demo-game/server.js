@@ -15,7 +15,9 @@ const api = process.env.GAMERANK_API || 'http://localhost:3000';
 // Mettre DEMO_BASE_PATH='' pour servir à la racine.
 const basePath = (process.env.DEMO_BASE_PATH ?? '/demo').replace(/\/+$/, '');
 const gamesDir = path.join(__dirname, 'games');
-const configPath = path.join(__dirname, 'games.json');
+// En homol/prod, DEMO_GAMES_CONFIG pointe sur le volume partagé où le seed
+// (conteneur api) a écrit les clés/gameId.
+const configPath = process.env.DEMO_GAMES_CONFIG || path.join(__dirname, 'games.json');
 
 function loadGames() {
   const games = [];

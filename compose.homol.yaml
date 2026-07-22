@@ -57,6 +57,8 @@ services:
       CLICKHOUSE_DB: gamerank
       ADMIN_EMAILS: ${ADMIN_EMAILS:-anthonygosme@gmail.com}
       UPLOADS_DIR: /app/apps/api/uploads
+      # Le seed écrit games.json (clés/gameId) dans le volume partagé avec demo-game.
+      DEMO_GAMES_CONFIG: /demo-config/games.json
       # Email : via le tunnel SSH ouvert sur le Mac hôte (host.docker.internal → 1587).
       # SMTP_PASS est interpolé depuis le .env racine (jamais écrit en dur ici).
       SMTP_HOST: host.docker.internal
@@ -71,18 +73,26 @@ services:
       - "127.0.0.1:18001:3000"   # LOCAL only — le Caddy local reverse-proxy dessus
     volumes:
       - uploads-homol:/app/apps/api/uploads
+      - demo-config-homol:/demo-config
 
   # Mock des « sites externes » : sert les pages jouables des jeux de démo.
-  # Les jeux seedés pointent sur http://localhost:4600/<slug> → exposé sur l'hôte.
+  # Le snippet pointe sur l'API homol (HTTPS, via Caddy) → pas de Mixed Content,
+  # et les events/votes arrivent sur homol (origine = webgamerank.hml → OK).
   demo-game:
     build:
       context: ./apps/demo-game
     image: webgamerank-demo:homol
     restart: unless-stopped
+    environment:
+      GAMERANK_API: https://webgamerank.hml
+      DEMO_GAMES_CONFIG: /demo-config/games.json
     ports:
       - "127.0.0.1:4600:4600"    # le navigateur (Mac) atteint localhost:4600
+    volumes:
+      - demo-config-homol:/demo-config   # games.json partagé avec l'api (seed)
 
 volumes:
   pgdata-homol:
   chdata-homol:
   uploads-homol:
+  demo-config-homol:

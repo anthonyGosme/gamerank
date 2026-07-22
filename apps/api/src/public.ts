@@ -424,17 +424,44 @@ export function registerPublicRoutes(app: FastifyInstance): void {
     );
   });
 
-  // Le clic « Play » est compté puis redirigé vers le site du développeur.
+  // Clic « Play ». Deux cas (SEO) :
+  //  - le visiteur vient de NOTRE site (referer sur le même host) → vrai clic :
+  //    on compte et on redirige vers le site du jeu.
+  //  - pas de referer, ou referer externe (lien partagé, crawler, moteur) →
+  //    on renvoie sur la fiche interne /g/:id/:slug (contexte + indexable),
+  //    sans compter de clic.
+  const siteHost = new URL(config.appUrl).host;
   app.get('/go/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
     if (!/^[0-9a-f-]{36}$/.test(id)) return reply.code(404).send();
+
+    let fromOurSite = false;
+    const referer = request.headers.referer;
+    if (referer) {
+      try {
+        fromOurSite = new URL(referer).host === siteHost;
+      } catch {
+        /* referer malformé → traité comme externe */
+      }
+    }
+
+    if (fromOurSite) {
+      const { rows } = await pool.query(
+        `UPDATE games SET play_clicks = play_clicks + 1
+          WHERE id = $1 AND status <> 'hidden' RETURNING url`,
+        [id],
+      );
+      if (rows.length === 0) return reply.code(404).send();
+      return reply.redirect(rows[0].url); // 302 → site du jeu
+    }
+
+    // Hit à froid : 302 vers la fiche interne, sans compter de clic.
     const { rows } = await pool.query(
-      `UPDATE games SET play_clicks = play_clicks + 1
-        WHERE id = $1 AND status <> 'hidden' RETURNING url`,
+      `SELECT name FROM games WHERE id = $1 AND status <> 'hidden'`,
       [id],
     );
     if (rows.length === 0) return reply.code(404).send();
-    return reply.redirect(rows[0].url);
+    return reply.redirect(`/g/${id}/${slugify(rows[0].name)}`);
   });
 
   app.get('/methodology', async (_request, reply) => {

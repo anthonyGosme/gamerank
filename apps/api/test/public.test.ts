@@ -6,6 +6,7 @@ import { pool } from '../src/db.js';
 import { clickhouse } from '../src/clickhouse.js';
 import { createDeveloper, createGame, cleanupCreated } from './helpers.js';
 import { slugify } from '../src/public.js';
+import { config } from '../src/config.js';
 
 let app: FastifyInstance;
 let ranked: { id: string };
@@ -98,13 +99,36 @@ test('fiche publique : SEO (canonical, og) et score', async () => {
   assert.equal(noSlug.statusCode, 200);
 });
 
-test('/go compte le clic puis redirige vers le site du jeu', async () => {
-  const first = await app.inject({ method: 'GET', url: `/go/${ranked.id}` });
-  assert.equal(first.statusCode, 302);
-  assert.match(first.headers.location as string, /^https:\/\//);
-  await app.inject({ method: 'GET', url: `/go/${ranked.id}` });
+test('/go : referer same-site → site du jeu (clic compté) ; sinon → fiche interne (pas de clic)', async () => {
+  await pool.query('UPDATE games SET play_clicks = 0 WHERE id = $1', [ranked.id]);
+  const internal = `/g/${ranked.id}/${slugify('Super Puzzle Quest')}`;
+  const sameSiteRef = `${config.appUrl}/g/${ranked.id}/x`;
+
+  // Sans referer → fiche interne (SEO), pas de clic compté.
+  const cold = await app.inject({ method: 'GET', url: `/go/${ranked.id}` });
+  assert.equal(cold.statusCode, 302);
+  assert.equal(cold.headers.location, internal);
+
+  // Referer externe (autre site) → fiche interne, pas de clic.
+  const ext = await app.inject({
+    method: 'GET',
+    url: `/go/${ranked.id}`,
+    headers: { referer: 'https://google.com/search' },
+  });
+  assert.equal(ext.headers.location, internal);
+
+  // Referer same-site → vrai clic : site du jeu (URL absolue) + clic compté.
+  const real = await app.inject({
+    method: 'GET',
+    url: `/go/${ranked.id}`,
+    headers: { referer: sameSiteRef },
+  });
+  assert.equal(real.statusCode, 302);
+  assert.match(real.headers.location as string, /^https?:\/\//);
+  assert.doesNotMatch(real.headers.location as string, /^\/g\//);
+
   const { rows } = await pool.query('SELECT play_clicks FROM games WHERE id = $1', [ranked.id]);
-  assert.equal(rows[0].play_clicks, 2);
+  assert.equal(rows[0].play_clicks, 1); // seul le hit same-site a compté
 });
 
 test('methodology, sitemap et robots sont servis', async () => {
