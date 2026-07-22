@@ -216,6 +216,28 @@ test('2ᵉ vote depuis la même IP (localStorage vidé) → refusé', async () =
   assert.equal(await storedVote(v2), null);
 });
 
+test('rate-limit : trop de requêtes depuis une IP → 429', async () => {
+  const ip = '192.0.2.50'; // IP dédiée (non utilisée ailleurs)
+  let last = await getTokenRes(ip);
+  for (let i = 0; i < config.rateVoteMax; i++) last = await getTokenRes(ip);
+  // Au-delà du quota partagé token+vote → 429.
+  assert.equal(last.statusCode, 429);
+  assert.match(last.json().error, /too many/);
+
+  async function getTokenRes(fromIp: string) {
+    return app.inject({
+      method: 'POST',
+      url: '/api/vote-token',
+      headers: {
+        'content-type': 'application/json',
+        'x-forwarded-for': fromIp,
+        origin: `https://${game.domain}`,
+      },
+      payload: JSON.stringify({ key: game.sdkKey }),
+    });
+  }
+});
+
 test('le badge SVG affiche NEW sans score, puis le score dès qu’il existe', async () => {
   await pool.query('UPDATE games SET current_score = NULL WHERE id = $1', [game.id]);
   const blank = await app.inject({ method: 'GET', url: `/games/${game.id}/badge.svg` });
