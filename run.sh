@@ -240,10 +240,19 @@ act_stop() {
   pkill -f "apps/demo-game/server.js" 2>/dev/null && say "  demo-game arrêté" || true
   act_tunnels_stop
   sleep 1
-  local p
+  # Libère les ports dev — mais UNIQUEMENT si un process `node` les tient. Un
+  # conteneur (ex. demo-game homol qui mappe 127.0.0.1:4600) est servi par le
+  # proxy de Docker Desktop : le tuer plante Docker. On ne touche jamais à ça.
+  local p cmd
   for port in "$DEV_API_PORT" "$DEV_DEMO_PORT"; do
     p="$(lsof -nP -tiTCP:$port -sTCP:LISTEN 2>/dev/null | head -n1 || true)"
-    [[ -n "$p" ]] && { kill -9 "$p" 2>/dev/null || true; say "  port $port libéré (pid $p)"; }
+    [[ -n "$p" ]] || continue
+    cmd="$(ps -p "$p" -o comm= 2>/dev/null || true)"
+    if [[ "$cmd" == *node* ]]; then
+      kill -9 "$p" 2>/dev/null || true; say "  port $port libéré (pid $p)"
+    else
+      warn "  port $port tenu par '$cmd' (pid $p) — laissé (probablement Docker/homol)"
+    fi
   done
   say "arrêté (infra docker toujours up : ./run.sh dev infra-down pour l'arrêter)."
 }
