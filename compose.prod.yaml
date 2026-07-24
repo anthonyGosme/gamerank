@@ -61,6 +61,7 @@ services:
       SMTP_SECURE: ${SMTP_SECURE:-false}
       SMTP_TLS_INSECURE: ${SMTP_TLS_INSECURE:-false}
       MAIL_FROM: ${MAIL_FROM:-WebGameRank <admin@webgamerank.com>}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-anthonygosme@gmail.com}
       PIPELINE_INTERVAL_SECONDS: ${PIPELINE_INTERVAL_SECONDS:-300}
       TRIPWIRE_SALTS: ${TRIPWIRE_SALTS:?TRIPWIRE_SALTS required}
     extra_hosts:

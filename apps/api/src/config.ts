@@ -26,6 +26,7 @@ export const config = {
   // serveur mail sur le même VPS). La connexion reste chiffrée.
   smtpTlsInsecure: process.env.SMTP_TLS_INSECURE === 'true',
   mailFrom: process.env.MAIL_FROM ?? 'WebGameRank <no-reply@webgamerank.local>',
+  contactEmail: process.env.CONTACT_EMAIL ?? 'anthonygosme@gmail.com',
   adminEmails: (process.env.ADMIN_EMAILS ?? '')
     .split(',')
     .map((email) => email.trim().toLowerCase())

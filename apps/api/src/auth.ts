@@ -3,6 +3,7 @@ import type { FastifyBaseLogger, FastifyInstance, FastifyReply, FastifyRequest }
 import { pool } from './db.js';
 import { config } from './config.js';
 import { sendMagicLink } from './mailer.js';
+import { ANALYTICS_TAG } from './layout.js';
 
 const SESSION_COOKIE = 'gr_session';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -78,7 +79,8 @@ async function issueMagicLink(
 }
 
 const sentPage = `<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"><title>Check your email — WebGameRank</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Check your email | WebGameRank</title>
+${ANALYTICS_TAG}
 <style>body{font-family:system-ui,sans-serif;background:#2e1a5c;color:#f3f0fb;display:flex;
 min-height:100vh;align-items:center;justify-content:center;margin:0}
 .card{background:#3a2470;border:1px solid #4d3488;border-radius:.8rem;padding:2rem;max-width:26rem;text-align:center}

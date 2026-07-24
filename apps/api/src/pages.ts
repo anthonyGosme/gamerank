@@ -6,7 +6,7 @@ import { shell } from './layout.js';
 
 const layout = (title: string, body: string, options?: { wide?: boolean }) =>
   shell({
-    title: `${title} — WebGameRank`,
+    title: `${title} | WebGameRank`,
     body: `<style>
       .game { display: flex; justify-content: space-between; align-items: center; gap: 1rem;
               padding: .8rem 0; border-bottom: 1px solid var(--line); }
@@ -29,7 +29,7 @@ const STATUS_LABELS = `{
 
 export const loginPage = layout('Login', `
   <h1>Login</h1>
-  <p class="muted">Passwordless — we email you a one-time login link.</p>
+  <p class="muted">Passwordless, we email you a one-time login link.</p>
   <div id="err"></div>
   <form method="post" action="/login" autocomplete="on">
     <input type="hidden" name="next" id="next">
@@ -98,7 +98,7 @@ export const dashboardPage = layout('Dashboard', `
       zone.innerHTML = '';
       if (games.length === 0) {
         zone.innerHTML = '<p class="notice">No games yet. Start by '
-          + '<a href="/games/new">declaring your game</a> — you will receive its SDK key.</p>';
+          + '<a href="/games/new">declaring your game</a>, you will receive its SDK key.</p>';
         return;
       }
       for (const game of games) {
@@ -149,7 +149,7 @@ export const newGamePage = layout('Add a game', `
       This is a local address (localhost or IP), not an internet domain name</label></p>
     <label for="category">Category</label>
     <select id="category" required>
-      <option value="">— pick one —</option>
+      <option value="">Select one</option>
       <option>action</option><option>puzzle</option><option>arcade</option>
       <option>strategy</option><option>sports</option><option>racing</option>
       <option>rpg</option><option>idle-clicker</option><option>card-board</option>
@@ -159,7 +159,7 @@ export const newGamePage = layout('Add a game', `
     <input id="shortDescription" placeholder="One catchy sentence, shown on ranking pages" required maxlength="160">
     <label for="description">Description</label>
     <textarea id="description" placeholder="What makes your game fun?" rows="4" required></textarea>
-    <label for="thumbnail">Thumbnail (PNG, JPEG, WebP or GIF — 2 MB max)</label>
+    <label for="thumbnail">Thumbnail (PNG, JPEG, WebP or GIF, 2 MB max)</label>
     <input id="thumbnail" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required>
     <img id="thumb-preview" alt="" hidden style="max-width:12rem;max-height:8rem;border-radius:.5rem;display:block;margin:.5rem 0 1rem">
     <button type="submit">Register and get my SDK key</button>
@@ -202,7 +202,7 @@ export const adminPage = layout(
   `
   <style>table { margin-bottom: 2rem; } td, th { font-size: .85rem; }</style>
   <div class="topbar">
-    <h1>Admin — ingestion overview</h1>
+    <h1>Admin, ingestion overview</h1>
     <a href="/dashboard">← Dashboard</a>
   </div>
   <div id="zone"><p class="muted">Loading…</p></div>
@@ -256,13 +256,13 @@ export const adminPage = layout(
       for (const game of games) {
         const s = byGame[game.id];
         const row = document.createElement('tr');
-        cell(row, game.currentRank != null ? '#' + game.currentRank : '—');
-        cell(row, game.currentScore != null ? String(Math.round(game.currentScore)) : '—');
+        cell(row, game.currentRank != null ? '#' + game.currentRank : 'N/A');
+        cell(row, game.currentScore != null ? String(Math.round(game.currentScore)) : 'N/A');
         cell(row, game.name);
         cell(row, game.developerEmail);
         cell(row, game.domain);
         cell(row, STATUS[game.status] ?? game.status);
-        cell(row, game.lastEventAt ? new Date(game.lastEventAt).toLocaleString() : '—');
+        cell(row, game.lastEventAt ? new Date(game.lastEventAt).toLocaleString() : 'N/A');
         cell(row, s ? s.events : '0');
         cell(row, s ? s.visitors : '0');
         cell(row, s ? Math.round(Number(s.activeMs) / 60000) : '0');
@@ -393,7 +393,7 @@ export const gamePage = layout('Game', `
     }
     function renderEventsStatus(game) {
       document.getElementById('events-status').textContent = game.lastEventAt
-        ? 'Events received ✓ — last: ' + new Date(game.lastEventAt).toLocaleString()
+        ? 'Events received ✓, last: ' + new Date(game.lastEventAt).toLocaleString()
         : 'No events received yet. Install the snippet, then play your game to check.';
     }
     async function refreshEventsStatus(id) {
@@ -408,7 +408,7 @@ export const juryPage = layout('Review games', `
   <p><a href="/dashboard">← My games</a></p>
   <h1>Review games</h1>
   <p class="lead">Play each game, then pick the <strong id="k">2</strong> you liked best.
-     This is how new games get discovered — and it's how yours gets reviewed too.</p>
+     This is how new games get discovered, and how yours gets reviewed too.</p>
   <div id="zone"><p class="muted">Loading…</p></div>
   <style>
     .jrow { display:flex; gap:1rem; align-items:center; background:var(--panel);

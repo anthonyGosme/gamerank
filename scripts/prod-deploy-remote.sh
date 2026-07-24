@@ -83,6 +83,13 @@ compose up -d demo-game
 # Smoke tests locaux. Le contrôle public via Caddy est fait par run.sh depuis
 # le poste du déployeur, après le retour de cette commande.
 curl --fail --silent --show-error --max-time 5 http://127.0.0.1:23000/ >/dev/null
+for _ in $(seq 1 30); do
+  if curl --fail --silent --show-error --max-time 3 \
+    http://127.0.0.1:23001/demo/ >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
 curl --fail --silent --show-error --max-time 5 http://127.0.0.1:23001/demo/ >/dev/null
 
 rm -f images.tar

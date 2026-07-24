@@ -80,7 +80,7 @@ export function registerJuryRoutes(app: FastifyInstance): void {
     // Sinon on assigne un nouveau lot depuis le pool.
     const games = await poolForJuror(developer.id);
     if (games.length < 2) {
-      return reply.code(409).send({ error: 'not enough games to review yet — check back soon' });
+      return reply.code(409).send({ error: 'not enough games to review yet, check back soon' });
     }
     const { rows: batchRow } = await pool.query(`SELECT gen_random_uuid() AS id`);
     const batchId = batchRow[0].id;

@@ -57,7 +57,7 @@ export async function sendTestEmail(to: string): Promise<void> {
   await transport.sendMail({
     from: config.mailFrom,
     to,
-    subject: 'WebGameRank — test email',
+    subject: 'WebGameRank | test email',
     text: `Email de test WebGameRank via ${config.smtpHost}:${config.smtpPort} (secure=${config.smtpSecure}).\nSi tu lis ceci, l'envoi fonctionne.`,
   });
 }
@@ -84,5 +84,39 @@ export async function sendMagicLink(email: string, url: string): Promise<void> {
     mailerHealth.consecutiveFailures += 1;
     mailerHealth.totalFailed += 1;
     throw err; // l'appelant (issueMagicLink) log et n'échoue pas la requête
+  }
+}
+
+export interface ContactMessage {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  ip: string;
+}
+
+export async function sendContactMessage(message: ContactMessage): Promise<void> {
+  try {
+    await transport.sendMail({
+      from: config.mailFrom,
+      to: config.contactEmail,
+      replyTo: { name: message.name, address: message.email },
+      subject: `[WebGameRank contact] ${message.subject}`,
+      text: [
+        `From: ${message.name} <${message.email}>`,
+        `IP: ${message.ip}`,
+        '',
+        message.message,
+      ].join('\n'),
+    });
+    mailerHealth.lastSuccessAt = Date.now();
+    mailerHealth.consecutiveFailures = 0;
+    mailerHealth.totalSent += 1;
+  } catch (err) {
+    mailerHealth.lastErrorAt = Date.now();
+    mailerHealth.lastError = errMsg(err);
+    mailerHealth.consecutiveFailures += 1;
+    mailerHealth.totalFailed += 1;
+    throw err;
   }
 }

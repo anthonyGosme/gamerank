@@ -33,6 +33,18 @@ export const LOGO_SVG = `<svg viewBox="0 0 32 32" width="30" height="30" aria-hi
   <rect x="21" y="6.5" width="4.5" height="19" rx="2" fill="#111827"/>
 </svg>`;
 
+// Même symbole que le header, sous forme de ressource autonome pour les
+// navigateurs, favoris et raccourcis. Sans dimensions HTML ni aria-hidden.
+export const FAVICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="8" fill="#f59e0b"/>
+  <rect x="6.5" y="17.5" width="4.5" height="8" rx="2" fill="#111827" opacity=".45"/>
+  <rect x="13.75" y="12.5" width="4.5" height="13" rx="2" fill="#111827" opacity=".72"/>
+  <rect x="21" y="6.5" width="4.5" height="19" rx="2" fill="#111827"/>
+</svg>`;
+
+export const ANALYTICS_TAG =
+  '<script defer src="https://stats.contentrank.app/script.js" data-website-id="ad913d69-a820-4dc7-a232-efd1b201ce3e"></script>';
+
 const STYLES = `
   :root {
     --accent: #f59e0b; --bg: #2e1a5c; --panel: #3a2470; --panel2: #271650;
@@ -148,6 +160,7 @@ function sidebar(activeCategory?: string): string {
     ${items}
     <div class="sep"></div>
     <a href="/methodology" class="${activeCategory === '@how' ? 'active' : ''}"><span class="emo">💡</span>How it works</a>
+    <a href="/contact" class="${activeCategory === '@contact' ? 'active' : ''}"><span class="emo">✉️</span>Contact</a>
     <a href="/dashboard" class="${activeCategory === '@dev' ? 'active' : ''}"><span class="emo">🛠️</span>For developers</a>
     <a href="/login" id="gr-auth"><span class="emo" id="gr-auth-emo">🔑</span><span id="gr-auth-label">Log in</span></a>
     <script>
@@ -178,7 +191,6 @@ export function shell(options: {
   const og = Object.entries(options.og ?? {})
     .map(([property, content]) => `<meta property="og:${property}" content="${escapeHtml(content)}">`)
     .join('\n  ');
-  const favicon = `data:image/svg+xml,${encodeURIComponent(LOGO_SVG)}`;
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -188,7 +200,9 @@ export function shell(options: {
   ${options.description ? `<meta name="description" content="${escapeHtml(options.description)}">` : ''}
   ${options.noindex ? '<meta name="robots" content="noindex">' : ''}
   ${options.path ? `<link rel="canonical" href="${escapeHtml(options.path)}">` : ''}
-  <link rel="icon" href="${favicon}">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="/favicon.ico">
+  ${ANALYTICS_TAG}
   ${og}
   <style>${STYLES}</style>
 </head>

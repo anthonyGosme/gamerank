@@ -67,6 +67,7 @@ services:
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_TLS_INSECURE: "true"
       MAIL_FROM: "WebGameRank <no-reply@webgamerank.com>"
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-anthonygosme@gmail.com}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:

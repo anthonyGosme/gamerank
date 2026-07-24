@@ -204,7 +204,7 @@ export function registerGameRoutes(app: FastifyInstance): void {
     if (game.is_local) {
       if (!game.last_event_at) {
         return fail(
-          'no events received yet — open your game with the snippet installed, play a few seconds, then retry',
+          'no events received yet, open your game with the snippet installed, play a few seconds, then retry',
         );
       }
     } else {
@@ -225,10 +225,10 @@ export function registerGameRoutes(app: FastifyInstance): void {
         if (err instanceof SsrfError) {
           return fail('that URL must be a public http(s) address');
         }
-        return fail('could not fetch your page — is it online?');
+        return fail('could not fetch your page, is it online?');
       }
       if (!html.includes('/sdk.js') || !html.includes(game.sdk_key)) {
-        return fail('snippet not found on your page — paste it, deploy, then retry');
+        return fail('snippet not found on your page, paste it, deploy, then retry');
       }
     }
 

@@ -48,6 +48,11 @@ test('la home est publique : Top + Latest, sans authentification', async () => {
   assert.match(response.body, /Super Puzzle Quest/); // classé → Top
   assert.match(response.body, /Brand New Shooter/); // sans score → Latest
   assert.match(response.body, /For developers/);
+  assert.match(response.body, /<h1>Top Web Games<\/h1>/);
+  assert.match(response.body, /href="\/about">see how it works<\/a>/);
+  assert.match(response.body, /href="\/favicon\.svg"/);
+  assert.match(response.body, /stats\.contentrank\.app\/script\.js/);
+  assert.match(response.body, /data-website-id="ad913d69-a820-4dc7-a232-efd1b201ce3e"/);
   // Les titres de section mènent aux pages dédiées.
   assert.match(response.body, /href="\/top"/);
   assert.match(response.body, /href="\/new"/);
@@ -89,6 +94,15 @@ test('fiche publique : SEO (canonical, og) et score', async () => {
   const response = await app.inject({ method: 'GET', url: `/g/${ranked.id}/${slug}` });
   assert.equal(response.statusCode, 200);
   assert.match(response.body, /Super Puzzle Quest/);
+  assert.match(
+    response.body,
+    /<title>Super Puzzle Quest \| Match wits with the toughest puzzle on the web\.<\/title>/,
+  );
+  assert.match(response.body, /<h1[^>]*>Super Puzzle Quest<\/h1>/);
+  assert.match(
+    response.body,
+    /<h2[^>]*>\s*Match wits with the toughest puzzle on the web\.\s*<\/h2>/,
+  );
   assert.match(response.body, new RegExp(`canonical" href="/g/${ranked.id}/${slug}`));
   assert.match(response.body, /og:title/);
   assert.match(response.body, />71</); // score arrondi affiché
@@ -132,9 +146,15 @@ test('/go : referer same-site → site du jeu (clic compté) ; sinon → fiche i
 });
 
 test('methodology, sitemap et robots sont servis', async () => {
+  const about = await app.inject({ method: 'GET', url: '/about' });
+  assert.equal(about.statusCode, 302);
+  assert.equal(about.headers.location, '/methodology');
+
   const methodology = await app.inject({ method: 'GET', url: '/methodology' });
   assert.equal(methodology.statusCode, 200);
   assert.match(methodology.body, /real play/i);
+  assert.match(methodology.body, /The 9 ranking metrics/);
+  assert.match(methodology.body, /Developer consensus/);
   assert.doesNotMatch(methodology.body, /Wilson|0,95|exponent/i); // pas de science précise
 
   const sitemap = await app.inject({ method: 'GET', url: '/sitemap.xml' });

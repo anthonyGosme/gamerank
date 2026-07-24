@@ -103,6 +103,7 @@ const SHELL = (title, body, bg) => `<!doctype html>
   .msg { min-height:1.5rem; margin-top:.8rem; color:var(--muted); }
   code { background:#271650; padding:.1rem .35rem; border-radius:.3rem; font-size:.85em; }
 </style>
+<script defer src="https://stats.contentrank.app/script.js" data-website-id="ad913d69-a820-4dc7-a232-efd1b201ce3e"></script>
 </head><body>
 <a class="back" href="${basePath}/">← All demo games</a>
 ${body}

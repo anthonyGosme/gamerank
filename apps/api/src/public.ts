@@ -153,15 +153,19 @@ export function registerPublicRoutes(app: FastifyInstance): void {
              .join('')}</div>`;
 
     const body = `
-      <h1>Web games, ranked by how long people actually play</h1>
-      <p class="lead">No installs, no hype — just the games that keep players coming back.</p>
+      <h1>Top Web Games</h1>
+      <p class="lead" style="margin-bottom:.35rem">
+        Ranked by real play time, player ratings, and developer reviews,
+        <a href="/about">see how it works</a>.
+      </p>
+      <p class="lead">No installs, no hype, just games that keep players coming back.</p>
       ${section('top', top)}
       ${section('new', topNew)}
       ${section('latest', latest)}
-      ${top.length + latest.length === 0 ? '<p>No games yet — <a href="/games/new">be the first to submit yours</a>.</p>' : ''}`;
+      ${top.length + latest.length === 0 ? '<p>No games yet, <a href="/games/new">be the first to submit yours</a>.</p>' : ''}`;
     return reply.type('text/html').send(
       shell({
-        title: 'WebGameRank — web games ranked by real play time',
+        title: 'Best Web Games, Ranked by Players and Developers',
         description:
           'Discover the best web games, ranked by measured play time, player retention and verified votes.',
         path: '/',
@@ -196,7 +200,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
         ${pager(`/${key}?`, pageNumber, totalPages)}`;
       return reply.type('text/html').send(
         shell({
-          title: `${definition.heading} — WebGameRank`,
+          title: `${definition.heading} | WebGameRank`,
           description: definition.description,
           path: `/${key}`,
           activeCategory: `@${key}`,
@@ -212,7 +216,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       return reply
         .code(404)
         .type('text/html')
-        .send(shell({ title: 'Not found — WebGameRank', body: '<h1>Category not found</h1>' }));
+        .send(shell({ title: 'Not found | WebGameRank', body: '<h1>Category not found</h1>' }));
     }
     const { sort = 'top', page = '1' } = request.query as { sort?: string; page?: string };
     const activeSort = (Object.keys(LISTS).includes(sort) ? sort : 'top') as ListKey;
@@ -248,7 +252,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       ${pager(`/c/${category}?sort=${activeSort}&`, pageNumber, totalPages)}`;
     return reply.type('text/html').send(
       shell({
-        title: `${label} web games — WebGameRank`,
+        title: `${label} web games | WebGameRank`,
         description: `Best ${label.toLowerCase()} web games ranked by real play time and player votes.`,
         path: `/c/${category}`,
         activeCategory: category,
@@ -263,7 +267,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       return reply
         .code(404)
         .type('text/html')
-        .send(shell({ title: 'Not found — WebGameRank', body: '<h1>Game not found</h1>' }));
+        .send(shell({ title: 'Not found | WebGameRank', body: '<h1>Game not found</h1>' }));
     }
     const { rows } = await pool.query(
       `SELECT ${PUBLIC_GAME} FROM games g WHERE g.id = $1 AND g.status <> 'hidden'`,
@@ -274,7 +278,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       return reply
         .code(404)
         .type('text/html')
-        .send(shell({ title: 'Not found — WebGameRank', body: '<h1>Game not found</h1>' }));
+        .send(shell({ title: 'Not found | WebGameRank', body: '<h1>Game not found</h1>' }));
     }
 
     const { rows: scoreRows } = await pool.query(
@@ -312,7 +316,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
     const body = `
       ${
         unlisted
-          ? `<p class="notice">This game is not listed publicly yet — its developer still has to
+          ? `<p class="notice">This game is not listed publicly yet, its developer still has to
              verify the WebGameRank snippet on the game page.</p>`
           : ''
       }
@@ -334,7 +338,9 @@ export function registerPublicRoutes(app: FastifyInstance): void {
           }
         </p>
         <h1 style="margin:.5rem 0">${escapeHtml(game.name)}</h1>
-        <p class="muted" style="margin:0 0 1rem">${escapeHtml(game.shortDescription)}</p>
+        <h2 class="muted" style="margin:.2rem 0 1rem;font-size:1.15rem;font-weight:600">
+          ${escapeHtml(game.shortDescription)}
+        </h2>
         <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
           <div>
             <div style="font-size:3.4rem;font-weight:800;line-height:1;color:var(--ink)">${game.currentScore != null ? Math.round(game.currentScore) : 'NEW'}</div>
@@ -351,7 +357,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
           .then(function (info) {
             if (!info) return;
             var votes = info.votesUp + info.votesDown;
-            var round = function (n, d) { return n == null ? '—' : (+n).toFixed(d || 0); };
+            var round = function (n, d) { return n == null ? 'N/A' : (+n).toFixed(d || 0); };
             var s = info.score, m = s && s.metrics, c = m && m.corrected;
             // « observé (n=échantillon) → corrigé », ou « prior » si pas de donnée.
             var shrunk = function (observed, sample, corrected, unit) {
@@ -363,7 +369,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
                   '<tr><th>Axis</th><th>0–100</th><th>Raw metric</th></tr>' +
                   '<tr><td><strong>Score</strong> (rank #' + s.rank + ')</td><td><strong>' + round(s.score, 1) + '</strong></td><td class="muted">v1 score A: ' + round(s.scoreA, 1) + '</td></tr>' +
                   '<tr><td>Popularity (G)</td><td>' + round(s.g, 1) + '</td><td class="muted">' + round(m.weightedVisitors, 1) + ' weighted visitors · ' + round(m.activeMs / 3600000, 1) + ' active h</td></tr>' +
-                  '<tr><td>Quality (Q)</td><td>' + round(s.q, 1) + '</td><td class="muted">—</td></tr>' +
+                  '<tr><td>Quality (Q)</td><td>' + round(s.q, 1) + '</td><td class="muted">N/A</td></tr>' +
                   '<tr><td>· Fidelity (cohort)</td><td>' + round(c.fidelity * 100, 1) + '%</td><td class="muted">' + shrunk((m.fidelity || 0) * 100, m.fidelitySample, c.fidelity * 100, '%') + '</td></tr>' +
                   '<tr><td>· Median session</td><td>' + round(c.median / 60000, 1) + ' min</td><td class="muted">' + (m.sessionSample ? round(m.medianSessionMs / 60000, 1) + ' min (n=' + m.sessionSample + ' sessions)' : 'no session yet → prior') + '</td></tr>' +
                   '<tr><td>· Approval (Wilson)</td><td>' + round(c.approval * 100, 1) + '%</td><td class="muted">' + (votes ? info.votesUp + '/' + votes + ' votes (Wilson lower bound)' : 'no vote → prior') + '</td></tr>' +
@@ -401,15 +407,15 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       ${
         subScores
           ? `<h2>Score breakdown</h2>${bar('Popularity', subScores.g)}${bar('Quality', subScores.q)}
-             <p class="muted" style="font-size:.9rem">Developer jury — coming soon.</p>`
-          : '<p class="muted" style="margin-top:1.5rem">This game is being evaluated — its score appears once enough play data comes in.</p>'
+             <p class="muted" style="font-size:.9rem">Developer jury, coming soon.</p>`
+          : '<p class="muted" style="margin-top:1.5rem">This game is being evaluated, its score appears once enough play data comes in.</p>'
       }
       <h2>About ${escapeHtml(game.name)}</h2>
       <p style="max-width:46rem">${escapeHtml(game.description)}</p>
-      <p class="muted" style="font-size:.9rem">Scores come from real, verified play time — <a href="/methodology">how it works</a>.</p>`;
+      <p class="muted" style="font-size:.9rem">Scores come from real, verified play time, <a href="/methodology">see how it works</a>.</p>`;
     return reply.type('text/html').send(
       shell({
-        title: `${game.name} — score & ranking on WebGameRank`,
+        title: `${game.name} | ${game.shortDescription}`,
         description: game.shortDescription || game.description.slice(0, 150),
         path: gamePath(game),
         activeCategory: game.category,
@@ -475,10 +481,24 @@ export function registerPublicRoutes(app: FastifyInstance): void {
         actually on screen <em>and</em> the player is actually playing. A tab left open in the
         background counts for nothing, and automated traffic is filtered out by design.</p>
         <h2>Quality can beat size</h2>
-        <p>A small game that players love — they come back day after day, play long sessions,
-        vote it up — can outrank a heavily promoted game that players abandon after a minute.
+        <p>A small game that players love, where they come back day after day, play long sessions,
+        and vote it up, can outrank a heavily promoted game that players abandon after a minute.
         Every score balances <strong>popularity</strong> (how many people really play) with
         <strong>quality</strong> (what players do once they arrive).</p>
+        <h2 id="metrics">The 9 ranking metrics</h2>
+        <p>The final ranking combines nine signals. They cover audience, player experience,
+        and the developer jury.</p>
+        <ol>
+          <li><strong>Qualified players</strong>, visitors who actively play long enough to count.</li>
+          <li><strong>Active play time</strong>, time spent visibly and actively playing.</li>
+          <li><strong>Effective voters</strong>, player ratings adjusted for trustworthy diversity.</li>
+          <li><strong>Player retention</strong>, how often players return on another day.</li>
+          <li><strong>Median session length</strong>, the typical duration of a real play session.</li>
+          <li><strong>Player approval</strong>, positive ratings corrected for sample size.</li>
+          <li><strong>Meaningful play rate</strong>, the share of visits that become genuine play.</li>
+          <li><strong>Developer selections</strong>, how often peer reviewers choose the game.</li>
+          <li><strong>Developer consensus</strong>, whether those selections agree with the wider jury.</li>
+        </ol>
         <h2>Votes you can trust</h2>
         <p>You can only vote on a game after really playing it, once per game. And a handful of
         enthusiastic votes never outweighs a hundred genuine ones.</p>
@@ -486,7 +506,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
         <p>Recent activity counts more than last month's. A rising game climbs fast; an abandoned
         one fades. New games are visible from day one in <a href="/new">Top new games</a> and
         <a href="/latest">Latest arrivals</a>.</p>
-        <h2>Developer jury — coming soon</h2>
+        <h2>Developer jury</h2>
         <p>Every developer who submits a game will play and review recent submissions from other
         developers: expert eyes on every game, from day one.</p>
         <p class="muted">Free for players and developers.
@@ -494,14 +514,17 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       </div>`;
     return reply.type('text/html').send(
       shell({
-        title: 'How WebGameRank works — real play time, verified votes',
+        title: 'How WebGameRank works | 9 ranking metrics',
         description:
-          'WebGameRank ranks web games by measured play time, player retention and verified votes — not marketing budgets.',
+          'WebGameRank ranks web games using nine metrics based on play time, player ratings, retention, and developer reviews.',
         path: '/methodology',
         body,
       }),
     );
   });
+
+  // URL courte utilisée dans l'accroche de la home.
+  app.get('/about', async (_request, reply) => reply.redirect('/methodology'));
 
   app.get('/sitemap.xml', async (_request, reply) => {
     const games = await query('', 'g.created_at DESC', 5000);
@@ -511,6 +534,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       '/new',
       '/latest',
       '/methodology',
+      '/contact',
       ...CATEGORIES.map((category) => `/c/${category}`),
       ...games.map((game) => gamePath(game)),
     ];

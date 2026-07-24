@@ -15,7 +15,9 @@ import { registerJuryRoutes } from './jury.js';
 import { registerPublicRoutes } from './public.js';
 import { registerAdminRoutes } from './admin.js';
 import { registerHealthRoutes } from './health.js';
+import { registerContactRoutes } from './contact.js';
 import { loginPage, dashboardPage, newGamePage, gamePage, adminPage, juryPage } from './pages.js';
+import { FAVICON_SVG } from './layout.js';
 
 export async function buildApp(options: { logger?: boolean } = {}): Promise<FastifyInstance> {
   const app = Fastify({ logger: options.logger ?? true, trustProxy: true });
@@ -55,6 +57,17 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   registerPublicRoutes(app); // sert aussi la home publique « / »
   registerAdminRoutes(app);
   registerHealthRoutes(app); // /health, /health/ready, /health/email
+  registerContactRoutes(app);
+
+  // Vraie ressource plutôt qu'un data URI : meilleure compatibilité avec les
+  // favoris, les raccourcis et le cache agressif des navigateurs.
+  const favicon = async (_request: unknown, reply: { type: (value: string) => { header: (name: string, value: string) => { send: (body: string) => unknown } } }) =>
+    reply
+      .type('image/svg+xml')
+      .header('Cache-Control', 'public, max-age=86400')
+      .send(FAVICON_SVG);
+  app.get('/favicon.svg', favicon);
+  app.get('/favicon.ico', favicon);
 
   app.get('/login', async (_request, reply) => reply.type('text/html').send(loginPage));
 
