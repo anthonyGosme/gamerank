@@ -3,6 +3,7 @@ dist/
 .env
 .env.prod
 .env.*
+.env.dev
 .idea/
 .DS_Store
 apps/api/uploads/
