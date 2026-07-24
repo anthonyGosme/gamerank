@@ -2,10 +2,14 @@ node_modules/
 dist/
 .env
 .env.prod
+.env.*
 .idea/
 .DS_Store
 apps/api/uploads/
 apps/demo-game/games.json
 logs/
 backups/
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
 *.prod.example
