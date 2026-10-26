@@ -526,7 +526,7 @@ prod_preflight() {
   [[ -f "$PROD_COMPOSE" ]] || die "$PROD_COMPOSE absent"
   [[ -f "$PROD_ENV" ]] || die "$PROD_ENV manquant (cp .env.prod.example .env.prod puis renseigner)"
   [[ -x scripts/prod-deploy-remote.sh ]] || die "scripts/prod-deploy-remote.sh doit être exécutable"
-  command -v docker >/dev/null || die "docker requis en local pour construire les images"
+  command -v git >/dev/null || die "git requis en local (archive des sources HEAD)"
   command -v ssh >/dev/null || die "ssh requis"
   command -v scp >/dev/null || die "scp requis"
   if grep -Eq 'CHANGE_ME|example\.com' "$PROD_ENV"; then
@@ -541,26 +541,25 @@ prod_preflight() {
 
 act_prod_deploy() {
   prod_preflight
-  local tmp_dir image_tar
+  local tmp_dir source_tar
   tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/gamerank-prod.XXXXXX")"
-  image_tar="$tmp_dir/images.tar"
+  source_tar="$tmp_dir/source.tar.gz"
   trap 'rm -rf "$tmp_dir"' RETURN
 
-  say "build des images de production..."
-  docker build -t webgamerank-api:prod -f Dockerfile .
-  docker build -t webgamerank-demo:prod apps/demo-game
-  say "export des images..."
-  docker save -o "$image_tar" webgamerank-api:prod webgamerank-demo:prod
+  # Build DÉPORTÉ sur le VPS (Docker local contourné) : on envoie les sources
+  # (HEAD, fichiers suivis uniquement) et le VPS build les images lui-même.
+  say "archive des sources (HEAD)..."
+  git archive --format=tar.gz -o "$source_tar" HEAD
 
   say "préparation de $VPS:$PROD_REMOTE_DIR..."
   prod_ssh "mkdir -p '$PROD_REMOTE_DIR' '$PROD_REMOTE_DIR/backups' && chmod 700 '$PROD_REMOTE_DIR'"
   scp -q "$PROD_COMPOSE" "$VPS:$PROD_REMOTE_DIR/compose.prod.yaml"
   scp -q "$PROD_ENV" "$VPS:$PROD_REMOTE_DIR/.env.prod"
   scp -q scripts/prod-deploy-remote.sh "$VPS:$PROD_REMOTE_DIR/prod-deploy-remote.sh"
-  scp -q "$image_tar" "$VPS:$PROD_REMOTE_DIR/images.tar"
+  scp -q "$source_tar" "$VPS:$PROD_REMOTE_DIR/source.tar.gz"
   prod_ssh "chmod 600 '$PROD_REMOTE_DIR/.env.prod' && chmod 700 '$PROD_REMOTE_DIR/prod-deploy-remote.sh'"
 
-  say "backup, migrations, démarrage et smoke tests sur le VPS..."
+  say "build (sur le VPS), backup, migrations, démarrage et smoke tests..."
   prod_ssh "GR_PROD_DIR='$PROD_REMOTE_DIR' '$PROD_REMOTE_DIR/prod-deploy-remote.sh'"
 
   local public_health public_home

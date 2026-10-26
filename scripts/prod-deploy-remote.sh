@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Exécuté sur le VPS par `./run.sh prod deploy`. Ne pas lancer sans les trois
-# fichiers déposés dans /opt/webgamerank : compose, env et images.
+# fichiers déposés dans /opt/webgamerank : compose, env et source.tar.gz.
+# Les images sont buildées ICI, sur le VPS, depuis les sources (pas de Docker
+# local requis côté déployeur).
 set -euo pipefail
 
 APP_DIR="${GR_PROD_DIR:-/opt/webgamerank}"
@@ -34,7 +36,12 @@ rollback() {
 }
 trap rollback ERR
 
-docker load -i images.tar
+# Build des images sur le VPS depuis les sources (HEAD). L'ancien :prod a déjà
+# été taggé :rollback plus haut, donc un build en échec reste récupérable.
+rm -rf src && mkdir -p src
+tar xzf source.tar.gz -C src
+docker build -t webgamerank-api:prod -f src/Dockerfile src
+docker build -t webgamerank-demo:prod src/apps/demo-game
 compose config --quiet
 
 # Les images de données sont épinglées dans le Compose. pull ne touche pas aux
@@ -92,6 +99,6 @@ for _ in $(seq 1 30); do
 done
 curl --fail --silent --show-error --max-time 5 http://127.0.0.1:23001/demo/ >/dev/null
 
-rm -f images.tar
+rm -rf src source.tar.gz
 trap - ERR
 echo "Déploiement applicatif terminé."
