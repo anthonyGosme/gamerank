@@ -3,6 +3,7 @@ dist/
 .env
 .env.prod
 .env.*
+.env.homol
 .env.dev
 .idea/
 .DS_Store

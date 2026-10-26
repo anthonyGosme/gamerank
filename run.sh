@@ -17,6 +17,7 @@ BACKUP_DIR="backups"
 HOMOL_COMPOSE="compose.homol.yaml"
 PROD_COMPOSE="compose.prod.yaml"
 PROD_ENV=".env.prod"
+DEV_ENV="${GR_DEV_ENV:-$ROOT/.env.dev}"
 PROD_REMOTE_DIR="${GR_PROD_DIR:-/opt/webgamerank}"
 
 DEV_API_PORT=3000                       # apps/api (tsx watch)
@@ -92,6 +93,7 @@ Commandes globales :
   status                les trois environnements d'un coup d'œil
 
 Notes :
+  - dev charge .env.dev (surcharge possible avec $GR_DEV_ENV=/chemin/fichier).
   - Les tunnels SSH (email + Kuma) passent par $GR_VPS (défaut root@87.106.6.144).
   - homol expose 127.0.0.1:18001 ; le reverse-proxy HTTPS est assuré par un
     Caddy local (non géré par run.sh) : voir doc/DEPLOY.md pour le bloc Caddy et
@@ -205,10 +207,14 @@ act_tunnels_stop() {
 
 # ─── start / stop / restart (dev) ─────────────────────────────────────────────
 require_dev() { [[ "$ENV_KIND" == "local" ]] || die "action réservée à dev"; }
+require_dev_env() {
+  require_dev
+  [[ -f "$DEV_ENV" ]] || die ".env.dev manquant (cp .env.example .env.dev puis renseigner)"
+}
 
 act_start() {
-  require_dev
-  [[ -f .env ]] || die ".env manquant (cp .env.example .env puis renseigner)"
+  require_dev_env
+  export ENV_FILE="$DEV_ENV"
   mkdir -p logs
   act_infra_up
   wait_postgres
@@ -339,15 +345,25 @@ act_logs() {
 # ─── test / migrate / build-sdk / seed ────────────────────────────────────────
 act_test() {
   local status=0
-  npm run --silent test -- "$@" || status=$?
+  if is_local; then
+    require_dev_env
+    ENV_FILE="$DEV_ENV" npm run --silent test -- "$@" || status=$?
+  else
+    npm run --silent test -- "$@" || status=$?
+  fi
   (( status == 0 )) || die "tests en échec (code $status)"
   say "tests OK"
 }
-act_migrate()   { npm run --silent migrate; say "migrations à jour"; }
+act_migrate()   { require_dev_env; ENV_FILE="$DEV_ENV" npm run --silent migrate; say "migrations à jour"; }
 act_build_sdk() { npm run --silent build:sdk; say "SDK build (/sdk.js, /widget.js)"; }
 act_seed() {
+  require_dev_env
   local base; base="$(demo_base_url)"
-  if [[ "${1:-}" == "--sample" ]]; then DEMO_BASE_URL="$base" SEED_SAMPLE=1 npm run --silent seed:demo; else DEMO_BASE_URL="$base" npm run --silent seed:demo; fi
+  if [[ "${1:-}" == "--sample" ]]; then
+    ENV_FILE="$DEV_ENV" DEMO_BASE_URL="$base" SEED_SAMPLE=1 npm run --silent seed:demo
+  else
+    ENV_FILE="$DEV_ENV" DEMO_BASE_URL="$base" npm run --silent seed:demo
+  fi
   say "jeux de démo insérés"
 }
 
@@ -363,12 +379,12 @@ act_email_check() {
 }
 
 act_email_test() {
-  require_dev
+  require_dev_env
   local to="${1:-}"
   [[ -n "$to" ]] || die "usage : ./run.sh dev email-test <destinataire>"
   port_listening "$TUNNEL_SMTP_PORT" || warn "tunnel SMTP :$TUNNEL_SMTP_PORT fermé — l'envoi va probablement échouer (./run.sh dev tunnels)"
   say "envoi d'un email de test à $to..."
-  npx tsx --env-file=.env apps/api/scripts/send-test-email.ts "$to"
+  npx tsx --env-file="$DEV_ENV" apps/api/scripts/send-test-email.ts "$to"
 }
 
 # ─── db-backup / db-restore / db-reset (Postgres) ─────────────────────────────
@@ -408,7 +424,7 @@ act_db_restore() {
 }
 
 act_db_reset() {
-  require_dev
+  require_dev_env
   local yes="${1:-}"
   port_listening "$DEV_API_PORT" && die "arrêtez l'app d'abord : ./run.sh dev stop"
   if [[ "$yes" != "--yes" ]]; then
@@ -418,7 +434,7 @@ act_db_reset() {
   fi
   do_backup "pre-reset" >/dev/null || true
   pg psql -U gamerank -d gamerank -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;' >/dev/null
-  npm run --silent migrate
+  ENV_FILE="$DEV_ENV" npm run --silent migrate
   say "base dev réinitialisée (schéma recréé via migrations)."
 }
 
