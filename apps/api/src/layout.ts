@@ -218,6 +218,14 @@ export function shell(options: {
     ${options.withSidebar === false ? '' : sidebar(options.activeCategory)}
     <main class="content${options.narrow ? ' narrow' : ''}">${options.body}</main>
   </div>
+  <footer style="border-top:1px solid var(--line);margin-top:2rem;padding:1.4rem 1rem;
+      text-align:center;color:var(--muted);font-size:.9rem">
+    <a href="/projects" style="color:var(--accent);text-decoration:none;font-weight:700">More projects</a>
+    <span style="opacity:.5"> · </span><a href="/methodology" style="color:inherit">How it works</a>
+    <span style="opacity:.5"> · </span><a href="/contact" style="color:inherit">Contact</a>
+    <span style="opacity:.5"> · </span><a href="/games/new" style="color:inherit">Submit your game</a>
+    <div style="margin-top:.5rem;opacity:.7">© WebGameRank</div>
+  </footer>
 </body>
 </html>`;
 }
