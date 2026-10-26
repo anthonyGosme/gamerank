@@ -523,6 +523,62 @@ export function registerPublicRoutes(app: FastifyInstance): void {
     );
   });
 
+  // Page « réseau » : liens EN DUR vers les autres projets du même créateur.
+  // Descriptions SEO/promo rédigées à partir des sites (octobre 2026).
+  app.get('/projects', async (_request, reply) => {
+    const projects = [
+      {
+        name: 'Pixmem',
+        url: 'https://pixmem.com/',
+        tag: 'Pixel & Memory.',
+        desc: 'A quick, retro-flavoured browser memory game: match the pixel-art patterns and sharpen your recall in short, addictive sessions.',
+      },
+      {
+        name: 'ContentRank',
+        url: 'https://contentrank.app/',
+        tag: 'Quality emerges from matches.',
+        desc: 'Compares two articles on the same topic across nine quality axes, each verdict backed by exact quoted passages. Scores come from a Glicko-2 network of head-to-head matches — evidence first, opinion second.',
+      },
+      {
+        name: 'HumanQuill',
+        url: 'https://humanquill.io/',
+        tag: 'Make AI text sound human.',
+        desc: 'A free rewriter that turns stiff, over-polished AI drafts into natural, varied prose — every edit highlighted so you stay in control, your text kept private on EU servers. For writers, students and marketers.',
+      },
+      {
+        name: 'Ontodynamique',
+        url: 'https://www.ontodynamique.com/',
+        tag: "Authenticity isn't discovered — it's built.",
+        desc: 'A French-language framework on identity and personal change: systems thinking meets philosophy, with weekly essays, diagnostic tools and a book. (In French.)',
+      },
+    ];
+    const cards = projects
+      .map(
+        (p) => `<a class="panel" href="${p.url}" target="_blank" rel="noopener"
+          style="display:block;text-decoration:none;color:inherit;margin-bottom:1rem">
+          <strong style="font-size:1.1rem">${escapeHtml(p.name)}</strong><span
+            style="color:var(--accent)"> — ${escapeHtml(p.tag)}</span>
+          <p class="muted" style="margin:.4rem 0 .6rem">${escapeHtml(p.desc)}</p>
+          <span style="color:var(--accent);font-size:.85rem;font-weight:700">Visit ${escapeHtml(p.name)} →</span>
+        </a>`,
+      )
+      .join('');
+    const body = `
+      <h1>More from the maker of WebGameRank</h1>
+      <p class="lead">Other things we build — handy tools and a game or two you might enjoy.</p>
+      <div style="max-width:46rem">${cards}</div>`;
+    return reply.type('text/html').send(
+      shell({
+        title: 'More projects | WebGameRank',
+        description:
+          'Other projects by the maker of WebGameRank: Pixmem, ContentRank, HumanQuill and Ontodynamique — games, writing tools and ideas.',
+        path: '/projects',
+        activeCategory: '@projects',
+        body,
+      }),
+    );
+  });
+
   // URL courte utilisée dans l'accroche de la home.
   app.get('/about', async (_request, reply) => reply.redirect('/methodology'));
 
@@ -534,6 +590,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       '/new',
       '/latest',
       '/methodology',
+      '/projects',
       '/contact',
       ...CATEGORIES.map((category) => `/c/${category}`),
       ...games.map((game) => gamePath(game)),

@@ -160,6 +160,7 @@ function sidebar(activeCategory?: string): string {
     ${items}
     <div class="sep"></div>
     <a href="/methodology" class="${activeCategory === '@how' ? 'active' : ''}"><span class="emo">💡</span>How it works</a>
+    <a href="/projects" class="${activeCategory === '@projects' ? 'active' : ''}"><span class="emo">🚀</span>More projects</a>
     <a href="/contact" class="${activeCategory === '@contact' ? 'active' : ''}"><span class="emo">✉️</span>Contact</a>
     <a href="/dashboard" class="${activeCategory === '@dev' ? 'active' : ''}"><span class="emo">🛠️</span>For developers</a>
     <a href="/login" id="gr-auth"><span class="emo" id="gr-auth-emo">🔑</span><span id="gr-auth-label">Log in</span></a>
