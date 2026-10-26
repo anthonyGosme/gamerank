@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebGameRank Outreach</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <span class="logo">▥</span>
+    <div>
+      <strong>WebGameRank</strong>
+      <small>Outreach importer</small>
+    </div>
+  </header>
+
+  <main>
+    <p id="intro">Ouvre la page filtrée de <code>r/playmygame</code>, puis importe automatiquement tous ses posts.</p>
+    <button id="extract-all" type="button">Charger et importer tous les posts</button>
+    <button id="extract" type="button" class="secondary">Importer seulement les posts visibles</button>
+    <p id="status" role="status" aria-live="polite"></p>
+    <section id="summary" hidden>
+      <dl>
+        <div><dt>Posts</dt><dd id="post-count">0</dd></div>
+        <div><dt>Liens candidats</dt><dd id="link-count">0</dd></div>
+        <div><dt>Sans lien</dt><dd id="empty-count">0</dd></div>
+      </dl>
+      <div id="preview"></div>
+      <button id="download" type="button" class="secondary">Télécharger candidates.json</button>
+    </section>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gamerank Outreach</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <div class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div>
+      <strong>WebGameRank</strong>
+      <span>Outreach Console</span>
+    </div>
+    <p>Outil local · envoi manuel ou automatique contrôlé</p>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Pipeline de prospection</p>
+        <h1>Des posts Reddit aux contacts vérifiés.</h1>
+        <p class="subtitle">Importe une collecte, contrôle sa qualité et suis chaque prospect sans doublonner les prises de contact.</p>
+      </div>
+      <label id="drop-zone" class="drop-zone">
+        <input id="file-input" type="file" accept="application/json,.json">
+        <span class="upload-icon">⇧</span>
+        <strong>Importer un fichier JSON</strong>
+        <small>Dépose le fichier ici ou clique pour le choisir</small>
+      </label>
+    </section>
+
+    <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
+
+    <section id="metrics" class="metrics" aria-label="Résumé">
+      <article><span>Prospects</span><strong id="metric-prospects">—</strong><small>posts uniques</small></article>
+      <article><span>Sites candidats</span><strong id="metric-sites">—</strong><small>à analyser</small></article>
+      <article><span>À enrichir</span><strong id="metric-review">—</strong><small>lien manquant</small></article>
+      <article><span>E-mails uniques</span><strong id="metric-emails">—</strong><small>retenus</small></article>
+      <article class="warning"><span>Doublons écartés</span><strong id="metric-duplicates">—</strong><small>jamais renvoyés</small></article>
+    </section>
+
+    <section class="panel extractor-panel">
+      <div>
+        <p class="eyebrow">Extraction de contacts publics</p>
+        <h2>Analyser les sites candidats</h2>
+        <p class="extractor-copy">Recherche les pages Contact, About, Legal et Privacy. Un navigateur local prend le relais uniquement pour les SPA. Aucune adresse n’est devinée et aucun message n’est envoyé.</p>
+      </div>
+      <div class="extractor-action">
+        <p><strong id="pending-sites">—</strong> site(s) restant(s)</p>
+        <button id="start-extraction" type="button">Analyser tous les non analysés</button>
+        <small id="extraction-status">Aucune analyse en cours.</small>
+      </div>
+    </section>
+
+    <section class="panel prospects-panel">
+      <div class="mail-test-bar">
+        <div>
+          <p class="eyebrow">Test SMTP de bout en bout</p>
+          <strong>test game · test.com → anthonygosme@gmail.com</strong>
+          <small>Utilise exactement le même transport et le même modèle que les prospects.</small>
+        </div>
+        <button id="send-test-email" type="button">Envoyer l’e-mail test</button>
+      </div>
+      <div class="auto-send-bar">
+        <div>
+          <p class="eyebrow">Envoi automatique contrôlé</p>
+          <strong>Envoie uniquement aux prospects visibles qui ont un e-mail et ne sont pas déjà contactés.</strong>
+          <small>L’automatisation s’arrête si la page est fermée ou si un envoi échoue.</small>
+        </div>
+        <label>
+          <span>Délai</span>
+          <span class="number-field"><input id="auto-send-delay" type="number" min="30" max="3600" step="10" value="120"> secondes</span>
+        </label>
+        <label>
+          <span>Maximum</span>
+          <span class="number-field"><input id="auto-send-limit" type="number" min="1" max="50" step="1" value="10"> mails</span>
+        </label>
+        <div class="auto-send-actions">
+          <button id="start-auto-send" type="button">Démarrer</button>
+          <button id="stop-auto-send" type="button" disabled>Arrêter</button>
+          <small id="auto-send-status">Automatisation arrêtée.</small>
+        </div>
+      </div>
+      <div class="panel-title">
+        <div>
+          <p class="eyebrow">File de travail</p>
+          <h2>Prospects</h2>
+        </div>
+        <div class="filters">
+          <label>
+            <span class="sr-only">Rechercher</span>
+            <input id="search" type="search" placeholder="Jeu, auteur, domaine…">
+          </label>
+          <label>
+            <span class="sr-only">Filtrer par statut</span>
+            <select id="status-filter">
+              <option value="">Tous les statuts</option>
+              <option value="site_found">Site candidat</option>
+              <option value="platform_only">Plateforme uniquement</option>
+              <option value="needs_review">À enrichir</option>
+              <option value="contact_found">Contact trouvé</option>
+              <option value="contact_form_only">Formulaire uniquement</option>
+              <option value="no_public_contact">Aucun contact public</option>
+              <option value="extraction_failed">Échec d’analyse</option>
+              <option value="email_sent">E-mail envoyé</option>
+              <option value="rejected">Écarté</option>
+            </select>
+          </label>
+          <label>
+            <span class="sr-only">Filtrer par recherche d’e-mail</span>
+            <select id="email-search-filter">
+              <option value="">Recherche e-mail : tous</option>
+              <option value="not_searched">E-mail non recherché</option>
+              <option value="searching">Recherche en cours</option>
+              <option value="searched">E-mail recherché</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Envoi</th><th>Nom du jeu</th><th>Titre du post</th><th>Importé le</th><th>Statut</th><th>Recherche e-mail</th><th>Site candidat</th><th>Contact</th><th>Source</th></tr></thead>
+          <tbody id="prospects-body"></tbody>
+        </table>
+      </div>
+      <p id="prospects-empty" class="empty" hidden>Aucun prospect pour ce filtre.</p>
+      <p class="table-note">Les 500 premiers résultats correspondant au filtre sont affichés.</p>
+    </section>
+
+    <div class="columns">
+      <section class="panel">
+        <div class="panel-title">
+          <div><p class="eyebrow">Traçabilité</p><h2>Imports récents</h2></div>
+          <button id="purge-database" class="danger-button" type="button">Purger la base</button>
+        </div>
+        <div id="imports-list" class="stack"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">
+          <div><p class="eyebrow">Anti-spam</p><h2>E-mails dupliqués non repris</h2></div>
+          <span id="duplicate-badge" class="count-badge">0</span>
+        </div>
+        <div id="duplicates-list" class="stack"></div>
+        <p id="duplicates-empty" class="empty">Aucun doublon détecté pour le moment.</p>
+      </section>
+    </div>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "WebGameRank Outreach Importer",
+  "version": "0.1.0",
+  "description": "Importe les publications web visibles de r/playmygame dans un fichier JSON.",
+  "permissions": ["activeTab"],
+  "host_permissions": ["https://www.reddit.com/r/playmygame/*"],
+  "action": {
+    "default_title": "Importer les posts WebGameRank",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.reddit.com/r/playmygame/*"],
+      "js": ["extractor-core.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
