@@ -540,6 +540,12 @@ export function registerPublicRoutes(app: FastifyInstance): void {
         desc: 'Compares two articles on the same topic across nine quality axes, each verdict backed by exact quoted passages. Scores come from a Glicko-2 network of head-to-head matches — evidence first, opinion second.',
       },
       {
+        name: 'Speedrunner',
+        url: 'https://github.com/anthonyGosme/speedrunner',
+        tag: 'CLI tools, up to 15× faster.',
+        desc: 'An open-source, single-binary daemon that keeps Python, Ruby and PHP command-line tools preloaded and forks them on each call, so interpreter startup and imports happen once. Works with ansible, pip, poetry, rubocop, rspec, php artisan and more — same output, zero config.',
+      },
+      {
         name: 'HumanQuill',
         url: 'https://humanquill.io/',
         tag: 'Make AI text sound human.',
@@ -571,7 +577,7 @@ export function registerPublicRoutes(app: FastifyInstance): void {
       shell({
         title: 'More projects | WebGameRank',
         description:
-          'Other projects by the maker of WebGameRank: Pixmem, ContentRank, HumanQuill and Ontodynamique — games, writing tools and ideas.',
+          'Other projects by the maker of WebGameRank: Pixmem, ContentRank, Speedrunner, HumanQuill and Ontodynamique — games, dev tools, writing tools and ideas.',
         path: '/projects',
         activeCategory: '@projects',
         body,
